@@ -1,4 +1,6 @@
-# Bookshelf — Agent Guidelines
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Hard rules
 
@@ -6,16 +8,24 @@
 2. **`context/foundation/` files are owned by the document-generation chain, not by conversation.** Never invent a `prd.md`, `tech-stack.md`, `infrastructure.md`, etc. inline. If a downstream step needs an upstream artifact and it's missing, refuse and redirect the user to regenerate it — do not synthesize the file from chat.
 3. **Stack openness is binding until tech-stack selection.** Discovery and PRD steps must NOT name frameworks, databases, hosting platforms, vendors, ORM/schema notation, runtime locations, enforcement mechanisms, UI affordances, or transport protocols. Those decisions land in tech-stack selection (greenfield) or stack assessment (brownfield).
 4. **Soft gates warn but allow override.** Quality cross-checks, the empty-CRUD and MVP-too-big detectors, the four agent-friendly criteria, and the infrastructure anti-bias lenses all WARN-AND-CONTINUE — they never block the user. Overrides are recorded in the artifact for downstream consumers.
+5. **Next.js 16 is not the Next.js in your training data.** APIs, conventions, and file structure may all differ. Read the relevant guide in `node_modules/next/dist/docs/` before writing framework code, and heed deprecation notices.
 
-## AGENTS.md / CLAUDE.md inclusion test
+## Project
 
-Before adding any rule to a rules-for-AI file, ask: *could the agent know this without this file? Could public training data have prepared it?* If yes, drop it. If no, keep it.
+Bookshelf — a personal ebook library manager (epub import, metadata enrichment, Markdown notes per book, Kobo sync). See @idea.md for the original brief and @context/foundation/prd.md for the locked PRD.
 
-**Belongs**: non-obvious project conventions, project-specific traps and historical workarounds, `@`-references to canonical files.
+Stack hand-off (from @context/foundation/tech-stack.md): Next.js 16 + React 19 + TypeScript (strict) + Tailwind v4, App Router under `src/app/`, `@/*` import alias → `./src/*`. Deployment target is AWS App Runner, CI on GitHub Actions, auto-deploy on merge.
 
-**Does NOT belong**: mainstream framework docs, README content, generic advice ("use TypeScript strict mode"), intention statements ("write clean code").
+## Commands
 
-**U-shaped attention.** LLMs attend most strongly to the start and end of context. Critical rules go to the top; per-area rules belong next to their code (nested `AGENTS.md` / `.cursor/rules/*.mdc` with file globs), not buried in one big file.
+Standard scripts live in @package.json — see the `scripts` field for `dev`, `build`, `start`, `lint`.
+
+No test framework is configured yet. Don't fabricate test commands; if you add a runner, add the script in `package.json`, ensure it runs in the existing ESLint/CI flow, and add the command (with a one-line description) here.
+
+## Traps / non-obvious
+
+- **`package.json` is named `bootstrap-scaffold`**, not `bookshelf` — leftover from the scaffold step (`create-next-app` rejects dot-prefixed temp dirs, so the bootstrap used `bootstrap-scaffold/`; see @context/changes/bootstrap-verification/verification.md). Rename it if it starts mattering; don't assume it reflects the product.
+- **Two moderate `npm audit` findings** trace to a single root cause: transitive `postcss <8.5.10` bundled inside `next`. Both clear when upstream `next` ships a patched bundle — don't downgrade `next` to `9.3.3` even though `npm audit --fix` suggests it.
 
 ## Foundation paths
 
