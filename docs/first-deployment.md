@@ -113,8 +113,8 @@ API keys for the AI provider, Google Drive OAuth credentials, etc. are **not** n
 
 - Web service (Starter): $7/mo
 - Background Worker (Starter): $7/mo
-- Postgres (Starter): $7/mo
-- **Total: ~$21/mo from day one.**
+- Postgres (`basic-256mb`, the current entry-level — legacy Starter is closed to new dbs): ~$6/mo
+- **Total: ~$20/mo from day one.** Confirm exact Postgres price in the blueprint preview before clicking Apply.
 
 The free tier is intentionally avoided: free Postgres expires after 30 days, and free web services cold-start in 30–60s, which blows the PRD's 30s AI-enrichment NFR (see `infrastructure.md` Risk Register, rows 1–2).
 

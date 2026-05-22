@@ -1,6 +1,6 @@
 databases:
   - name: bookshelf-db
-    plan: starter
+    plan: basic-256mb
     databaseName: bookshelf
     user: bookshelf
     region: frankfurt
