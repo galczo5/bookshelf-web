@@ -16,10 +16,10 @@ Plan for getting Bookshelf onto Render for the first time. Target platform decis
 
 **Agent does (after the above):**
 
-- [ ] Add `"engines": { "node": ">=22" }` to `package.json`
-- [ ] Write `render.yaml` at repo root declaring `bookshelf-web`, `bookshelf-worker`, `bookshelf-db` — region `frankfurt`, Docker runtime
+- [X] Add `"engines": { "node": ">=22" }` to `package.json`
+- [X] Write `render.yaml` at repo root declaring `bookshelf-web`, `bookshelf-worker`, `bookshelf-db` — region `frankfurt`, Docker runtime
 - [X] Confirm Docker runtime vs. Native runtime choice with you — **Docker** (confirmed)
-- [ ] Push the branch and open a PR with the blueprint
+- [X] Push the branch and open a PR with the blueprint
 - [ ] After merge, run `render blueprint launch` (or trigger via MCP) and watch the first build
 - [ ] Verify the web service responds, the worker is running idle, and the Postgres connection string is wired into both
 - [ ] Enable automated daily Postgres backups in the dashboard (one toggle; the agent will remind you)
