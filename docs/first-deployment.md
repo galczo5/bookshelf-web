@@ -17,12 +17,11 @@ Plan for getting Bookshelf onto Render for the first time. Target platform decis
 **Agent does (after the above):**
 
 - [X] Add `"engines": { "node": ">=22" }` to `package.json`
-- [X] Write `render.yaml` at repo root declaring `bookshelf-web`, `bookshelf-worker`, `bookshelf-db` — region `frankfurt`, Docker runtime
+- [X] Write `render.yaml` at repo root declaring `bookshelf-web` + `bookshelf-db` — region `frankfurt`, Docker, `free` plans (worker deferred — see "Test deploy on free tier" below)
 - [X] Confirm Docker runtime vs. Native runtime choice with you — **Docker** (confirmed)
 - [X] Push the branch and open a PR with the blueprint
 - [ ] After merge, run `render blueprint launch` (or trigger via MCP) and watch the first build
-- [ ] Verify the web service responds, the worker is running idle, and the Postgres connection string is wired into both
-- [ ] Enable automated daily Postgres backups in the dashboard (one toggle; the agent will remind you)
+- [ ] Verify the web service responds and the Postgres connection string is wired in
 - [ ] Record the resulting service IDs and URLs in `context/deployment/deploy-plan.md`
 
 **You do (after first deploy is green):**
@@ -111,12 +110,19 @@ API keys for the AI provider, Google Drive OAuth credentials, etc. are **not** n
 
 ## Cost expectation
 
+**Test deploy (current — `free` plans):** $0/mo. Two hard constraints to plan around:
+
+- **Free Postgres expires 30 days after creation** (14-day grace before deletion). Set a calendar reminder for ~day 25 to upgrade to `basic-256mb` (~$6/mo) or back up + recreate.
+- **Free Web Service sleeps after 15 min idle, 30–60s cold start.** Fine for kicking the tires; would violate the PRD's 30s AI-enrichment NFR in production. Upgrade web to Starter ($7/mo) when real users are in the loop.
+- **Background Workers have no free tier.** The worker is deferred from `render.yaml` until real enrichment code exists; reintroduce it then on Starter ($7/mo).
+- Ephemeral filesystem on free web — fine; Next.js state lives in Postgres.
+
+**Production target when ready:**
+
 - Web service (Starter): $7/mo
 - Background Worker (Starter): $7/mo
-- Postgres (`basic-256mb`, the current entry-level — legacy Starter is closed to new dbs): ~$6/mo
-- **Total: ~$20/mo from day one.** Confirm exact Postgres price in the blueprint preview before clicking Apply.
-
-The free tier is intentionally avoided: free Postgres expires after 30 days, and free web services cold-start in 30–60s, which blows the PRD's 30s AI-enrichment NFR (see `infrastructure.md` Risk Register, rows 1–2).
+- Postgres (`basic-256mb`): ~$6/mo
+- **Total: ~$20/mo.** Confirm exact Postgres price in the blueprint preview before clicking Apply.
 
 ---
 
