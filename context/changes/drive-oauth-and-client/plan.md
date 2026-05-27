@@ -439,10 +439,10 @@ No data migration required (no prior data exists). The `auth_tokens` table is cr
 
 #### Automated
 
-- [ ] 1.1 `npm run build` succeeds with the new auth wiring (TypeScript strict mode passes)
-- [ ] 1.2 `npm run lint` passes (no ESLint errors)
-- [ ] 1.3 Repository search for `import 'server-only'` confirms `src/auth.ts` and `src/lib/auth-tokens.ts` carry the directive
-- [ ] 1.4 `grep -r 'prompt.*consent' src/auth.config.ts` returns a match (refresh-token capture safeguard)
+- [x] 1.1 `npm run build` succeeds with the new auth wiring (TypeScript strict mode passes)
+- [x] 1.2 `npm run lint` passes (no ESLint errors)
+- [x] 1.3 Repository search for `import 'server-only'` confirms `src/auth.ts` and `src/lib/auth-tokens.ts` carry the directive
+- [x] 1.4 `grep -r 'prompt.*consent' src/auth.config.ts` returns a match (refresh-token capture safeguard)
 
 #### Manual
 
