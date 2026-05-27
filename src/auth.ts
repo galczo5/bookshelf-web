@@ -43,7 +43,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user }) {
-      return user.email === process.env.BOOKSHELF_ALLOWED_EMAIL;
+      const allowed = process.env.BOOKSHELF_ALLOWED_EMAIL;
+      if (!allowed || !user.email) return false;
+      return user.email === allowed;
     },
     async jwt({ token, account }) {
       if (account) {

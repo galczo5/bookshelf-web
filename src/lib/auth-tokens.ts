@@ -5,7 +5,13 @@ import { query } from "@/lib/db";
 function getKey(): Buffer {
   const keyEnv = process.env.AUTH_TOKENS_ENCRYPTION_KEY;
   if (!keyEnv) throw new Error("AUTH_TOKENS_ENCRYPTION_KEY is not set");
-  return Buffer.from(keyEnv, "base64");
+  const key = Buffer.from(keyEnv, "base64");
+  if (key.length !== 32) {
+    throw new Error(
+      "AUTH_TOKENS_ENCRYPTION_KEY must decode to 32 bytes (use `openssl rand -base64 32`)"
+    );
+  }
+  return key;
 }
 
 function encrypt(plain: string): Buffer {
@@ -27,6 +33,7 @@ function decrypt(blob: Buffer): string {
 }
 
 // Lazy singleton — created on first use, not at module load, so build-time imports don't fail.
+// Cached promise is cleared on rejection so a transient DB failure can be retried.
 let tableReady: Promise<void> | null = null;
 
 function ensureTable(): Promise<void> {
@@ -37,7 +44,12 @@ function ensureTable(): Promise<void> {
         refresh_token_ciphertext BYTEA NOT NULL,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
-    `).then(() => undefined);
+    `)
+      .then(() => undefined)
+      .catch((err) => {
+        tableReady = null;
+        throw err;
+      });
   }
   return tableReady;
 }
