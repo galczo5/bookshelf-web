@@ -457,10 +457,10 @@ No data migration required (no prior data exists). The `auth_tokens` table is cr
 
 #### Automated
 
-- [ ] 2.1 `npm run build` succeeds with the new Drive client wiring
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `grep -r 'server-only' src/lib/drive/` returns a match for `client.ts`
-- [ ] 2.4 `src/app/actions/check-drive.ts` imports `src/lib/drive/client.ts` and compiles (module graph correctness)
+- [x] 2.1 `npm run build` succeeds with the new Drive client wiring
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `grep -r 'server-only' src/lib/drive/` returns a match for `client.ts`
+- [x] 2.4 `src/app/actions/check-drive.ts` imports `src/lib/drive/client.ts` and compiles (module graph correctness)
 
 #### Manual
 

@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
+import { CheckDriveButton } from "@/app/components/check-drive-button";
 
 export default async function Home() {
   const session = await auth();
@@ -14,9 +15,9 @@ export default async function Home() {
           <span className="font-medium text-zinc-700">{session.user.email}</span>
         </p>
 
-        <p className="mb-6 rounded-lg bg-zinc-50 px-4 py-3 text-sm text-zinc-500">
-          Drive: connection check coming in Phase 2.
-        </p>
+        <div className="mb-6">
+          <CheckDriveButton />
+        </div>
 
         <form
           action={async () => {
