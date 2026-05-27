@@ -16,3 +16,4 @@ README.md
 idea.md
 CLAUDE.md
 *.tsbuildinfo
+docker-compose.yml
