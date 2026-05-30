@@ -7,9 +7,12 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run build:migrate",
+    "build:migrate": "rm -rf dist && tsc -p tsconfig.migrate.json",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "tsx scripts/migrate.mts",
+    "db:migrate:down": "tsx scripts/migrate.mts down"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "tsx": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",

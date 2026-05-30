@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "incremental": false
+  },
+  "include": [
+    "scripts/migrate.mts",
+    "src/lib/db/migrations/**/*.mts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
+}

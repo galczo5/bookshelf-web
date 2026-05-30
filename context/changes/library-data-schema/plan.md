@@ -320,13 +320,13 @@ Boot-time migration adds latency to container startup proportional to the number
 
 #### Automated
 
-- [ ] 1.1 `npm run build` succeeds (Next.js build + `tsc -p tsconfig.migrate.json` both pass)
-- [ ] 1.2 `npm run lint` passes
-- [ ] 1.3 `npm run db:migrate` against a fresh DB creates `auth_tokens` + 2 Kysely bookkeeping tables
-- [ ] 1.4 `npm run db:migrate:down` reverts `0001_initial_auth_tokens` cleanly
-- [ ] 1.5 `grep -r "ensureTable" src/` returns no matches
-- [ ] 1.6 `dist/scripts/migrate.js` and `dist/src/lib/db/migrations/0001_initial_auth_tokens.js` exist after build
-- [ ] 1.7 `docker build .` succeeds with the new CMD wrapper
+- [x] 1.1 `npm run build` succeeds (Next.js build + `tsc -p tsconfig.migrate.json` both pass)
+- [x] 1.2 `npm run lint` passes
+- [x] 1.3 `npm run db:migrate` against a fresh DB creates `auth_tokens` + 2 Kysely bookkeeping tables
+- [x] 1.4 `npm run db:migrate:down` reverts `0001_initial_auth_tokens` cleanly
+- [x] 1.5 `grep -r "ensureTable" src/` returns no matches
+- [x] 1.6 `dist/scripts/migrate.mjs` and `dist/src/lib/db/migrations/0001_initial_auth_tokens.mjs` exist after build (adaptation: Kysely is ESM-only so files use .mts→.mjs, not .ts→.js)
+- [x] 1.7 `docker build .` succeeds with the new CMD wrapper
 
 #### Manual
 
@@ -338,12 +338,12 @@ Boot-time migration adds latency to container startup proportional to the number
 
 #### Automated
 
-- [ ] 2.1 `npm run build` succeeds with full `Database` interface
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run db:migrate` lands all six app tables + 2 Kysely bookkeeping tables
-- [ ] 2.4 `npm run db:migrate:down` (twice) reverts `0002` then `0001` cleanly
-- [ ] 2.5 `psql … \d books` shows expected columns, `DEFAULT gen_random_uuid()`, and FK `ON DELETE CASCADE`
-- [ ] 2.6 `grep -E "Database|AuthTokensTable|UsersTable|BooksTable|TagsTable|BookTagsTable|NotesTable" src/lib/db.ts` returns all seven names
+- [x] 2.1 `npm run build` succeeds with full `Database` interface
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run db:migrate` lands all six app tables + 2 Kysely bookkeeping tables
+- [x] 2.4 `npm run db:migrate:down` (twice) reverts `0002` then `0001` cleanly
+- [x] 2.5 `psql … \d books` shows expected columns, `DEFAULT gen_random_uuid()`, and FK `ON DELETE CASCADE`
+- [x] 2.6 `grep -E "Database|AuthTokensTable|UsersTable|BooksTable|TagsTable|BookTagsTable|NotesTable" src/lib/db.ts` returns all seven names
 
 #### Manual
 

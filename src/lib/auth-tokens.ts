@@ -32,30 +32,7 @@ function decrypt(blob: Buffer): string {
   return Buffer.concat([decipher.update(ct), decipher.final()]).toString("utf8");
 }
 
-// Lazy singleton — created on first use, not at module load, so build-time imports don't fail.
-// Cached promise is cleared on rejection so a transient DB failure can be retried.
-let tableReady: Promise<void> | null = null;
-
-function ensureTable(): Promise<void> {
-  if (!tableReady) {
-    tableReady = query(`
-      CREATE TABLE IF NOT EXISTS auth_tokens (
-        email TEXT PRIMARY KEY,
-        refresh_token_ciphertext BYTEA NOT NULL,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `)
-      .then(() => undefined)
-      .catch((err) => {
-        tableReady = null;
-        throw err;
-      });
-  }
-  return tableReady;
-}
-
 export async function getRefreshToken(email: string): Promise<string | null> {
-  await ensureTable();
   const result = await query(
     "SELECT refresh_token_ciphertext FROM auth_tokens WHERE email = $1",
     [email]
@@ -66,7 +43,6 @@ export async function getRefreshToken(email: string): Promise<string | null> {
 }
 
 export async function saveRefreshToken(email: string, plaintext: string): Promise<void> {
-  await ensureTable();
   const ciphertext = encrypt(plaintext);
   await query(
     `INSERT INTO auth_tokens (email, refresh_token_ciphertext, updated_at)
@@ -79,6 +55,5 @@ export async function saveRefreshToken(email: string, plaintext: string): Promis
 }
 
 export async function clearRefreshToken(email: string): Promise<void> {
-  await ensureTable();
   await query("DELETE FROM auth_tokens WHERE email = $1", [email]);
 }

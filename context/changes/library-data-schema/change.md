@@ -1,7 +1,7 @@
 ---
 change_id: library-data-schema
 title: Library data schema
-status: planned
+status: implementing
 created: 2026-05-30
 updated: 2026-05-30
 archived_at: null

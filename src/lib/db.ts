@@ -1,8 +1,62 @@
 import "server-only";
-import { Kysely, PostgresDialect } from "kysely";
+import { ColumnType, Generated, Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
-export type Database = Record<string, never>;
+export interface AuthTokensTable {
+  email: string;
+  refresh_token_ciphertext: Buffer;
+  updated_at: ColumnType<Date, string | undefined, string>;
+}
+
+export interface UsersTable {
+  id: Generated<string>;
+  email: string;
+  created_at: Generated<Date>;
+}
+
+export interface BooksTable {
+  id: Generated<string>;
+  user_id: string;
+  drive_file_id: string;
+  title: string;
+  author: string | null;
+  isbn: string | null;
+  cover_bytes: Buffer | null;
+  cover_mime: string | null;
+  trashed_at: ColumnType<Date | null, string | null | undefined, string | null>;
+  created_at: Generated<Date>;
+  updated_at: ColumnType<Date, string | undefined, string>;
+}
+
+export interface TagsTable {
+  id: Generated<string>;
+  user_id: string;
+  name: string;
+  created_at: Generated<Date>;
+}
+
+export interface BookTagsTable {
+  book_id: string;
+  tag_id: string;
+  added_at: Generated<Date>;
+}
+
+export interface NotesTable {
+  id: Generated<string>;
+  book_id: string;
+  body: string;
+  created_at: Generated<Date>;
+  updated_at: ColumnType<Date, string | undefined, string>;
+}
+
+export interface Database {
+  auth_tokens: AuthTokensTable;
+  users: UsersTable;
+  books: BooksTable;
+  tags: TagsTable;
+  book_tags: BookTagsTable;
+  notes: NotesTable;
+}
 
 declare global {
   var _pgPool: Pool | undefined;

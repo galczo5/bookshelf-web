@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Compiled migration output — linted at source level only
+    "dist/**",
   ]),
 ]);
 
