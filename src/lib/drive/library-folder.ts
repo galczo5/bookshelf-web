@@ -1,0 +1,35 @@
+import "server-only";
+import type { drive_v3 } from "googleapis";
+
+const folderCache = new Map<string, string>();
+
+export async function getOrCreateLibraryFolder(
+  drive: drive_v3.Drive,
+  email: string
+): Promise<string> {
+  const cached = folderCache.get(email);
+  if (cached) return cached;
+
+  const listRes = await drive.files.list({
+    q: "name='Bookshelf' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+    fields: "files(id)",
+  });
+
+  const existingId = listRes.data.files?.[0]?.id;
+  if (existingId) {
+    folderCache.set(email, existingId);
+    return existingId;
+  }
+
+  const createRes = await drive.files.create({
+    requestBody: {
+      name: "Bookshelf",
+      mimeType: "application/vnd.google-apps.folder",
+    },
+    fields: "id",
+  });
+
+  const newId = createRes.data.id!;
+  folderCache.set(email, newId);
+  return newId;
+}

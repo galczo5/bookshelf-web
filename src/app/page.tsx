@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { CheckDriveButton } from "@/app/components/check-drive-button";
+import { ImportDropzone } from "@/app/components/import-dropzone";
 
 export default async function Home() {
   const session = await auth();
@@ -14,6 +15,10 @@ export default async function Home() {
           Signed in as{" "}
           <span className="font-medium text-zinc-700">{session.user.email}</span>
         </p>
+
+        <div className="mb-6">
+          <ImportDropzone />
+        </div>
 
         <div className="mb-6">
           <CheckDriveButton />

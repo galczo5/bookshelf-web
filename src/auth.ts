@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import authConfig from "@/auth.config";
 import { getRefreshToken, saveRefreshToken } from "@/lib/auth-tokens";
+import { upsertUserByEmail } from "@/lib/users";
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -45,7 +46,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async signIn({ user }) {
       const allowed = process.env.BOOKSHELF_ALLOWED_EMAIL;
       if (!allowed || !user.email) return false;
-      return user.email === allowed;
+      if (user.email !== allowed) return false;
+      await upsertUserByEmail(user.email);
+      return true;
     },
     async jwt({ token, account }) {
       if (account) {
