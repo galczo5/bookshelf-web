@@ -1,6 +1,7 @@
 import "server-only";
 import { ColumnType, Generated, Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
+import type { EnrichmentProposals } from "@/lib/enrichment/types";
 
 export interface AuthTokensTable {
   email: string;
@@ -17,15 +18,24 @@ export interface UsersTable {
 export interface BooksTable {
   id: Generated<string>;
   user_id: string;
-  drive_file_id: string;
+  drive_file_id: string | null;
   title: string;
   author: string | null;
   isbn: string | null;
   cover_bytes: Buffer | null;
   cover_mime: string | null;
   trashed_at: ColumnType<Date | null, string | null | undefined, string | null>;
+  review_state: Generated<"pending" | "confirmed">;
   created_at: Generated<Date>;
   updated_at: ColumnType<Date, string | undefined, string>;
+}
+
+export interface BookDraftsTable {
+  book_id: string;
+  filename: string;
+  staged_bytes: Buffer;
+  proposals: ColumnType<EnrichmentProposals | null, EnrichmentProposals | null, EnrichmentProposals | null>;
+  created_at: Generated<Date>;
 }
 
 export interface TagsTable {
@@ -53,6 +63,7 @@ export interface Database {
   auth_tokens: AuthTokensTable;
   users: UsersTable;
   books: BooksTable;
+  book_drafts: BookDraftsTable;
   tags: TagsTable;
   book_tags: BookTagsTable;
   notes: NotesTable;
@@ -94,6 +105,11 @@ export function query(text: string, params?: unknown[]) {
 
 export const db = new Proxy({} as Kysely<Database>, {
   get(_, prop) {
-    return getDb()[prop as keyof Kysely<Database>];
+    const instance = getDb();
+    const value = instance[prop as keyof Kysely<Database>];
+    if (typeof value === "function") {
+      return (value as (...args: unknown[]) => unknown).bind(instance);
+    }
+    return value;
   },
 });

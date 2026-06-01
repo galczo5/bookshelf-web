@@ -3,9 +3,15 @@ import { redirect } from "next/navigation";
 import { CheckDriveButton } from "@/app/components/check-drive-button";
 import { ImportDropzone } from "@/app/components/import-dropzone";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const session = await auth();
   if (!session?.user) redirect("/signin");
+
+  const { error } = await searchParams;
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-zinc-50 pt-20">
@@ -15,6 +21,12 @@ export default async function Home() {
           Signed in as{" "}
           <span className="font-medium text-zinc-700">{session.user.email}</span>
         </p>
+
+        {error === "enrichment_failed" && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            AI enrichment failed. Please try again.
+          </div>
+        )}
 
         <div className="mb-6">
           <ImportDropzone />

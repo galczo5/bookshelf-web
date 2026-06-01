@@ -50,12 +50,6 @@ export function ImportDropzone() {
         </div>
       </form>
 
-      {state?.ok === true && (
-        <p className="mt-3 text-sm text-green-700">
-          Imported: {state.title} by {state.author ?? "Unknown"}
-        </p>
-      )}
-
       {state?.ok === false && (
         <p className="mt-3 text-sm text-red-600">{state.message}</p>
       )}
