@@ -571,23 +571,23 @@ No new migrations required — all tables were created in migrations `0002` and 
 
 #### Automated
 
-- [x] 4.1 TypeScript compiles: `npm run build` — sidebar refactor included
-- [x] 4.2 No lint errors: `npm run lint` — sidebar refactor included
+- [x] 4.1 TypeScript compiles: `npm run build` — e99e939
+- [x] 4.2 No lint errors: `npm run lint` — e99e939
 
 #### Manual
 
-- [x] 4.3 Book detail shows cover, title, author, isbn
-- [x] 4.4 Tag picker: add new tag, add existing tag, remove tag — all correct
-- [x] 4.5 Notes: create via modal, edit pre-populated, delete — all correct
-- [x] 4.6 Tiptap renders Markdown (bold, italic, lists) correctly
-- [x] 4.7 Unknown or unauthorized book id returns 404
+- [x] 4.3 Book detail shows cover, title, author, isbn — e99e939
+- [x] 4.4 Tag picker: add new tag, add existing tag, remove tag — all correct — e99e939
+- [x] 4.5 Notes: create via modal, edit pre-populated, delete — all correct — e99e939
+- [x] 4.6 Tiptap renders Markdown (bold, italic, lists) correctly — e99e939
+- [x] 4.7 Unknown or unauthorized book id returns 404 — e99e939
 
 ### Phase 5: Tags Settings Page
 
 #### Automated
 
-- [ ] 5.1 TypeScript compiles: `npm run build`
-- [ ] 5.2 No lint errors: `npm run lint`
+- [x] 5.1 TypeScript compiles: `npm run build`
+- [x] 5.2 No lint errors: `npm run lint`
 
 #### Manual
 

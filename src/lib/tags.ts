@@ -24,7 +24,7 @@ export async function listUserTagsWithCount(
     .select([
       "tags.id",
       "tags.name",
-      db.fn.count<string>("book_tags.book_id").as("book_count"),
+      (eb) => eb.fn.count<string>("book_tags.book_id").as("book_count"),
     ])
     .where("tags.user_id", "=", userId)
     .groupBy(["tags.id", "tags.name"])
