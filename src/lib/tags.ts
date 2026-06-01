@@ -111,3 +111,38 @@ export async function renameTag(
     .where("user_id", "=", userId)
     .execute();
 }
+
+export async function applyTagsToBooks(
+  userId: string,
+  bookIds: string[],
+  tagNames: string[]
+): Promise<void> {
+  if (bookIds.length === 0 || tagNames.length === 0) return;
+
+  await db.transaction().execute(async (trx) => {
+    for (const name of tagNames) {
+      await trx
+        .insertInto("tags")
+        .values({ user_id: userId, name })
+        .onConflict((oc) => oc.columns(["user_id", "name"]).doNothing())
+        .execute();
+    }
+
+    const tags = await trx
+      .selectFrom("tags")
+      .select(["id"])
+      .where("user_id", "=", userId)
+      .where("name", "in", tagNames)
+      .execute();
+
+    const rows = bookIds.flatMap((bookId) =>
+      tags.map((tag) => ({ book_id: bookId, tag_id: tag.id }))
+    );
+
+    await trx
+      .insertInto("book_tags")
+      .values(rows)
+      .onConflict((oc) => oc.columns(["book_id", "tag_id"]).doNothing())
+      .execute();
+  });
+}

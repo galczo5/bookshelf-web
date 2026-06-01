@@ -7,6 +7,7 @@ import { listUserTags } from "@/lib/tags";
 import { listBookNotes } from "@/lib/notes";
 import { CoverPlaceholder } from "@/app/components/cover-placeholder";
 import { TagPicker } from "./tag-picker";
+import { SuggestionsPanel } from "./suggestions-panel";
 import { NotesSection } from "./notes-section";
 
 export default async function BookPage({
@@ -65,6 +66,7 @@ export default async function BookPage({
           initialBookTags={book.tags}
           allUserTags={allUserTags}
         />
+        <SuggestionsPanel bookId={book.id} />
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-white p-6">

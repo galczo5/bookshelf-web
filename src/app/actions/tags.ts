@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getUserIdByEmail } from "@/lib/users";
-import { addTagToBook, removeTagFromBook, renameTag } from "@/lib/tags";
+import { addTagToBook, removeTagFromBook, renameTag, applyTagsToBooks } from "@/lib/tags";
 
 export type TagActionState = {
   ok: boolean;
@@ -52,6 +52,45 @@ export async function removeTagAction(
     return { ok: true };
   } catch {
     return { ok: false, message: "Could not remove tag. Please try again." };
+  }
+}
+
+export type BulkTagActionState = {
+  ok: boolean;
+  message?: string;
+};
+
+export async function applyTagsToBooksAction(
+  _prev: BulkTagActionState,
+  formData: FormData
+): Promise<BulkTagActionState> {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/signin");
+
+  const bookIdsRaw = String(formData.get("bookIds") ?? "").trim();
+  const tagNamesRaw = String(formData.get("tagNames") ?? "").trim();
+
+  const bookIds = bookIdsRaw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const tagNames = tagNamesRaw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const deduped = [...new Set(bookIds)];
+  const dedupedTags = [...new Set(tagNames)];
+
+  if (deduped.length === 0) return { ok: false, message: "No books selected." };
+  if (dedupedTags.length === 0) return { ok: false, message: "Tag name cannot be empty." };
+
+  try {
+    const userId = await getUserIdByEmail(session.user.email);
+    await applyTagsToBooks(userId, deduped, dedupedTags);
+    return { ok: true };
+  } catch {
+    return { ok: false, message: "Could not apply tags. Please try again." };
   }
 }
 
