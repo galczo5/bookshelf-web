@@ -1,7 +1,7 @@
 ---
 change_id: library-and-book-view
 title: Library and book view
-status: implementing
+status: implemented
 created: 2026-06-01
 updated: 2026-06-01
 
