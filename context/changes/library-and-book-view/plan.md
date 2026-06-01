@@ -545,8 +545,8 @@ No new migrations required — all tables were created in migrations `0002` and 
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles: `npm run build`
-- [x] 2.2 No lint errors: `npm run lint`
+- [x] 2.1 TypeScript compiles: `npm run build` — 0565b62
+- [x] 2.2 No lint errors: `npm run lint` — 0565b62
 
 #### Manual
 
@@ -557,8 +557,8 @@ No new migrations required — all tables were created in migrations `0002` and 
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles: `npm run build`
-- [ ] 3.2 No lint errors: `npm run lint`
+- [x] 3.1 TypeScript compiles: `npm run build`
+- [x] 3.2 No lint errors: `npm run lint`
 
 #### Manual
 
