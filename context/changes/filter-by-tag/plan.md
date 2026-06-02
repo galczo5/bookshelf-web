@@ -227,9 +227,9 @@ URLs from before this change (no params) continue to work exactly as before. URL
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Build passes: `npm run build`
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — b13f73b
+- [x] 1.2 Linting passes: `npm run lint` — b13f73b
+- [x] 1.3 Build passes: `npm run build` — b13f73b
 
 #### Manual
 
@@ -246,9 +246,9 @@ URLs from before this change (no params) continue to work exactly as before. URL
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Build passes: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — b13f73b
+- [x] 2.2 Linting passes: `npm run lint` — b13f73b
+- [x] 2.3 Build passes: `npm run build` — b13f73b
 
 #### Manual
 

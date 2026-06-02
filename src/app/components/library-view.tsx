@@ -7,6 +7,7 @@ import { BookCard } from "@/app/components/book-card";
 import { applyTagsToBooksAction } from "@/app/actions/tags";
 import type { BookSummary } from "@/lib/books";
 import type { Tag } from "@/lib/tags";
+import { matchesQuery } from "@/lib/search-utils";
 
 export function LibraryView({
   books,
@@ -36,12 +37,8 @@ export function LibraryView({
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }
 
-  const q = searchQuery.toLowerCase();
   const filtered = books.filter((b) => {
-    const matchesSearch =
-      !q ||
-      b.title.toLowerCase().includes(q) ||
-      (b.author?.toLowerCase().includes(q) ?? false);
+    const matchesSearch = matchesQuery(b, searchQuery);
     const matchesTags = showUntagged
       ? b.tags.length === 0
       : activeTagNames.size === 0 ||
