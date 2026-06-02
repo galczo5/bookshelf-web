@@ -10,7 +10,7 @@ import { listUserTags } from "@/lib/tags";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; tags?: string | string[]; q?: string; view?: string; untagged?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");

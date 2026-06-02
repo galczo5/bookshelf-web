@@ -260,8 +260,8 @@ No schema changes. No data migration. Both phases ship behind no feature flag �
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npm run build` — 2e62499
+- [x] 2.2 Linting passes: `npm run lint` — 2e62499
 
 #### Manual
 

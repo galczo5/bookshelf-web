@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { BookCard } from "@/app/components/book-card";
 import { applyTagsToBooksAction } from "@/app/actions/tags";
 import type { BookSummary } from "@/lib/books";
@@ -15,9 +16,7 @@ export function LibraryView({
   tags: Tag[];
 }): React.JSX.Element {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const searchParams = useSearchParams();
   const [selectionMode, setSelectionMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkInput, setBulkInput] = useState("");
@@ -25,24 +24,52 @@ export function LibraryView({
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const searchQuery = searchParams.get("q") ?? "";
+  const activeTagNames = new Set(searchParams.getAll("tags"));
+  const view = searchParams.get("view") === "list" ? "list" : "grid";
+  const showUntagged = searchParams.get("untagged") === "1";
+
+  function updateParams(mutator: (params: URLSearchParams) => void) {
+    const next = new URLSearchParams(searchParams.toString());
+    mutator(next);
+    const qs = next.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }
+
   const q = searchQuery.toLowerCase();
   const filtered = books.filter((b) => {
     const matchesSearch =
       !q ||
       b.title.toLowerCase().includes(q) ||
       (b.author?.toLowerCase().includes(q) ?? false);
-    const matchesTags =
-      activeTags.size === 0 ||
-      [...activeTags].every((tagId) => b.tags.some((t) => t.id === tagId));
+    const matchesTags = showUntagged
+      ? b.tags.length === 0
+      : activeTagNames.size === 0 ||
+        [...activeTagNames].every((tagName) => b.tags.some((t) => t.name === tagName));
     return matchesSearch && matchesTags;
   });
 
-  function toggleTag(id: string) {
-    setActiveTags((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
+  function toggleTag(name: string) {
+    updateParams((params) => {
+      const current = params.getAll("tags");
+      params.delete("tags");
+      params.delete("untagged");
+      if (current.includes(name)) {
+        current.filter((n) => n !== name).forEach((n) => params.append("tags", n));
+      } else {
+        [...current, name].forEach((n) => params.append("tags", n));
+      }
+    });
+  }
+
+  function toggleUntagged() {
+    updateParams((params) => {
+      if (params.get("untagged") === "1") {
+        params.delete("untagged");
+      } else {
+        params.delete("tags");
+        params.set("untagged", "1");
+      }
     });
   }
 
@@ -109,12 +136,22 @@ export function LibraryView({
           type="search"
           placeholder="Search by title or author…"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) =>
+            updateParams((p) => {
+              if (e.target.value) p.set("q", e.target.value);
+              else p.delete("q");
+            })
+          }
           className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
         <button
           type="button"
-          onClick={() => setView(view === "grid" ? "list" : "grid")}
+          onClick={() =>
+            updateParams((p) => {
+              if (view === "grid") p.set("view", "list");
+              else p.delete("view");
+            })
+          }
           className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
           aria-label={view === "grid" ? "Switch to list view" : "Switch to grid view"}
         >
@@ -182,15 +219,16 @@ export function LibraryView({
         </div>
       )}
 
-      {tags.length > 0 && (
+      {(tags.length > 0 || books.length > 0) && (
         <div className="flex flex-wrap gap-2">
           {tags.map((t) => (
             <button
               key={t.id}
               type="button"
-              onClick={() => toggleTag(t.id)}
+              onClick={() => toggleTag(t.name)}
+              aria-pressed={activeTagNames.has(t.name)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                activeTags.has(t.id)
+                activeTagNames.has(t.name)
                   ? "bg-blue-600 text-white"
                   : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
               }`}
@@ -198,6 +236,18 @@ export function LibraryView({
               {t.name}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={toggleUntagged}
+            aria-pressed={showUntagged}
+            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+              showUntagged
+                ? "border-transparent bg-blue-600 text-white"
+                : "border-zinc-300 bg-transparent text-zinc-500 hover:border-zinc-400 hover:text-zinc-700"
+            }`}
+          >
+            Untagged
+          </button>
         </div>
       )}
 
