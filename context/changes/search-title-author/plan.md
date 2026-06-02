@@ -392,8 +392,8 @@ None — no schema, no API, no breaking client behavior. Existing `q` URL params
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint` — 942c184
+- [x] 4.2 Build passes: `npm run build` — 942c184
 
 #### Manual
 
