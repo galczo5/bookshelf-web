@@ -6,6 +6,7 @@ import { CoverPlaceholder } from "@/app/components/cover-placeholder";
 import { QuickTagPopover } from "@/app/components/quick-tag-popover";
 import type { BookSummary } from "@/lib/books";
 import type { Tag } from "@/lib/tags";
+import { Highlighted } from "@/app/components/highlighted";
 
 interface BookCardProps {
   book: BookSummary;
@@ -14,6 +15,7 @@ interface BookCardProps {
   selectionMode: boolean;
   selected: boolean;
   onSelectToggle: () => void;
+  searchQuery: string;
 }
 
 export function BookCard({
@@ -23,6 +25,7 @@ export function BookCard({
   selectionMode,
   selected,
   onSelectToggle,
+  searchQuery,
 }: BookCardProps): React.JSX.Element {
   const coverUrl = `/api/books/${book.id}/cover`;
 
@@ -56,10 +59,12 @@ export function BookCard({
           )}
           <div className="flex flex-col gap-0.5 p-3">
             <p className="line-clamp-2 text-sm font-semibold leading-tight text-zinc-900">
-              {book.title}
+              <Highlighted text={book.title} query={searchQuery} />
             </p>
             {book.author && (
-              <p className="line-clamp-1 text-xs text-zinc-500">{book.author}</p>
+              <p className="line-clamp-1 text-xs text-zinc-500">
+                <Highlighted text={book.author} query={searchQuery} />
+              </p>
             )}
           </div>
         </button>
@@ -82,10 +87,12 @@ export function BookCard({
           </div>
           <div className="flex flex-col gap-0.5 p-3">
             <p className="line-clamp-2 text-sm font-semibold leading-tight text-zinc-900 group-hover:text-blue-600">
-              {book.title}
+              <Highlighted text={book.title} query={searchQuery} />
             </p>
             {book.author && (
-              <p className="line-clamp-1 text-xs text-zinc-500">{book.author}</p>
+              <p className="line-clamp-1 text-xs text-zinc-500">
+                <Highlighted text={book.author} query={searchQuery} />
+              </p>
             )}
           </div>
         </Link>
@@ -137,10 +144,12 @@ export function BookCard({
         </div>
         <div className="min-w-0 flex-1 text-left">
           <p className="truncate text-sm font-semibold text-zinc-900">
-            {book.title}
+            <Highlighted text={book.title} query={searchQuery} />
           </p>
           {book.author && (
-            <p className="truncate text-xs text-zinc-500">{book.author}</p>
+            <p className="truncate text-xs text-zinc-500">
+              <Highlighted text={book.author} query={searchQuery} />
+            </p>
           )}
         </div>
       </button>
@@ -166,10 +175,12 @@ export function BookCard({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-zinc-900 group-hover:text-blue-600">
-            {book.title}
+            <Highlighted text={book.title} query={searchQuery} />
           </p>
           {book.author && (
-            <p className="truncate text-xs text-zinc-500">{book.author}</p>
+            <p className="truncate text-xs text-zinc-500">
+              <Highlighted text={book.author} query={searchQuery} />
+            </p>
           )}
           {book.tags.length > 0 && (
             <div className="mt-1 flex flex-wrap gap-1">

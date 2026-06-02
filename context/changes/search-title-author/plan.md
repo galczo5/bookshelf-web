@@ -342,9 +342,9 @@ None — no schema, no API, no breaking client behavior. Existing `q` URL params
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 No TypeScript errors in changed files
+- [x] 1.1 Lint passes: `npm run lint` — 38102f0
+- [x] 1.2 Build passes: `npm run build` — 38102f0
+- [x] 1.3 No TypeScript errors in changed files — 38102f0
 
 #### Manual
 
@@ -358,9 +358,9 @@ None — no schema, no API, no breaking client behavior. Existing `q` URL params
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 No TypeScript errors
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 No TypeScript errors
 
 #### Manual
 

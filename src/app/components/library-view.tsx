@@ -263,6 +263,7 @@ export function LibraryView({
               selectionMode={selectionMode}
               selected={selected.has(b.id)}
               onSelectToggle={() => toggleSelect(b.id)}
+              searchQuery={searchQuery}
             />
           ))}
         </div>
@@ -277,6 +278,7 @@ export function LibraryView({
               selectionMode={selectionMode}
               selected={selected.has(b.id)}
               onSelectToggle={() => toggleSelect(b.id)}
+              searchQuery={searchQuery}
             />
           ))}
         </div>
