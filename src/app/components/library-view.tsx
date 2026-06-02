@@ -42,6 +42,7 @@ export function LibraryView({
           active.tagName === "TEXTAREA" ||
           active.isContentEditable);
       if (isEditable && active !== searchInputRef.current) return;
+      // re-select even if already focused — Cmd-K from within the input behaves like browser omnibar
       e.preventDefault();
       searchInputRef.current?.focus();
       searchInputRef.current?.select();
@@ -54,7 +55,7 @@ export function LibraryView({
     const next = new URLSearchParams(searchParams.toString());
     mutator(next);
     const qs = next.toString();
-    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    router.replace(qs ? `?${qs}` : window.location.pathname, { scroll: false });
   }
 
   const filtered = books.filter((b) => {

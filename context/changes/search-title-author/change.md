@@ -1,7 +1,7 @@
 ---
 change_id: search-title-author
 title: Search title author
-status: implemented
+status: impl_reviewed
 created: 2026-06-02
 updated: 2026-06-02
 archived_at: null

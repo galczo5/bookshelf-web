@@ -20,9 +20,9 @@ export function highlightMatches(
   const tokens = tokenize(query);
   if (tokens.length === 0) return [{ text, mark: false }];
 
-  const folded = Array.from(text)
-    .map((ch) => foldDiacritics(ch))
-    .join("");
+  // foldDiacritics preserves codepoint count for BMP Latin characters,
+  // so indices in `folded` align 1-to-1 with `text`.
+  const folded = foldDiacritics(text);
 
   const ranges: Array<[number, number]> = [];
   for (const tok of tokens) {
