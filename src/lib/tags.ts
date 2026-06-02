@@ -1,4 +1,5 @@
 import "server-only";
+import { sql } from "kysely";
 import { db } from "@/lib/db";
 
 export interface Tag {
@@ -99,17 +100,115 @@ export async function removeTagFromBook(
     .execute();
 }
 
-export async function renameTag(
+export type RenameOutcome =
+  | { kind: "renamed"; tag: Tag }
+  | { kind: "merged"; target: Tag; mergedBookCount: number };
+
+export async function findCollidingTag(
   userId: string,
   tagId: string,
   newName: string
-): Promise<void> {
-  await db
-    .updateTable("tags")
-    .set({ name: newName })
-    .where("id", "=", tagId)
-    .where("user_id", "=", userId)
-    .execute();
+): Promise<Tag | null> {
+  const trimmed = newName.trim().toLowerCase();
+  return (
+    (await db
+      .selectFrom("tags")
+      .select(["id", "name"])
+      .where("user_id", "=", userId)
+      .where("id", "!=", tagId)
+      .where(sql`lower(trim(name))`, "=", trimmed)
+      .executeTakeFirst()) ?? null
+  );
+}
+
+export async function countBookTags(tagId: string): Promise<number> {
+  const row = await db
+    .selectFrom("book_tags")
+    .select((eb) => eb.fn.count<string>("book_id").as("count"))
+    .where("tag_id", "=", tagId)
+    .executeTakeFirstOrThrow();
+  return Number(row.count);
+}
+
+export async function renameOrMergeTag(
+  userId: string,
+  tagId: string,
+  newName: string
+): Promise<RenameOutcome> {
+  const collision = await findCollidingTag(userId, tagId, newName);
+
+  if (!collision) {
+    await db
+      .updateTable("tags")
+      .set({ name: newName.trim() })
+      .where("id", "=", tagId)
+      .where("user_id", "=", userId)
+      .execute();
+    return { kind: "renamed", tag: { id: tagId, name: newName.trim() } };
+  }
+
+  return db.transaction().execute(async (trx) => {
+    const source = await trx
+      .selectFrom("tags")
+      .select(["id", "name"])
+      .where("id", "=", tagId)
+      .where("user_id", "=", userId)
+      .executeTakeFirst();
+    if (!source) throw new Error("Source tag not found");
+
+    const trimmedLower = newName.trim().toLowerCase();
+    const target = await trx
+      .selectFrom("tags")
+      .select(["id", "name"])
+      .where("user_id", "=", userId)
+      .where("id", "!=", tagId)
+      .where(sql`lower(trim(name))`, "=", trimmedLower)
+      .executeTakeFirst();
+
+    if (!target) {
+      // race: colliding tag was deleted — fall through to plain rename
+      await trx
+        .updateTable("tags")
+        .set({ name: newName.trim() })
+        .where("id", "=", tagId)
+        .where("user_id", "=", userId)
+        .execute();
+      return { kind: "renamed", tag: { id: tagId, name: newName.trim() } };
+    }
+
+    await trx
+      .insertInto("book_tags")
+      .columns(["book_id", "tag_id"])
+      .expression((eb) =>
+        eb
+          .selectFrom("book_tags as bt")
+          .select([
+            "bt.book_id",
+            eb.val(target.id).as("tag_id"),
+          ])
+          .where("bt.tag_id", "=", source.id)
+      )
+      .onConflict((oc) => oc.columns(["book_id", "tag_id"]).doNothing())
+      .execute();
+
+    await trx
+      .deleteFrom("tags")
+      .where("id", "=", source.id)
+      .where("user_id", "=", userId)
+      .execute();
+
+    const countRow = await trx
+      .selectFrom("book_tags")
+      .select((eb) => eb.fn.count<string>("book_id").as("count"))
+      .where("tag_id", "=", target.id)
+      .executeTakeFirstOrThrow();
+
+    return {
+      kind: "merged",
+      target,
+      mergedBookCount: Number(countRow.count),
+    };
+  });
 }
 
 export async function applyTagsToBooks(

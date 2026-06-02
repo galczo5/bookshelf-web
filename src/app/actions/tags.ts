@@ -3,7 +3,15 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getUserIdByEmail } from "@/lib/users";
-import { addTagToBook, removeTagFromBook, renameTag, applyTagsToBooks } from "@/lib/tags";
+import {
+  addTagToBook,
+  removeTagFromBook,
+  renameOrMergeTag,
+  applyTagsToBooks,
+  findCollidingTag,
+  countBookTags,
+} from "@/lib/tags";
+import { db } from "@/lib/db";
 
 export type TagActionState = {
   ok: boolean;
@@ -94,24 +102,67 @@ export async function applyTagsToBooksAction(
   }
 }
 
+export type RenameTagActionState =
+  | { ok: true; kind: "renamed"; tag: { id: string; name: string } }
+  | { ok: true; kind: "merged"; target: { id: string; name: string }; mergedBookCount: number }
+  | { ok: false; kind: "needs_confirm"; target: { id: string; name: string }; targetBookCount: number; sourceBookCount: number }
+  | { ok: false; kind: "error"; message: string };
+
 export async function renameTagAction(
-  _prev: TagActionState,
+  _prev: RenameTagActionState,
   formData: FormData
-): Promise<TagActionState> {
+): Promise<RenameTagActionState> {
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
 
   const tagId = String(formData.get("tagId") ?? "").trim();
-  const newName = String(formData.get("newName") ?? "").trim();
+  const newName = String(formData.get("newName") ?? "");
+  const confirmedMerge = String(formData.get("confirmedMerge") ?? "0");
 
-  if (!tagId) return { ok: false, message: "Missing tag id" };
-  if (!newName) return { ok: false, message: "New name cannot be empty" };
+  if (!tagId) return { ok: false, kind: "error", message: "Missing tag id" };
+  if (!newName.trim()) return { ok: false, kind: "error", message: "Tag name cannot be empty." };
+  if (newName.trim().length > 50) return { ok: false, kind: "error", message: "Tag name is too long (50 characters max)." };
 
   try {
     const userId = await getUserIdByEmail(session.user.email);
-    await renameTag(userId, tagId, newName);
-    return { ok: true };
+
+    // No-op: same name modulo case/whitespace
+    const sourceTag = await db
+      .selectFrom("tags")
+      .select(["id", "name"])
+      .where("id", "=", tagId)
+      .where("user_id", "=", userId)
+      .executeTakeFirst();
+    if (
+      sourceTag &&
+      sourceTag.name.trim().toLowerCase() === newName.trim().toLowerCase()
+    ) {
+      return { ok: true, kind: "renamed", tag: sourceTag };
+    }
+
+    if (confirmedMerge !== "1") {
+      const collision = await findCollidingTag(userId, tagId, newName);
+      if (collision) {
+        const [targetBookCount, sourceBookCount] = await Promise.all([
+          countBookTags(collision.id),
+          countBookTags(tagId),
+        ]);
+        return {
+          ok: false,
+          kind: "needs_confirm",
+          target: collision,
+          targetBookCount,
+          sourceBookCount,
+        };
+      }
+    }
+
+    const outcome = await renameOrMergeTag(userId, tagId, newName);
+    if (outcome.kind === "merged") {
+      return { ok: true, kind: "merged", target: outcome.target, mergedBookCount: outcome.mergedBookCount };
+    }
+    return { ok: true, kind: "renamed", tag: outcome.tag };
   } catch {
-    return { ok: false, message: "Could not rename tag. Please try again." };
+    return { ok: false, kind: "error", message: "Could not rename tag. Please try again." };
   }
 }
