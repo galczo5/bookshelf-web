@@ -29,6 +29,7 @@ export function LibraryView({
   const activeTagNames = new Set(searchParams.getAll("tags"));
   const view = searchParams.get("view") === "list" ? "list" : "grid";
   const showUntagged = searchParams.get("untagged") === "1";
+  const hasActiveFilter = !!searchQuery || activeTagNames.size > 0 || showUntagged;
 
   function updateParams(mutator: (params: URLSearchParams) => void) {
     const next = new URLSearchParams(searchParams.toString());
@@ -165,6 +166,11 @@ export function LibraryView({
         >
           {selectionMode ? "Cancel" : "Select"}
         </button>
+        <span className="ml-auto text-sm text-zinc-500">
+          {hasActiveFilter
+            ? `${filtered.length} of ${books.length} books`
+            : `${books.length} books`}
+        </span>
       </div>
 
       {selectionMode && selected.size > 0 && (
@@ -249,9 +255,26 @@ export function LibraryView({
       )}
 
       {filtered.length === 0 ? (
-        <p className="py-12 text-center text-sm text-zinc-400">
-          {books.length === 0 ? "No books yet." : "No books match your filters."}
-        </p>
+        <div className="py-12 text-center">
+          {searchQuery ? (
+            <>
+              <p className="text-sm text-zinc-400">
+                No books match &ldquo;{searchQuery}&rdquo;
+              </p>
+              <button
+                type="button"
+                onClick={() => updateParams((p) => p.delete("q"))}
+                className="mt-3 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-200"
+              >
+                Clear search
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-zinc-400">
+              {books.length === 0 ? "No books yet." : "No books match your filters."}
+            </p>
+          )}
+        </div>
       ) : view === "grid" ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {filtered.map((b) => (
