@@ -375,8 +375,8 @@ None — no schema, no API, no breaking client behavior. Existing `q` URL params
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — 282b08e
+- [x] 3.2 Build passes: `npm run build` — 282b08e
 
 #### Manual
 
@@ -392,8 +392,8 @@ None — no schema, no API, no breaking client behavior. Existing `q` URL params
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
 
 #### Manual
 

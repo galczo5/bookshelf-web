@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { BookCard } from "@/app/components/book-card";
@@ -24,12 +24,31 @@ export function LibraryView({
   const [bulkSuggestions, setBulkSuggestions] = useState<Tag[]>([]);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const searchQuery = searchParams.get("q") ?? "";
   const activeTagNames = new Set(searchParams.getAll("tags"));
   const view = searchParams.get("view") === "list" ? "list" : "grid";
   const showUntagged = searchParams.get("untagged") === "1";
   const hasActiveFilter = !!searchQuery || activeTagNames.size > 0 || showUntagged;
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== "k" || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      const active = document.activeElement;
+      const isEditable =
+        active instanceof HTMLElement &&
+        (active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA" ||
+          active.isContentEditable);
+      if (isEditable && active !== searchInputRef.current) return;
+      e.preventDefault();
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function updateParams(mutator: (params: URLSearchParams) => void) {
     const next = new URLSearchParams(searchParams.toString());
@@ -131,6 +150,7 @@ export function LibraryView({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <input
+          ref={searchInputRef}
           type="search"
           placeholder="Search by title or author…"
           value={searchQuery}
