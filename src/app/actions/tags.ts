@@ -10,8 +10,8 @@ import {
   applyTagsToBooks,
   findCollidingTag,
   countBookTags,
+  getTagById,
 } from "@/lib/tags";
-import { db } from "@/lib/db";
 
 export type TagActionState = {
   ok: boolean;
@@ -127,16 +127,9 @@ export async function renameTagAction(
     const userId = await getUserIdByEmail(session.user.email);
 
     // No-op: same name modulo case/whitespace
-    const sourceTag = await db
-      .selectFrom("tags")
-      .select(["id", "name"])
-      .where("id", "=", tagId)
-      .where("user_id", "=", userId)
-      .executeTakeFirst();
-    if (
-      sourceTag &&
-      sourceTag.name.trim().toLowerCase() === newName.trim().toLowerCase()
-    ) {
+    const sourceTag = await getTagById(userId, tagId);
+    if (!sourceTag) return { ok: false, kind: "error", message: "Tag not found." };
+    if (sourceTag.name.trim().toLowerCase() === newName.trim().toLowerCase()) {
       return { ok: true, kind: "renamed", tag: sourceTag };
     }
 
@@ -144,8 +137,8 @@ export async function renameTagAction(
       const collision = await findCollidingTag(userId, tagId, newName);
       if (collision) {
         const [targetBookCount, sourceBookCount] = await Promise.all([
-          countBookTags(collision.id),
-          countBookTags(tagId),
+          countBookTags(userId, collision.id),
+          countBookTags(userId, tagId),
         ]);
         return {
           ok: false,

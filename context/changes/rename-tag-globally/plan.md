@@ -214,8 +214,8 @@ None. Schema is unchanged. No data backfill.
 
 #### Automated
 
-- [x] 1.1 TypeScript + Next.js production build passes: `npm run build`
-- [x] 1.2 ESLint passes: `npm run lint`
+- [x] 1.1 TypeScript + Next.js production build passes: `npm run build` — 653ed1b
+- [x] 1.2 ESLint passes: `npm run lint` — 653ed1b
 
 #### Manual
 

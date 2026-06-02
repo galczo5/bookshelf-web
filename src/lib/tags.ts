@@ -100,6 +100,17 @@ export async function removeTagFromBook(
     .execute();
 }
 
+export async function getTagById(userId: string, tagId: string): Promise<Tag | null> {
+  return (
+    (await db
+      .selectFrom("tags")
+      .select(["id", "name"])
+      .where("id", "=", tagId)
+      .where("user_id", "=", userId)
+      .executeTakeFirst()) ?? null
+  );
+}
+
 export type RenameOutcome =
   | { kind: "renamed"; tag: Tag }
   | { kind: "merged"; target: Tag; mergedBookCount: number };
@@ -121,11 +132,13 @@ export async function findCollidingTag(
   );
 }
 
-export async function countBookTags(tagId: string): Promise<number> {
+export async function countBookTags(userId: string, tagId: string): Promise<number> {
   const row = await db
-    .selectFrom("book_tags")
-    .select((eb) => eb.fn.count<string>("book_id").as("count"))
-    .where("tag_id", "=", tagId)
+    .selectFrom("book_tags as bt")
+    .innerJoin("tags as t", "t.id", "bt.tag_id")
+    .select((eb) => eb.fn.count<string>("bt.book_id").as("count"))
+    .where("bt.tag_id", "=", tagId)
+    .where("t.user_id", "=", userId)
     .executeTakeFirstOrThrow();
   return Number(row.count);
 }
@@ -191,6 +204,7 @@ export async function renameOrMergeTag(
       .onConflict((oc) => oc.columns(["book_id", "tag_id"]).doNothing())
       .execute();
 
+    // INSERT must precede DELETE — CASCADE on tags.id drops unmigrated book_tags rows if reversed.
     await trx
       .deleteFrom("tags")
       .where("id", "=", source.id)
