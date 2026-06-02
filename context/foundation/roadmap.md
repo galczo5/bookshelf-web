@@ -3,7 +3,7 @@ project: Bookshelf
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-05-25
+updated: 2026-06-02
 prd_version: 1
 main_goal: low-complexity
 top_blocker: capacity
@@ -31,16 +31,16 @@ The roadmap orders work around closing one loop: **US-01's full happy path — i
 
 | ID    | Change ID                        | Outcome (user can …)                                                | Prerequisites    | PRD refs                  | Status   |
 | ----- | -------------------------------- | ------------------------------------------------------------------- | ---------------- | ------------------------- | -------- |
-| F-01  | drive-oauth-and-client           | (foundation) Drive OAuth + Drive API client wired                   | —                | Access Control, FR-005    | ready    |
-| F-02  | library-data-schema              | (foundation) Postgres schema for books, tags, notes                 | —                | NFR persistence, FR-008+  | ready    |
-| S-01  | epub-import-to-drive             | import an epub; embedded metadata extracted; file lands in Drive    | F-01, F-02       | US-01, FR-001, FR-002, FR-005 | proposed |
-| S-02  | ai-metadata-enrichment-gate      | review and confirm/reject AI proposals for missing metadata fields  | S-01             | US-01, FR-003, FR-004     | proposed |
-| S-03  | library-and-book-view            | browse the library; open a single-book view with metadata + notes   | S-02             | FR-008, FR-013            | proposed |
-| S-04  | tag-a-book                       | add and remove custom tags on a book                                | S-03             | FR-009                    | proposed |
-| S-05  | book-notes                       | write, edit, and delete a Markdown note attached to a book          | S-03             | US-01, FR-014, FR-015, FR-016 | proposed |
-| S-06  | filter-by-tag                    | filter the library by one or more tags                              | S-04             | FR-011                    | proposed |
-| S-07  | search-title-author              | search the library by title or author text                          | S-03             | FR-012                    | proposed |
-| S-08  | rename-tag-globally              | rename a tag everywhere it appears                                  | S-04             | FR-010                    | proposed |
+| F-01  | drive-oauth-and-client           | (foundation) Drive OAuth + Drive API client wired                   | —                | Access Control, FR-005    | implemented |
+| F-02  | library-data-schema              | (foundation) Postgres schema for books, tags, notes                 | —                | NFR persistence, FR-008+  | implemented |
+| S-01  | epub-import-to-drive             | import an epub; embedded metadata extracted; file lands in Drive    | F-01, F-02       | US-01, FR-001, FR-002, FR-005 | implemented |
+| S-02  | ai-metadata-enrichment-gate      | review and confirm/reject AI proposals for missing metadata fields  | S-01             | US-01, FR-003, FR-004     | implemented |
+| S-03  | library-and-book-view            | browse the library; open a single-book view with metadata + notes   | S-02             | FR-008, FR-013            | implemented |
+| S-04  | tag-a-book                       | add and remove custom tags on a book                                | S-03             | FR-009                    | implemented |
+| S-05  | book-notes                       | write, edit, and delete a Markdown note attached to a book          | S-03             | US-01, FR-014, FR-015, FR-016 | implemented |
+| S-06  | filter-by-tag                    | filter the library by one or more tags                              | S-04             | FR-011                    | implemented |
+| S-07  | search-title-author              | search the library by title or author text                          | S-03             | FR-012                    | implemented |
+| S-08  | rename-tag-globally              | rename a tag everywhere it appears                                  | S-04             | FR-010                    | implemented |
 | S-09  | soft-delete-book                 | move a book to a recoverable trash directory in Drive               | S-03             | FR-006                    | proposed |
 | S-10  | restore-trashed-book             | restore a previously trashed book back into the library             | S-09             | FR-007                    | proposed |
 
@@ -81,7 +81,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** OAuth misconfiguration silently delays everything below it; the redirect/scopes setup is finicky but well-trodden territory.
-- **Status:** ready
+- **Status:** implemented
 
 ### F-02: Library data schema (Postgres)
 
@@ -95,7 +95,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Offline-tolerance NFR vs web form-factor (PRD Open Q #3) — Owner: user. Block: no. Affects whether the schema needs to mirror to an IndexedDB local cache, but the v1 schema doesn't change either way.
 - **Risk:** schema rigidity could bite when tags/notes patterns evolve; mitigated by deferring indexes and complex constraints until a slice forces them.
-- **Status:** ready
+- **Status:** implemented
 
 ## Slices
 
@@ -110,7 +110,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Target Drive directory layout (e.g., `Bookshelf/<author>/<title>.epub` vs flat) — Owner: user. Block: no. Default to a layout that satisfies the app-independent-library guardrail.
 - **Risk:** epub format variability — embedded metadata is sometimes missing or malformed; this is exactly why `S-02` exists, but `S-01` still has to fail gracefully for unreadable files.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-02: AI metadata enrichment with confirmation gate
 
@@ -124,7 +124,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Choice of enrichment provider (search + LLM combination) — Owner: user. Block: no, resolved during `/10x-plan`.
   - Privacy boundary enforcement: which exact fields are allowed to cross the network (filename, embedded title/author/ISBN, front-matter strings — per PRD NFR) — Owner: user. Block: no.
 - **Risk:** the 30 s latency budget is a real constraint; if external providers stall, the loading UX must keep the user oriented (PRD NFR). Privacy NFR also gates what can be sent.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-03: Library list view and single-book view
 
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** the 2 s open-to-list NFR for libraries up to 1000 books is the load-bearing performance constraint; naive cover fetching from Drive will violate it without local caching.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-04: Tag a book
 
@@ -148,7 +148,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** —
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-05: Book notes — write, edit, delete (north star)
 
@@ -160,7 +160,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** persistence-durability NFR (5 s) applies to notes — autosave or explicit save must respect it; trivial under Postgres but worth naming so the implementation doesn't drift into a debounced-localStorage shape.
-- **Status:** proposed
+- **Status:** implemented (delivered as part of `S-03 library-and-book-view`; no separate change folder)
 
 ### S-06: Filter library by tag
 
@@ -172,7 +172,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** the 200 ms filter-on-keystroke NFR applies; for a 1000-book library this is comfortably client-side, but the implementation should not silently re-fetch on every keystroke.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-07: Search library by title or author
 
@@ -184,7 +184,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** same 200 ms NFR as `S-06`; same client-side answer.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-08: Rename a tag globally
 
@@ -196,7 +196,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** global mutation; must be transactional to avoid half-renamed state.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-09: Soft-delete a book to a Drive trash directory
 
