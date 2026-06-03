@@ -2,6 +2,7 @@ import "server-only";
 import type { drive_v3 } from "googleapis";
 
 const folderCache = new Map<string, string>();
+// best-effort cache keyed by libraryFolderId; callers handle stale-ID 404s gracefully
 const trashFolderCache = new Map<string, string>();
 
 export async function getOrCreateLibraryFolder(

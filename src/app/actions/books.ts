@@ -65,12 +65,30 @@ export async function trashBookAction(
   const trashFolderId = await getOrCreateTrashFolder(drive, libraryFolderId);
 
   const desired = composeFilename(book.author, book.title);
-  const [finalName, originalNameRes] = await Promise.all([
-    findAvailableFilename(drive, trashFolderId, desired),
-    drive.files.get({ fileId: book.drive_file_id, fields: "name" }),
-  ]);
-  const originalName = originalNameRes.data.name ?? desired;
   const driveFileId = book.drive_file_id;
+
+  let originalName: string;
+  try {
+    const nameRes = await drive.files.get({ fileId: driveFileId, fields: "name" });
+    originalName = nameRes.data.name ?? desired;
+  } catch (e: unknown) {
+    const code = (e as { code?: number }).code;
+    if (code === 404) {
+      console.warn(
+        `trashBookAction: book ${bookId} file not found in Drive (404) — proceeding DB-only`
+      );
+      const result = await trashConfirmedBook(bookId, userId);
+      if (!result)
+        return { ok: false, message: "Could not trash book. Please try again." };
+      revalidatePath("/");
+      revalidatePath(`/books/${bookId}`);
+      return { ok: true };
+    }
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, message: `Drive file lookup failed: ${msg}` };
+  }
+
+  const finalName = await findAvailableFilename(drive, trashFolderId, desired);
 
   let driveMoveDone = false;
   try {
@@ -93,6 +111,7 @@ export async function trashBookAction(
     if (!result) {
       if (driveMoveDone) {
         try {
+          // restore original filename — forward move renamed file to finalName in Trash
           await moveDriveFile(drive, driveFileId, trashFolderId, libraryFolderId, originalName);
         } catch (rollbackErr) {
           console.error("trashBookAction: Drive rollback failed:", rollbackErr);
@@ -103,6 +122,7 @@ export async function trashBookAction(
   } catch (e) {
     if (driveMoveDone) {
       try {
+        // restore original filename — forward move renamed file to finalName in Trash
         await moveDriveFile(drive, driveFileId, trashFolderId, libraryFolderId, originalName);
       } catch (rollbackErr) {
         console.error("trashBookAction: Drive rollback failed:", rollbackErr);
