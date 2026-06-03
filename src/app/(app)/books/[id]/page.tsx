@@ -9,6 +9,7 @@ import { CoverPlaceholder } from "@/app/components/cover-placeholder";
 import { TagPicker } from "./tag-picker";
 import { SuggestionsPanel } from "./suggestions-panel";
 import { NotesSection } from "./notes-section";
+import TrashBookControl from "./trash-book-control";
 
 export default async function BookPage({
   params,
@@ -72,6 +73,10 @@ export default async function BookPage({
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <NotesSection bookId={book.id} initialNotes={notes} />
       </div>
+
+      <section className="mt-8 flex justify-end">
+        <TrashBookControl bookId={book.id} title={book.title} />
+      </section>
     </main>
   );
 }

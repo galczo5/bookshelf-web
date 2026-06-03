@@ -1,0 +1,118 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import type { drive_v3 } from "googleapis";
+import { auth, signOut } from "@/auth";
+import { getDriveClient } from "@/lib/drive/client";
+import { DriveAuthError } from "@/lib/drive/errors";
+import {
+  getOrCreateLibraryFolder,
+  getOrCreateTrashFolder,
+} from "@/lib/drive/library-folder";
+import { composeFilename, findAvailableFilename } from "@/lib/drive/upload";
+import { moveDriveFile } from "@/lib/drive/trash";
+import { getUserIdByEmail } from "@/lib/users";
+import { trashConfirmedBook } from "@/lib/books";
+import { db } from "@/lib/db";
+
+export async function trashBookAction(
+  bookId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/signin");
+
+  const userId = await getUserIdByEmail(session.user.email);
+
+  const book = await db
+    .selectFrom("books")
+    .select(["drive_file_id", "title", "author"])
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .executeTakeFirst();
+
+  if (!book) return { ok: false, message: "Book not found." };
+
+  if (!book.drive_file_id) {
+    console.warn(
+      `trashBookAction: book ${bookId} has no drive_file_id — skipping Drive move`
+    );
+    const result = await trashConfirmedBook(bookId, userId);
+    if (!result)
+      return { ok: false, message: "Could not trash book. Please try again." };
+    revalidatePath("/");
+    revalidatePath(`/books/${bookId}`);
+    return { ok: true };
+  }
+
+  let drive: drive_v3.Drive;
+  try {
+    drive = await getDriveClient();
+  } catch (e) {
+    if (e instanceof DriveAuthError) {
+      await signOut({ redirect: false });
+      redirect("/signin?expired=1");
+    }
+    throw e;
+  }
+
+  const libraryFolderId = await getOrCreateLibraryFolder(
+    drive,
+    session.user.email
+  );
+  const trashFolderId = await getOrCreateTrashFolder(drive, libraryFolderId);
+
+  const desired = composeFilename(book.author, book.title);
+  const [finalName, originalNameRes] = await Promise.all([
+    findAvailableFilename(drive, trashFolderId, desired),
+    drive.files.get({ fileId: book.drive_file_id, fields: "name" }),
+  ]);
+  const originalName = originalNameRes.data.name ?? desired;
+  const driveFileId = book.drive_file_id;
+
+  let driveMoveDone = false;
+  try {
+    await moveDriveFile(drive, driveFileId, libraryFolderId, trashFolderId, finalName);
+    driveMoveDone = true;
+  } catch (e: unknown) {
+    const code = (e as { code?: number }).code;
+    if (code === 404) {
+      console.warn(
+        `trashBookAction: book ${bookId} file not found in Drive (404) — proceeding DB-only`
+      );
+    } else {
+      const msg = e instanceof Error ? e.message : String(e);
+      return { ok: false, message: `Drive move failed: ${msg}` };
+    }
+  }
+
+  try {
+    const result = await trashConfirmedBook(bookId, userId);
+    if (!result) {
+      if (driveMoveDone) {
+        try {
+          await moveDriveFile(drive, driveFileId, trashFolderId, libraryFolderId, originalName);
+        } catch (rollbackErr) {
+          console.error("trashBookAction: Drive rollback failed:", rollbackErr);
+        }
+      }
+      return { ok: false, message: "Could not trash book. Please try again." };
+    }
+  } catch (e) {
+    if (driveMoveDone) {
+      try {
+        await moveDriveFile(drive, driveFileId, trashFolderId, libraryFolderId, originalName);
+      } catch (rollbackErr) {
+        console.error("trashBookAction: Drive rollback failed:", rollbackErr);
+      }
+    }
+    console.error("trashBookAction: DB update failed:", e);
+    return { ok: false, message: "Could not trash book. Please try again." };
+  }
+
+  revalidatePath("/");
+  revalidatePath(`/books/${bookId}`);
+  return { ok: true };
+}

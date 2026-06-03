@@ -221,17 +221,17 @@ None. The `trashed_at` column already exists with no default and no existing tra
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — ba711d6
+- [x] 1.2 Linting passes: `npm run lint` — ba711d6
+- [x] 1.3 Build succeeds: `npm run build` — ba711d6
 
 ### Phase 2: Server action + book-detail trash control with confirm modal
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 
