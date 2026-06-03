@@ -1,6 +1,6 @@
 import "server-only";
-import { sql } from "kysely";
-import { db } from "@/lib/db";
+import { Kysely, sql } from "kysely";
+import { db, type Database } from "@/lib/db";
 
 export interface BookSummary {
   id: string;
@@ -99,4 +99,23 @@ export async function getConfirmedBook(
     createdAt: book.created_at,
     tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
   };
+}
+
+export async function trashConfirmedBook(
+  bookId: string,
+  userId: string,
+  trx?: Kysely<Database>
+): Promise<{ trashedAt: Date } | null> {
+  const row = await (trx ?? db)
+    .updateTable("books")
+    .set({ trashed_at: sql`NOW()` })
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .returning("trashed_at")
+    .executeTakeFirst();
+
+  if (!row) return null;
+  return { trashedAt: row.trashed_at as Date };
 }
