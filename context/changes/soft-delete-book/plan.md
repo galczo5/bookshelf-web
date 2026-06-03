@@ -229,16 +229,16 @@ None. The `trashed_at` column already exists with no default and no existing tra
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — e76c91a
+- [x] 2.2 Linting passes: `npm run lint` — e76c91a
+- [x] 2.3 Build succeeds: `npm run build` — e76c91a
 
 #### Manual
 
-- [ ] 2.4 Importing a book and then clicking "Move to trash" on its detail page, confirming in the modal, redirects to `/` and the book no longer appears in the library list.
-- [ ] 2.5 In Drive UI, the trashed epub is visible inside `Bookshelf/Trash/`; the original `Bookshelf/` no longer contains it.
-- [ ] 2.6 Clicking "Move to trash" then "Cancel" in the modal leaves the book intact (no DB change, no Drive change).
-- [ ] 2.7 Importing two books with the same author/title, trashing both — second one lands in `Trash/` with a `(2)` suffix.
-- [ ] 2.8 Triggering an offline state during the modal confirm shows a "Drive move failed" message and leaves both DB and Drive unchanged; retry after reconnect succeeds.
-- [ ] 2.9 Manually deleting a book's file from Drive UI then clicking "Move to trash" in the app: book disappears from library, server log records the 404, DB shows `trashed_at` set.
-- [ ] 2.10 Trashed books do NOT appear in the library list, search results, or tag filters.
+- [x] 2.4 Importing a book and then clicking "Move to trash" on its detail page, confirming in the modal, redirects to `/` and the book no longer appears in the library list.
+- [x] 2.5 In Drive UI, the trashed epub is visible inside `Bookshelf/Trash/`; the original `Bookshelf/` no longer contains it.
+- [x] 2.6 Clicking "Move to trash" then "Cancel" in the modal leaves the book intact (no DB change, no Drive change).
+- [x] 2.7 Importing two books with the same author/title, trashing both — second one lands in `Trash/` with a `(2)` suffix.
+- [x] 2.8 Triggering an offline state during the modal confirm shows a "Drive move failed" message and leaves both DB and Drive unchanged; retry after reconnect succeeds.
+- [x] 2.9 Manually deleting a book's file from Drive UI then clicking "Move to trash" in the app: book disappears from library, server log records the 404, DB shows `trashed_at` set.
+- [x] 2.10 Trashed books do NOT appear in the library list, search results, or tag filters.
