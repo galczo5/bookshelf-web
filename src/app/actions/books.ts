@@ -234,6 +234,7 @@ export async function restoreBookAction(
     if (!result) {
       if (driveMoveDone) {
         try {
+          // restore original name — forward move renamed file to finalName in Library
           await moveDriveFile(drive, driveFileId, libraryFolderId, trashFolderId, originalName);
         } catch (rollbackErr) {
           console.error("restoreBookAction: Drive rollback failed:", rollbackErr);
@@ -244,6 +245,7 @@ export async function restoreBookAction(
   } catch (e) {
     if (driveMoveDone) {
       try {
+        // restore original name — forward move renamed file to finalName in Library
         await moveDriveFile(drive, driveFileId, libraryFolderId, trashFolderId, originalName);
       } catch (rollbackErr) {
         console.error("restoreBookAction: Drive rollback failed:", rollbackErr);
