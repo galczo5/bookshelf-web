@@ -69,7 +69,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Harness bootstrap + import/migration integrity | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers. | #1, #2 | integration, contract | change opened | `context/changes/testing-harness-and-import-integrity/` |
+| 1 | Harness bootstrap + import/migration integrity | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers. | #1, #2 | integration, contract | complete | `context/changes/testing-harness-and-import-integrity/` |
 | 2 | Notes durability + tag-rename atomicity | Defend Risk #6 (notes save round-trip) and Risk #4 (rename transactional integrity) at the action layer, reusing the Postgres harness from Phase 1. | #4, #6 | integration | not started | — |
 | 3 | Drive error envelope + AI privacy + session boundary | Defend Risk #3, Risk #5, Risk #7 with focused unit, contract, and integration tests sharing fixtures from Phase 1. AI privacy via prompt-construction contract; session boundary via session-less invocation sweep. | #3, #5, #7 | unit, contract, integration | not started | — |
 | 4 | Quality-gates wiring | Lock the test floor in CI (GitHub Actions: lint + typecheck + Vitest matrix against a Render-major Postgres); optional post-deploy smoke via Render MCP for the deployed schema. | cross-cutting | gates | not started | — |
@@ -142,11 +142,11 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.2 Adding an integration test against Postgres
 
-- TBD — see §3 Phase 1. The canonical pattern (action + real Postgres + faked external boundary) lands here and will anchor §3 Phase 2 and §3 Phase 3 reuse.
+Drop the test file into `tests/integration/`. Import `resetDb`, `seedDraft`, and `readState` from `tests/helpers/db.ts` — `resetDb` truncates all user tables and re-seeds the test user in one call, `readState(bookId)` returns the `{reviewState, driveFileId, hasDraft}` triple that anchors Risk #1 assertions. Mock `@/lib/drive/client` with `createDriveFake()` from `tests/helpers/drive-fake.ts` to control Drive behaviour per-test. Example: `tests/integration/confirm-review.test.ts`.
 
 ### 6.3 Adding a test for a server action
 
-- TBD — see §3 Phase 1 (happy path + DB round-trip) and §3 Phase 3 (session-less invocation pattern for Risk #7).
+Call the action directly (no HTTP layer) — pass a `FormData` as the second argument and a `null` initial state as the first. Mock `@/auth` via `vi.mock('@/auth', () => ({ auth: vi.fn(), signOut: vi.fn() }))` and use `vi.mocked(auth).mockResolvedValue(...)` per-test to control the session. On success paths, actions call Next.js `redirect()` which throws a `NEXT_REDIRECT` error — catch it and assert the URL with `isRedirectError` + `getURLFromRedirectError` from `next/dist/client/components/redirect-error` and `next/dist/client/components/redirect`. Example: `tests/integration/import-epub.test.ts`.
 
 ### 6.4 Adding a migration + verifying parity
 
@@ -179,6 +179,7 @@ contributors should respect these unless the underlying assumption changes.
 - Strategy (§1–§5) last reviewed: 2026-06-02
 - Stack versions last verified: 2026-06-02
 - AI-native tool references last verified: 2026-06-02 (no AI-native tools wired; re-check if any are added)
+- Phase 1 landed: 2026-06-04
 
 Refresh (`/10x-test-plan --refresh`) when:
 

@@ -486,12 +486,12 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [x] 3.1 `npm run test:migrate-replay` exits 0 against a clean Postgres 18
-- [x] 3.2 `npm run test:migrate-replay` is idempotent across consecutive runs
-- [x] 3.3 `npm run test:migrate-replay -- --update-snapshot` produces zero `git diff` on a re-run
-- [x] 3.4 Committed snapshot reflects current 0001/0002/0003 migrations (manual review of round)
-- [x] 3.5 `npm run lint` passes on the script
-- [x] 3.6 `npm run db:migrate` / `db:migrate:down` still work after the migrate.mts refactor
+- [x] 3.1 `npm run test:migrate-replay` exits 0 against a clean Postgres 18 — c3abc9a
+- [x] 3.2 `npm run test:migrate-replay` is idempotent across consecutive runs — c3abc9a
+- [x] 3.3 `npm run test:migrate-replay -- --update-snapshot` produces zero `git diff` on a re-run — c3abc9a
+- [x] 3.4 Committed snapshot reflects current 0001/0002/0003 migrations (manual review of round) — c3abc9a
+- [x] 3.5 `npm run lint` passes on the script — c3abc9a
+- [x] 3.6 `npm run db:migrate` / `db:migrate:down` still work after the migrate.mts refactor — c3abc9a
 
 #### Manual
 
@@ -503,9 +503,9 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [ ] 4.1 `.github/workflows/test.yml` parses cleanly on GitHub (verified by draft PR)
-- [ ] 4.2 `actionlint` reports no warnings (skip if tool not installed)
-- [ ] 4.3 AGENTS.md "Running tests" references the exact local commands
+- [x] 4.1 `.github/workflows/test.yml` parses cleanly on GitHub (verified by draft PR)
+- [x] 4.2 `actionlint` reports no warnings (skip if tool not installed)
+- [x] 4.3 AGENTS.md "Running tests" references the exact local commands
 
 #### Manual
 

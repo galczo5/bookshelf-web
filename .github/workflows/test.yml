@@ -1,0 +1,78 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: bookshelf
+          POSTGRES_PASSWORD: bookshelf
+          POSTGRES_DB: bookshelf
+        options: >-
+          --health-cmd "pg_isready -U bookshelf"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgres://bookshelf:bookshelf@localhost:5432/bookshelf_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - name: Create test database
+        run: psql postgres://bookshelf:bookshelf@localhost:5432/bookshelf -c 'CREATE DATABASE bookshelf_test'
+      - run: npm run db:migrate
+      - run: npm run test:integration
+
+  test-migrate-replay:
+    name: Migration Replay
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: bookshelf
+          POSTGRES_PASSWORD: bookshelf
+          POSTGRES_DB: bookshelf
+        options: >-
+          --health-cmd "pg_isready -U bookshelf"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL_REPLAY: postgres://bookshelf:bookshelf@localhost:5432/bookshelf_replay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run test:migrate-replay

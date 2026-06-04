@@ -29,6 +29,27 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Running tests
+
+Start Postgres, create the test DB, and run the full suite:
+
+```bash
+docker compose up -d db
+createdb bookshelf_test
+DATABASE_URL=postgres://bookshelf:bookshelf@localhost:5432/bookshelf_test npm run db:migrate
+npm test
+```
+
+To verify migration idempotency against Postgres 18 (matches the Render production image):
+
+```bash
+npm run test:migrate-replay
+```
+
+See `context/foundation/test-plan.md` for the full testing strategy.
+
+CI runs the same three steps (`lint`, `test:integration`, `test:migrate-replay`) on every PR via `.github/workflows/test.yml`.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
