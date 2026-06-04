@@ -14,7 +14,7 @@
     "db:migrate": "tsx scripts/migrate.mts",
     "db:migrate:down": "tsx scripts/migrate.mts down",
     "test": "vitest run",
-    "test:integration": "vitest run --dir tests/integration",
+    "test:integration": "vitest run tests/integration",
     "test:migrate-replay": "tsx scripts/test-migrate-replay.mts"
   },
   "dependencies": {

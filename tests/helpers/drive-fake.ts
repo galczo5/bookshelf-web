@@ -12,6 +12,7 @@ export interface FakeDriveFile {
 export interface DriveFake {
   client: drive_v3.Drive;
   files: ReadonlyMap<string, FakeDriveFile>;
+  deleteCallCount: number;
   failNextCreate(err: Error): void;
   failNextDelete(err: Error): void;
   reset(): void;
@@ -45,6 +46,7 @@ export function createDriveFake(): DriveFake {
   let counter = 0;
   let nextCreateError: Error | undefined;
   let nextDeleteError: Error | undefined;
+  let _deleteCallCount = 0;
 
   const notImplemented = (method: string) => {
     return () => {
@@ -89,6 +91,7 @@ export function createDriveFake(): DriveFake {
     },
 
     async delete(params: { fileId?: string }) {
+      _deleteCallCount++;
       if (nextDeleteError) {
         const err = nextDeleteError;
         nextDeleteError = undefined;
@@ -111,10 +114,13 @@ export function createDriveFake(): DriveFake {
 
   const client = { files } as unknown as drive_v3.Drive;
 
-  return {
+  const fake: DriveFake = {
     client,
     get files() {
       return filesMap as ReadonlyMap<string, FakeDriveFile>;
+    },
+    get deleteCallCount() {
+      return _deleteCallCount;
     },
     failNextCreate(err: Error) {
       nextCreateError = err;
@@ -127,6 +133,9 @@ export function createDriveFake(): DriveFake {
       counter = 0;
       nextCreateError = undefined;
       nextDeleteError = undefined;
+      _deleteCallCount = 0;
     },
   };
+
+  return fake;
 }

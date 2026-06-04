@@ -450,13 +450,13 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [x] 1.1 `npm install` completes without errors
-- [x] 1.2 `docker compose down -v && docker compose up -d db` brings up Postgres 18 cleanly (healthcheck reports healthy within 30s)
-- [x] 1.3 `createdb bookshelf_test` via psql succeeds against the new image
-- [x] 1.4 `npm run db:migrate` against `bookshelf_test` succeeds on Postgres 18
-- [x] 1.5 `npm test` exits 0 with an empty suite
-- [x] 1.6 `npm run lint` passes including new `tests/` files
-- [x] 1.7 `tsc --noEmit -p tsconfig.json` passes on test files
+- [x] 1.1 `npm install` completes without errors — 0b7a7ba
+- [x] 1.2 `docker compose down -v && docker compose up -d db` brings up Postgres 18 cleanly (healthcheck reports healthy within 30s) — 0b7a7ba
+- [x] 1.3 `createdb bookshelf_test` via psql succeeds against the new image — 0b7a7ba
+- [x] 1.4 `npm run db:migrate` against `bookshelf_test` succeeds on Postgres 18 — 0b7a7ba
+- [x] 1.5 `npm test` exits 0 with an empty suite — 0b7a7ba
+- [x] 1.6 `npm run lint` passes including new `tests/` files — 0b7a7ba
+- [x] 1.7 `tsc --noEmit -p tsconfig.json` passes on test files — 0b7a7ba
 
 #### Manual
 
@@ -469,11 +469,11 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [ ] 2.1 All five tests in `tests/integration/confirm-review.test.ts` pass
-- [ ] 2.2 Both tests in `tests/integration/import-epub.test.ts` pass
-- [ ] 2.3 `npm test` exits 0 in under 30s on warm Docker
-- [ ] 2.4 `npm run lint` passes with no new test-file warnings
-- [ ] 2.5 `tsc --noEmit -p tsconfig.json` passes (Drive fake cast typechecks)
+- [x] 2.1 All five tests in `tests/integration/confirm-review.test.ts` pass
+- [x] 2.2 Both tests in `tests/integration/import-epub.test.ts` pass
+- [x] 2.3 `npm test` exits 0 in under 30s on warm Docker
+- [x] 2.4 `npm run lint` passes with no new test-file warnings
+- [x] 2.5 `tsc --noEmit -p tsconfig.json` passes (Drive fake cast typechecks)
 
 #### Manual
 

@@ -14,6 +14,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(process.cwd(), "src"),
+      // server-only's default export throws in non-React-Server contexts.
+      // Map to the package's own empty.js so Vitest (plain Node) can import it.
+      "server-only": path.resolve(
+        process.cwd(),
+        "node_modules/server-only/empty.js"
+      ),
     },
   },
 });
