@@ -13,7 +13,7 @@ const migrationFolder = path.join(
 export async function runMigrator(
   db: Kysely<Record<string, never>>,
   direction: "latest" | "down" | "reset"
-): Promise<{ error: unknown; results?: { migrationName: string; status: string }[] }> {
+): Promise<{ error?: unknown; results?: { migrationName: string; status: string }[] }> {
   const migrator = new Migrator({
     db,
     provider: new FileMigrationProvider({ fs, path, migrationFolder }),

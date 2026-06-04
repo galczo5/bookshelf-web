@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ImportDropzone } from "@/app/components/import-dropzone";
 import { ImportButton } from "@/app/components/import-button";
 import { LibraryView } from "@/app/components/library-view";
-import { getUserIdByEmail } from "@/lib/users";
+import { getUserIdByEmail, upsertUserByEmail } from "@/lib/users";
 import { listConfirmedBooks } from "@/lib/books";
 import { listUserTags } from "@/lib/tags";
 
@@ -16,6 +16,7 @@ export default async function Home({
   if (!session?.user?.email) redirect("/signin");
 
   const { error } = await searchParams;
+  await upsertUserByEmail(session.user.email);
   const userId = await getUserIdByEmail(session.user.email);
 
   const [books, tags] = await Promise.all([
