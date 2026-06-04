@@ -150,7 +150,10 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.4 Adding a migration + verifying parity
 
-- TBD — see §3 Phase 1. Covers forward apply, rollback, and the Render-major Postgres image used in CI for Risk #2.
+1. Write the migration file under `src/lib/db/migrations/` following the `NNNN_name.mts` naming convention.
+2. Apply it locally: `npm run db:migrate` against your dev DB.
+3. Regenerate the schema snapshot: `npm run test:migrate-replay -- --update-snapshot`. This drops and recreates `bookshelf_replay`, runs all migrations forward → full reset → forward again, and writes `tests/fixtures/migration-schema-snapshot.json`.
+4. Commit the migration file and the updated snapshot in a single commit. CI runs `npm run test:migrate-replay` on every PR and will fail if the committed snapshot drifts from what the migrations actually produce.
 
 ### 6.5 Adding a test for an AI-touching path
 

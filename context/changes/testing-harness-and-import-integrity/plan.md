@@ -469,11 +469,11 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [x] 2.1 All five tests in `tests/integration/confirm-review.test.ts` pass
-- [x] 2.2 Both tests in `tests/integration/import-epub.test.ts` pass
-- [x] 2.3 `npm test` exits 0 in under 30s on warm Docker
-- [x] 2.4 `npm run lint` passes with no new test-file warnings
-- [x] 2.5 `tsc --noEmit -p tsconfig.json` passes (Drive fake cast typechecks)
+- [x] 2.1 All five tests in `tests/integration/confirm-review.test.ts` pass — 70d8b6a
+- [x] 2.2 Both tests in `tests/integration/import-epub.test.ts` pass — 70d8b6a
+- [x] 2.3 `npm test` exits 0 in under 30s on warm Docker — 70d8b6a
+- [x] 2.4 `npm run lint` passes with no new test-file warnings — 70d8b6a
+- [x] 2.5 `tsc --noEmit -p tsconfig.json` passes (Drive fake cast typechecks) — 70d8b6a
 
 #### Manual
 
@@ -486,12 +486,12 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Automated
 
-- [ ] 3.1 `npm run test:migrate-replay` exits 0 against a clean Postgres 18
-- [ ] 3.2 `npm run test:migrate-replay` is idempotent across consecutive runs
-- [ ] 3.3 `npm run test:migrate-replay -- --update-snapshot` produces zero `git diff` on a re-run
-- [ ] 3.4 Committed snapshot reflects current 0001/0002/0003 migrations (manual review of round)
-- [ ] 3.5 `npm run lint` passes on the script
-- [ ] 3.6 `npm run db:migrate` / `db:migrate:down` still work after the migrate.mts refactor
+- [x] 3.1 `npm run test:migrate-replay` exits 0 against a clean Postgres 18
+- [x] 3.2 `npm run test:migrate-replay` is idempotent across consecutive runs
+- [x] 3.3 `npm run test:migrate-replay -- --update-snapshot` produces zero `git diff` on a re-run
+- [x] 3.4 Committed snapshot reflects current 0001/0002/0003 migrations (manual review of round)
+- [x] 3.5 `npm run lint` passes on the script
+- [x] 3.6 `npm run db:migrate` / `db:migrate:down` still work after the migrate.mts refactor
 
 #### Manual
 

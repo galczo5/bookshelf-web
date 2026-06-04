@@ -1,0 +1,528 @@
+{
+  "tables": [
+    {
+      "name": "auth_tokens",
+      "columns": [
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "refresh_token_ciphertext",
+          "type": "bytea",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "auth_tokens_email_not_null",
+          "type": "CHECK",
+          "definition": "auth_tokens_email_not_null"
+        },
+        {
+          "name": "auth_tokens_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "auth_tokens_pkey"
+        },
+        {
+          "name": "auth_tokens_refresh_token_ciphertext_not_null",
+          "type": "CHECK",
+          "definition": "auth_tokens_refresh_token_ciphertext_not_null"
+        },
+        {
+          "name": "auth_tokens_updated_at_not_null",
+          "type": "CHECK",
+          "definition": "auth_tokens_updated_at_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "auth_tokens_pkey",
+          "definition": "CREATE UNIQUE INDEX auth_tokens_pkey ON public.auth_tokens USING btree (email)"
+        }
+      ]
+    },
+    {
+      "name": "book_drafts",
+      "columns": [
+        {
+          "name": "book_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "filename",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "staged_bytes",
+          "type": "bytea",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "proposals",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "book_drafts_book_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "book_drafts_book_id_fkey"
+        },
+        {
+          "name": "book_drafts_book_id_not_null",
+          "type": "CHECK",
+          "definition": "book_drafts_book_id_not_null"
+        },
+        {
+          "name": "book_drafts_created_at_not_null",
+          "type": "CHECK",
+          "definition": "book_drafts_created_at_not_null"
+        },
+        {
+          "name": "book_drafts_filename_not_null",
+          "type": "CHECK",
+          "definition": "book_drafts_filename_not_null"
+        },
+        {
+          "name": "book_drafts_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "book_drafts_pkey"
+        },
+        {
+          "name": "book_drafts_staged_bytes_not_null",
+          "type": "CHECK",
+          "definition": "book_drafts_staged_bytes_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "book_drafts_pkey",
+          "definition": "CREATE UNIQUE INDEX book_drafts_pkey ON public.book_drafts USING btree (book_id)"
+        }
+      ]
+    },
+    {
+      "name": "book_tags",
+      "columns": [
+        {
+          "name": "book_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "tag_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "added_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "book_tags_added_at_not_null",
+          "type": "CHECK",
+          "definition": "book_tags_added_at_not_null"
+        },
+        {
+          "name": "book_tags_book_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "book_tags_book_id_fkey"
+        },
+        {
+          "name": "book_tags_book_id_not_null",
+          "type": "CHECK",
+          "definition": "book_tags_book_id_not_null"
+        },
+        {
+          "name": "book_tags_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "book_tags_pkey"
+        },
+        {
+          "name": "book_tags_tag_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "book_tags_tag_id_fkey"
+        },
+        {
+          "name": "book_tags_tag_id_not_null",
+          "type": "CHECK",
+          "definition": "book_tags_tag_id_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "book_tags_pkey",
+          "definition": "CREATE UNIQUE INDEX book_tags_pkey ON public.book_tags USING btree (book_id, tag_id)"
+        }
+      ]
+    },
+    {
+      "name": "books",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "drive_file_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "author",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "isbn",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "cover_bytes",
+          "type": "bytea",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "cover_mime",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "trashed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "review_state",
+          "type": "text",
+          "nullable": false,
+          "default": "'confirmed'::text"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "books_created_at_not_null",
+          "type": "CHECK",
+          "definition": "books_created_at_not_null"
+        },
+        {
+          "name": "books_id_not_null",
+          "type": "CHECK",
+          "definition": "books_id_not_null"
+        },
+        {
+          "name": "books_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "books_pkey"
+        },
+        {
+          "name": "books_review_state_not_null",
+          "type": "CHECK",
+          "definition": "books_review_state_not_null"
+        },
+        {
+          "name": "books_title_not_null",
+          "type": "CHECK",
+          "definition": "books_title_not_null"
+        },
+        {
+          "name": "books_updated_at_not_null",
+          "type": "CHECK",
+          "definition": "books_updated_at_not_null"
+        },
+        {
+          "name": "books_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "books_user_id_fkey"
+        },
+        {
+          "name": "books_user_id_not_null",
+          "type": "CHECK",
+          "definition": "books_user_id_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "books_pkey",
+          "definition": "CREATE UNIQUE INDEX books_pkey ON public.books USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "notes",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "book_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "body",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "notes_body_not_null",
+          "type": "CHECK",
+          "definition": "notes_body_not_null"
+        },
+        {
+          "name": "notes_book_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "notes_book_id_fkey"
+        },
+        {
+          "name": "notes_book_id_not_null",
+          "type": "CHECK",
+          "definition": "notes_book_id_not_null"
+        },
+        {
+          "name": "notes_created_at_not_null",
+          "type": "CHECK",
+          "definition": "notes_created_at_not_null"
+        },
+        {
+          "name": "notes_id_not_null",
+          "type": "CHECK",
+          "definition": "notes_id_not_null"
+        },
+        {
+          "name": "notes_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "notes_pkey"
+        },
+        {
+          "name": "notes_updated_at_not_null",
+          "type": "CHECK",
+          "definition": "notes_updated_at_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "notes_pkey",
+          "definition": "CREATE UNIQUE INDEX notes_pkey ON public.notes USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "tags",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tags_created_at_not_null",
+          "type": "CHECK",
+          "definition": "tags_created_at_not_null"
+        },
+        {
+          "name": "tags_id_not_null",
+          "type": "CHECK",
+          "definition": "tags_id_not_null"
+        },
+        {
+          "name": "tags_name_not_null",
+          "type": "CHECK",
+          "definition": "tags_name_not_null"
+        },
+        {
+          "name": "tags_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "tags_pkey"
+        },
+        {
+          "name": "tags_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "tags_user_id_fkey"
+        },
+        {
+          "name": "tags_user_id_name_unique",
+          "type": "UNIQUE",
+          "definition": "tags_user_id_name_unique"
+        },
+        {
+          "name": "tags_user_id_not_null",
+          "type": "CHECK",
+          "definition": "tags_user_id_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tags_pkey",
+          "definition": "CREATE UNIQUE INDEX tags_pkey ON public.tags USING btree (id)"
+        },
+        {
+          "name": "tags_user_id_name_unique",
+          "definition": "CREATE UNIQUE INDEX tags_user_id_name_unique ON public.tags USING btree (user_id, name)"
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "users_created_at_not_null",
+          "type": "CHECK",
+          "definition": "users_created_at_not_null"
+        },
+        {
+          "name": "users_email_key",
+          "type": "UNIQUE",
+          "definition": "users_email_key"
+        },
+        {
+          "name": "users_email_not_null",
+          "type": "CHECK",
+          "definition": "users_email_not_null"
+        },
+        {
+          "name": "users_id_not_null",
+          "type": "CHECK",
+          "definition": "users_id_not_null"
+        },
+        {
+          "name": "users_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "users_pkey"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "users_email_key",
+          "definition": "CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)"
+        },
+        {
+          "name": "users_pkey",
+          "definition": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+        }
+      ]
+    }
+  ]
+}
