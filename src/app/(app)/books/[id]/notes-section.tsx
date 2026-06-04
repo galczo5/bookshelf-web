@@ -14,7 +14,7 @@ import {
 } from "@/app/actions/notes";
 import type { Note } from "@/lib/notes";
 
-function NoteReader({ body }: { body: string }) {
+export function NoteReader({ body }: { body: string }) {
   const editor = useEditor({
     extensions: [StarterKit, Markdown],
     content: body,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Tag, LogOut, User } from "lucide-react";
+import { BookOpen, Tag, Trash2, LogOut, User } from "lucide-react";
 import { signOutAction } from "@/app/actions/sign-out";
 import {
   Sidebar,
@@ -19,6 +19,7 @@ import {
 const navItems = [
   { href: "/", label: "Library", icon: BookOpen },
   { href: "/tags", label: "Tags", icon: Tag },
+  { href: "/trash", label: "Trash", icon: Trash2 },
 ];
 
 export function AppSidebar({ email }: { email: string }) {

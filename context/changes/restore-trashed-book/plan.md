@@ -301,17 +301,17 @@ None. `trashed_at` already exists, is already nullable, and existing rows alread
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — 9b1ec79
+- [x] 1.2 Linting passes: `npm run lint` — 9b1ec79
+- [x] 1.3 Build succeeds: `npm run build` — 9b1ec79
 
 ### Phase 2: Trash page, sidebar link, restore control, read-only detail variant
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 
