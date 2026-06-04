@@ -1,7 +1,7 @@
 ---
 change_id: testing-harness-and-import-integrity
 title: Test harness bootstrap and import/migration integrity (test-plan Phase 1)
-status: implementing
+status: implemented
 created: 2026-06-02
 updated: 2026-06-04
 archived_at: null

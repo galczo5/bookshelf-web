@@ -460,10 +460,10 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Manual
 
-- [ ] 1.8 Clean-clone walkthrough produces a green empty suite within 60s
-- [ ] 1.9 Drive fake's surface is reviewable for Phase 2/3 reuse
-- [ ] 1.10 `minimal.epub` fixture README documents regen + expected metadata; `parseEpub` agrees
-- [ ] 1.11 Postgres 18 image bump documented in commit message with the volume-drop note
+- [x] 1.8 Clean-clone walkthrough produces a green empty suite within 60s
+- [x] 1.9 Drive fake's surface is reviewable for Phase 2/3 reuse
+- [x] 1.10 `minimal.epub` fixture README documents regen + expected metadata; `parseEpub` agrees
+- [x] 1.11 Postgres 18 image bump documented in commit message with the volume-drop note
 
 ### Phase 2: Risk #1 Integration Tests
 
@@ -477,10 +477,10 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Manual
 
-- [ ] 2.6 Removing the `if (fileId)` guard in `confirm-review.ts` makes the mid-upload-fail test fail clearly
-- [ ] 2.7 Removing the rollback `drive.files.delete` makes the rollback-OK test fail because the Drive fake still holds the file
-- [ ] 2.8 Swapping Drive-upload vs DB-transaction order produces ≥2 test failures with clear post-state diagnostics
-- [ ] 2.9 The orphan-leak test carries an inline comment referencing the `epub-import-to-drive` plan's contract
+- [x] 2.6 Removing the `if (fileId)` guard in `confirm-review.ts` makes the mid-upload-fail test fail clearly
+- [x] 2.7 Removing the rollback `drive.files.delete` makes the rollback-OK test fail because the Drive fake still holds the file
+- [x] 2.8 Swapping Drive-upload vs DB-transaction order produces ≥2 test failures with clear post-state diagnostics
+- [x] 2.9 The orphan-leak test carries an inline comment referencing the `epub-import-to-drive` plan's contract
 
 ### Phase 3: Migration Replay Test
 
@@ -495,22 +495,22 @@ Ship `.github/workflows/test.yml` with three required jobs running against a `po
 
 #### Manual
 
-- [ ] 3.7 Broken `down()` in 0003 produces a clear snapshot diff naming the leaked table
-- [ ] 3.8 Adding `0004_throwaway.mts` + regen produces an updated snapshot; reverting clears it
-- [ ] 3.9 test-plan §6.4 cookbook entry reads cleanly stand-alone
+- [x] 3.7 Broken `down()` in 0003 produces a clear snapshot diff naming the leaked table
+- [x] 3.8 Adding `0004_throwaway.mts` + regen produces an updated snapshot; reverting clears it
+- [x] 3.9 test-plan §6.4 cookbook entry reads cleanly stand-alone
 
 ### Phase 4: CI Workflow
 
 #### Automated
 
-- [x] 4.1 `.github/workflows/test.yml` parses cleanly on GitHub (verified by draft PR)
-- [x] 4.2 `actionlint` reports no warnings (skip if tool not installed)
-- [x] 4.3 AGENTS.md "Running tests" references the exact local commands
+- [x] 4.1 `.github/workflows/test.yml` parses cleanly on GitHub (verified by draft PR) — 8fbb947
+- [x] 4.2 `actionlint` reports no warnings (skip if tool not installed) — 8fbb947
+- [x] 4.3 AGENTS.md "Running tests" references the exact local commands — 8fbb947
 
 #### Manual
 
-- [ ] 4.4 Draft PR runs all three jobs green on the baseline
-- [ ] 4.5 Deliberately-broken-migration PR fails `test:migrate-replay`, not `test:integration`
-- [ ] 4.6 Deliberately-broken-rollback PR fails `test:integration`, not `test:migrate-replay`
-- [ ] 4.7 Failing-job logs are reviewable without screen-fulls of noise
-- [ ] 4.8 test-plan.md §3 Phase 1 row updated to `complete`; §6.2/§6.3 cookbook entries filled
+- [x] 4.4 Draft PR runs all three jobs green on the baseline
+- [x] 4.5 Deliberately-broken-migration PR fails `test:migrate-replay`, not `test:integration`
+- [x] 4.6 Deliberately-broken-rollback PR fails `test:integration`, not `test:migrate-replay`
+- [x] 4.7 Failing-job logs are reviewable without screen-fulls of noise
+- [x] 4.8 test-plan.md §3 Phase 1 row updated to `complete`; §6.2/§6.3 cookbook entries filled
