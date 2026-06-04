@@ -309,20 +309,20 @@ None. `trashed_at` already exists, is already nullable, and existing rows alread
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 9f21f3c
+- [x] 2.2 Linting passes: `npm run lint` — 9f21f3c
+- [x] 2.3 Build succeeds: `npm run build` — 9f21f3c
 
 #### Manual
 
-- [ ] 2.4 Trashing a book (via the S-09 flow on `/books/[id]`) and then visiting `/trash` shows the book in the list, with cover, title, author, and a date.
-- [ ] 2.5 Clicking "Restore" on a trash row opens the modal; confirming restores the book — it disappears from `/trash`, reappears at `/`, and the file is back in `Bookshelf/` in Drive (no longer in `Bookshelf/Trash/`).
-- [ ] 2.6 The modal's Cancel button leaves the book in trash; no DB change, no Drive change.
-- [ ] 2.7 Visiting `/books/[id]` for a trashed book renders the read-only variant: tags appear as static chips, notes are visible but not editable, the suggestions panel is gone, the "This book is in trash" banner is visible, and the bottom-of-page button reads "Restore" instead of "Move to trash".
-- [ ] 2.8 Visiting `/books/[id]` for a confirmed book renders exactly as before (tag picker editable, notes editable, suggestions panel present, "Move to trash" button at the bottom).
-- [ ] 2.9 Importing a new book with the same author/title as a trashed one, then restoring the trashed one — the restored file lands in `Bookshelf/` with a `(2)` suffix; the library list shows both books distinctly.
-- [ ] 2.10 Triggering offline state during the restore-modal confirm shows a "Drive move failed" message inside the modal; the book stays in trash, Drive state unchanged. After reconnecting, retrying restore succeeds.
-- [ ] 2.11 Manually deleting the trashed file from Drive UI (outside the app), then clicking Restore in the app: the book leaves `/trash`, reappears at `/`, server log records the 404, DB row has `trashed_at = NULL`.
-- [ ] 2.12 The sidebar "Trash" link is visible on every authenticated route and routes correctly to `/trash`.
-- [ ] 2.13 With no trashed books, `/trash` shows the empty-state message.
-- [ ] 2.14 The trash list orders books with the most-recently-trashed at the top.
+- [x] 2.4 Trashing a book (via the S-09 flow on `/books/[id]`) and then visiting `/trash` shows the book in the list, with cover, title, author, and a date.
+- [x] 2.5 Clicking "Restore" on a trash row opens the modal; confirming restores the book — it disappears from `/trash`, reappears at `/`, and the file is back in `Bookshelf/` in Drive (no longer in `Bookshelf/Trash/`).
+- [x] 2.6 The modal's Cancel button leaves the book in trash; no DB change, no Drive change.
+- [x] 2.7 Visiting `/books/[id]` for a trashed book renders the read-only variant: tags appear as static chips, notes are visible but not editable, the suggestions panel is gone, the "This book is in trash" banner is visible, and the bottom-of-page button reads "Restore" instead of "Move to trash".
+- [x] 2.8 Visiting `/books/[id]` for a confirmed book renders exactly as before (tag picker editable, notes editable, suggestions panel present, "Move to trash" button at the bottom).
+- [x] 2.9 Importing a new book with the same author/title as a trashed one, then restoring the trashed one — the restored file lands in `Bookshelf/` with a `(2)` suffix; the library list shows both books distinctly.
+- [x] 2.10 Triggering offline state during the restore-modal confirm shows a "Drive move failed" message inside the modal; the book stays in trash, Drive state unchanged. After reconnecting, retrying restore succeeds.
+- [x] 2.11 Manually deleting the trashed file from Drive UI (outside the app), then clicking Restore in the app: the book leaves `/trash`, reappears at `/`, server log records the 404, DB row has `trashed_at = NULL`.
+- [x] 2.12 The sidebar "Trash" link is visible on every authenticated route and routes correctly to `/trash`.
+- [x] 2.13 With no trashed books, `/trash` shows the empty-state message.
+- [x] 2.14 The trash list orders books with the most-recently-trashed at the top.

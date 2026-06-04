@@ -1,7 +1,7 @@
 ---
 change_id: restore-trashed-book
 title: Restore trashed book
-status: implementing
+status: implemented
 created: 2026-06-03
 updated: 2026-06-04
 archived_at: null
