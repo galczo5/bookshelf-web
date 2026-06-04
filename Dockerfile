@@ -27,6 +27,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
+# kysely/migration subpath isn't traced by Next.js (only used in migrate script);
+# copy the full package so dist/scripts/migrate.mjs can resolve it at startup.
+COPY --from=builder /app/node_modules/kysely ./node_modules/kysely
 
 USER nextjs
 EXPOSE 3000
