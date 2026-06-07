@@ -5,9 +5,7 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .createTable("auth_tokens")
     .addColumn("email", "text", (col) => col.primaryKey())
     .addColumn("refresh_token_ciphertext", "bytea", (col) => col.notNull())
-    .addColumn("updated_at", "timestamptz", (col) =>
-      col.notNull().defaultTo(sql`NOW()`)
-    )
+    .addColumn("updated_at", "timestamptz", (col) => col.notNull().defaultTo(sql`NOW()`))
     .execute();
 }
 

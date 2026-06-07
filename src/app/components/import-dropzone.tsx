@@ -50,9 +50,7 @@ export function ImportDropzone() {
         </div>
       </form>
 
-      {state?.ok === false && (
-        <p className="mt-3 text-sm text-red-600">{state.message}</p>
-      )}
+      {state?.ok === false && <p className="mt-3 text-sm text-red-600">{state.message}</p>}
     </div>
   );
 }

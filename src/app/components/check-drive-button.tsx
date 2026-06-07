@@ -24,20 +24,14 @@ export function CheckDriveButton() {
       {state?.ok === true && (
         <div className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm">
           <p className="font-medium text-green-800">{state.result.email}</p>
-          {state.result.displayName && (
-            <p className="text-green-700">{state.result.displayName}</p>
-          )}
+          {state.result.displayName && <p className="text-green-700">{state.result.displayName}</p>}
           {state.result.storageQuotaGB !== undefined && (
-            <p className="text-green-600">
-              Storage quota: {state.result.storageQuotaGB} GB
-            </p>
+            <p className="text-green-600">Storage quota: {state.result.storageQuotaGB} GB</p>
           )}
         </div>
       )}
 
-      {state?.ok === false && (
-        <p className="mt-3 text-sm text-red-600">{state.message}</p>
-      )}
+      {state?.ok === false && <p className="mt-3 text-sm text-red-600">{state.message}</p>}
     </div>
   );
 }

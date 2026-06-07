@@ -16,8 +16,7 @@ export class EpubParseError extends Error {
 const xmlParser = new XMLParser({
   attributeNamePrefix: "@_",
   ignoreAttributes: false,
-  isArray: (name) =>
-    ["manifest", "item", "metadata", "dc:creator", "dc:identifier"].includes(name),
+  isArray: (name) => ["manifest", "item", "metadata", "dc:creator", "dc:identifier"].includes(name),
 });
 
 export async function parseEpub(buffer: Buffer): Promise<EpubMetadata> {
@@ -134,9 +133,7 @@ function extractIsbn(identifiers: unknown[]): string | null {
     if (!id || typeof id !== "object") continue;
     const obj = id as Record<string, unknown>;
     const scheme =
-      (obj["@_opf:scheme"] as string | undefined) ??
-      (obj["@_scheme"] as string | undefined) ??
-      "";
+      (obj["@_opf:scheme"] as string | undefined) ?? (obj["@_scheme"] as string | undefined) ?? "";
     if (scheme.toLowerCase() === "isbn") {
       const text = obj["#text"];
       if (typeof text === "string" && text.trim()) return text.trim();
@@ -178,15 +175,11 @@ async function extractCover(
         const itemId = (obj["@_content"] as string | undefined) ?? "";
         if (itemId) {
           const coverItem = items.find(
-            (i) =>
-              i &&
-              typeof i === "object" &&
-              (i as Record<string, unknown>)["@_id"] === itemId
+            (i) => i && typeof i === "object" && (i as Record<string, unknown>)["@_id"] === itemId
           ) as Record<string, unknown> | undefined;
           if (coverItem) {
             const href = coverItem["@_href"] as string | undefined;
-            const mime =
-              (coverItem["@_media-type"] as string | undefined) ?? "image/jpeg";
+            const mime = (coverItem["@_media-type"] as string | undefined) ?? "image/jpeg";
             if (href) {
               const bytes = await readZipEntry(zip, opfDir + href);
               if (bytes) return { bytes, mime };

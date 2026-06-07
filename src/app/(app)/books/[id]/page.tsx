@@ -64,12 +64,8 @@ export default async function BookPage({
 
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold text-zinc-900">{book.title}</h2>
-          {book.author && (
-            <p className="mt-1 text-zinc-600">{book.author}</p>
-          )}
-          {book.isbn && (
-            <p className="mt-1 text-sm text-zinc-400">ISBN: {book.isbn}</p>
-          )}
+          {book.author && <p className="mt-1 text-zinc-600">{book.author}</p>}
+          {book.isbn && <p className="mt-1 text-sm text-zinc-400">ISBN: {book.isbn}</p>}
         </div>
       </div>
 
@@ -95,10 +91,7 @@ export default async function BookPage({
               <h2 className="mb-4 text-lg font-semibold text-zinc-900">Notes</h2>
               <div className="space-y-4">
                 {notes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="rounded-lg border border-zinc-200 bg-white p-4"
-                  >
+                  <div key={note.id} className="rounded-lg border border-zinc-200 bg-white p-4">
                     <NoteReader body={note.body} />
                   </div>
                 ))}
@@ -109,11 +102,7 @@ export default async function BookPage({
       ) : (
         <>
           <div className="mb-8 rounded-xl border border-zinc-200 bg-white p-6">
-            <TagPicker
-              bookId={book.id}
-              initialBookTags={book.tags}
-              allUserTags={allUserTags}
-            />
+            <TagPicker bookId={book.id} initialBookTags={book.tags} allUserTags={allUserTags} />
             <SuggestionsPanel bookId={book.id} />
           </div>
 

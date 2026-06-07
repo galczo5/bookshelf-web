@@ -10,7 +10,13 @@ import { listUserTags } from "@/lib/tags";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; tags?: string | string[]; q?: string; view?: string; untagged?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    tags?: string | string[];
+    q?: string;
+    view?: string;
+    untagged?: string;
+  }>;
 }) {
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
@@ -19,10 +25,7 @@ export default async function Home({
   await upsertUserByEmail(session.user.email);
   const userId = await getUserIdByEmail(session.user.email);
 
-  const [books, tags] = await Promise.all([
-    listConfirmedBooks(userId),
-    listUserTags(userId),
-  ]);
+  const [books, tags] = await Promise.all([listConfirmedBooks(userId), listUserTags(userId)]);
 
   const hasBooks = books.length > 0;
 

@@ -31,9 +31,7 @@ function isValidProposals(v: unknown): v is EnrichmentProposals {
 export async function enrichBook(input: EnrichmentInput): Promise<EnrichmentProposals> {
   const safeInput: EnrichmentInput = {
     ...input,
-    frontMatterStrings: input.frontMatterStrings
-      .slice(0, 10)
-      .map((s) => s.slice(0, 200)),
+    frontMatterStrings: input.frontMatterStrings.slice(0, 10).map((s) => s.slice(0, 200)),
   };
 
   const prompt = buildEnrichmentPrompt(safeInput);
@@ -74,10 +72,7 @@ export async function enrichBook(input: EnrichmentInput): Promise<EnrichmentProp
     return parsed;
   } catch (err) {
     if (err instanceof EnrichmentFailedError) throw err;
-    if (
-      err instanceof Error &&
-      (err.name === "AbortError" || err.name === "TimeoutError")
-    ) {
+    if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) {
       throw new EnrichmentFailedError("timeout");
     }
     throw new EnrichmentFailedError("network");

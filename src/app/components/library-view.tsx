@@ -38,9 +38,7 @@ export function LibraryView({
       const active = document.activeElement;
       const isEditable =
         active instanceof HTMLElement &&
-        (active.tagName === "INPUT" ||
-          active.tagName === "TEXTAREA" ||
-          active.isContentEditable);
+        (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable);
       if (isEditable && active !== searchInputRef.current) return;
       // re-select even if already focused — Cmd-K from within the input behaves like browser omnibar
       e.preventDefault();
@@ -114,9 +112,7 @@ export function LibraryView({
   function handleBulkInputChange(value: string) {
     setBulkInput(value);
     if (value.trim()) {
-      setBulkSuggestions(
-        tags.filter((t) => t.name.toLowerCase().includes(value.toLowerCase()))
-      );
+      setBulkSuggestions(tags.filter((t) => t.name.toLowerCase().includes(value.toLowerCase())));
     } else {
       setBulkSuggestions([]);
     }
@@ -279,9 +275,7 @@ export function LibraryView({
         <div className="py-12 text-center">
           {searchQuery ? (
             <>
-              <p className="text-sm text-zinc-400">
-                No books match &ldquo;{searchQuery}&rdquo;
-              </p>
+              <p className="text-sm text-zinc-400">No books match &ldquo;{searchQuery}&rdquo;</p>
               <button
                 type="button"
                 onClick={() => updateParams((p) => p.delete("q"))}

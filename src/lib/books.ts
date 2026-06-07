@@ -64,10 +64,7 @@ export async function listConfirmedBooks(userId: string): Promise<BookSummary[]>
   }));
 }
 
-export async function getConfirmedBook(
-  bookId: string,
-  userId: string
-): Promise<BookDetail | null> {
+export async function getConfirmedBook(bookId: string, userId: string): Promise<BookDetail | null> {
   const book = await db
     .selectFrom("books")
     .select([
@@ -152,10 +149,7 @@ export async function listTrashedBooks(userId: string): Promise<TrashedBookSumma
   }));
 }
 
-export async function getOwnedBook(
-  bookId: string,
-  userId: string
-): Promise<BookDetail | null> {
+export async function getOwnedBook(bookId: string, userId: string): Promise<BookDetail | null> {
   const book = await db
     .selectFrom("books")
     .select([

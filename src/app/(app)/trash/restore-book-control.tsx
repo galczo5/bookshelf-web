@@ -6,13 +6,7 @@ import { Dialog } from "radix-ui";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { restoreBookAction } from "@/app/actions/books";
 
-export default function RestoreBookControl({
-  bookId,
-  title,
-}: {
-  bookId: string;
-  title: string;
-}) {
+export default function RestoreBookControl({ bookId, title }: { bookId: string; title: string }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,8 +52,7 @@ export default function RestoreBookControl({
               Restore book?
             </Dialog.Title>
             <p className="mb-4 text-sm text-zinc-600">
-              Restore <span className="font-medium">{title}</span> to your
-              library?
+              Restore <span className="font-medium">{title}</span> to your library?
             </p>
 
             {error && (

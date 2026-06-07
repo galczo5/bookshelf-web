@@ -6,11 +6,7 @@ export function foldDiacritics(s: string): string {
 }
 
 export function tokenize(query: string): string[] {
-  return query
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(foldDiacritics);
+  return query.trim().split(/\s+/).filter(Boolean).map(foldDiacritics);
 }
 
 export function highlightMatches(
@@ -63,7 +59,5 @@ export function matchesQuery(
   if (tokens.length === 0) return true;
   const foldedTitle = foldDiacritics(book.title);
   const foldedAuthor = foldDiacritics(book.author ?? "");
-  return tokens.every(
-    (tok) => foldedTitle.includes(tok) || foldedAuthor.includes(tok)
-  );
+  return tokens.every((tok) => foldedTitle.includes(tok) || foldedAuthor.includes(tok));
 }

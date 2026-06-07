@@ -5,7 +5,10 @@ import type { drive_v3 } from "googleapis";
 function sanitizeSegment(raw: string | null | undefined): string {
   if (!raw || !raw.trim()) return "unknown";
   let s = raw.replace(/[/\\:*?"<>|]/g, "_");
-  s = s.replace(/\s+/g, " ").trim().replace(/^\.+|\.+$/g, "");
+  s = s
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\.+|\.+$/g, "");
   s = s.slice(0, 100).trim();
   return s || "unknown";
 }

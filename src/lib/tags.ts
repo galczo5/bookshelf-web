@@ -50,11 +50,7 @@ export async function listBookTags(bookId: string, userId: string): Promise<Tag[
     .execute();
 }
 
-export async function addTagToBook(
-  userId: string,
-  bookId: string,
-  tagName: string
-): Promise<Tag> {
+export async function addTagToBook(userId: string, bookId: string, tagName: string): Promise<Tag> {
   return db.transaction().execute(async (trx) => {
     await trx
       .insertInto("tags")
@@ -90,11 +86,7 @@ export async function removeTagFromBook(
     .where("tag_id", "=", tagId)
     .where((eb) =>
       eb.exists(
-        eb
-          .selectFrom("tags")
-          .select("id")
-          .where("id", "=", tagId)
-          .where("user_id", "=", userId)
+        eb.selectFrom("tags").select("id").where("id", "=", tagId).where("user_id", "=", userId)
       )
     )
     .execute();
@@ -195,10 +187,7 @@ export async function renameOrMergeTag(
       .expression((eb) =>
         eb
           .selectFrom("book_tags as bt")
-          .select([
-            "bt.book_id",
-            eb.val(target.id).as("tag_id"),
-          ])
+          .select(["bt.book_id", eb.val(target.id).as("tag_id")])
           .where("bt.tag_id", "=", source.id)
       )
       .onConflict((oc) => oc.columns(["book_id", "tag_id"]).doNothing())

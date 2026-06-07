@@ -6,9 +6,7 @@ import { parseEpub, EpubParseError } from "@/lib/epub/parse";
 import { getUserIdByEmail } from "@/lib/users";
 import { createDraft } from "@/lib/book-drafts";
 
-export type ImportEpubState =
-  | null
-  | { ok: false; message: string };
+export type ImportEpubState = null | { ok: false; message: string };
 
 export async function importEpubAction(
   _prev: ImportEpubState,
@@ -34,8 +32,7 @@ export async function importEpubAction(
     throw e;
   }
 
-  const derivedTitle =
-    (metadata.title ?? file.name.replace(/\.epub$/i, "").trim()) || "Untitled";
+  const derivedTitle = (metadata.title ?? file.name.replace(/\.epub$/i, "").trim()) || "Untitled";
 
   const userId = await getUserIdByEmail(session.user.email);
 

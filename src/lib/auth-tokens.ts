@@ -33,10 +33,9 @@ function decrypt(blob: Buffer): string {
 }
 
 export async function getRefreshToken(email: string): Promise<string | null> {
-  const result = await query(
-    "SELECT refresh_token_ciphertext FROM auth_tokens WHERE email = $1",
-    [email]
-  );
+  const result = await query("SELECT refresh_token_ciphertext FROM auth_tokens WHERE email = $1", [
+    email,
+  ]);
   if (result.rows.length === 0) return null;
   const blob: Buffer = result.rows[0].refresh_token_ciphertext;
   return decrypt(blob);

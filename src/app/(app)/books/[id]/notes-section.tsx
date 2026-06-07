@@ -7,11 +7,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "tiptap-markdown";
 import { NoteEditor, type NoteEditorHandle } from "./note-editor";
-import {
-  createNoteAction,
-  updateNoteAction,
-  deleteNoteAction,
-} from "@/app/actions/notes";
+import { createNoteAction, updateNoteAction, deleteNoteAction } from "@/app/actions/notes";
 import type { Note } from "@/lib/notes";
 
 export function NoteReader({ body }: { body: string }) {
@@ -110,10 +106,7 @@ export function NotesSection({
       ) : (
         <div className="space-y-4">
           {notes.map((note) => (
-            <div
-              key={note.id}
-              className="rounded-lg border border-zinc-200 bg-white p-4"
-            >
+            <div key={note.id} className="rounded-lg border border-zinc-200 bg-white p-4">
               <NoteReader body={note.body} />
               <div className="mt-3 flex gap-3">
                 <button
@@ -145,12 +138,7 @@ export function NotesSection({
               {editingNote ? "Edit note" : "New note"}
             </Dialog.Title>
 
-            {isOpen && (
-              <NoteEditor
-                ref={editorRef}
-                initialContent={editingNote?.body ?? ""}
-              />
-            )}
+            {isOpen && <NoteEditor ref={editorRef} initialContent={editingNote?.body ?? ""} />}
 
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 

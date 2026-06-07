@@ -5,19 +5,13 @@ import { auth, signOut } from "@/auth";
 import { getDriveClient } from "@/lib/drive/client";
 import { DriveAuthError } from "@/lib/drive/errors";
 import { getOrCreateLibraryFolder } from "@/lib/drive/library-folder";
-import {
-  uploadBookToDrive,
-  findAvailableFilename,
-  composeFilename,
-} from "@/lib/drive/upload";
+import { uploadBookToDrive, findAvailableFilename, composeFilename } from "@/lib/drive/upload";
 import { getUserIdByEmail } from "@/lib/users";
 import { getDraftWithBook, confirmDraft } from "@/lib/book-drafts";
 
 export type ConfirmReviewState = null | { ok: false; message: string };
 
-async function fetchCover(
-  url: string
-): Promise<{ bytes: Buffer; mime: string }> {
+async function fetchCover(url: string): Promise<{ bytes: Buffer; mime: string }> {
   if (!url.startsWith("https://")) {
     throw new Error("Cover URL must use HTTPS");
   }
@@ -103,12 +97,7 @@ export async function confirmReviewAction(
     const folderId = await getOrCreateLibraryFolder(drive, session.user.email);
     const desired = composeFilename(author || null, title);
     const finalName = await findAvailableFilename(drive, folderId, desired);
-    fileId = await uploadBookToDrive(
-      drive,
-      folderId,
-      finalName,
-      draft.stagedBytes
-    );
+    fileId = await uploadBookToDrive(drive, folderId, finalName, draft.stagedBytes);
 
     await confirmDraft(bookId, userId, {
       title,

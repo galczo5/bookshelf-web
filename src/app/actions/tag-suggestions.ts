@@ -47,13 +47,9 @@ export async function suggestTagsAction(
       existingTagNames,
     });
 
-    const existingLower = new Set(
-      allUserTags.map((t) => t.name.toLowerCase())
-    );
+    const existingLower = new Set(allUserTags.map((t) => t.name.toLowerCase()));
 
-    const filtered = result.tags.filter(
-      (p) => p.isNew || existingLower.has(p.name.toLowerCase())
-    );
+    const filtered = result.tags.filter((p) => p.isNew || existingLower.has(p.name.toLowerCase()));
 
     return { ok: true, proposals: filtered };
   } catch (err) {

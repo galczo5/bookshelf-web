@@ -105,7 +105,13 @@ export async function applyTagsToBooksAction(
 export type RenameTagActionState =
   | { ok: true; kind: "renamed"; tag: { id: string; name: string } }
   | { ok: true; kind: "merged"; target: { id: string; name: string }; mergedBookCount: number }
-  | { ok: false; kind: "needs_confirm"; target: { id: string; name: string }; targetBookCount: number; sourceBookCount: number }
+  | {
+      ok: false;
+      kind: "needs_confirm";
+      target: { id: string; name: string };
+      targetBookCount: number;
+      sourceBookCount: number;
+    }
   | { ok: false; kind: "error"; message: string };
 
 export async function renameTagAction(
@@ -121,7 +127,8 @@ export async function renameTagAction(
 
   if (!tagId) return { ok: false, kind: "error", message: "Missing tag id" };
   if (!newName.trim()) return { ok: false, kind: "error", message: "Tag name cannot be empty." };
-  if (newName.trim().length > 50) return { ok: false, kind: "error", message: "Tag name is too long (50 characters max)." };
+  if (newName.trim().length > 50)
+    return { ok: false, kind: "error", message: "Tag name is too long (50 characters max)." };
 
   try {
     const userId = await getUserIdByEmail(session.user.email);
@@ -152,7 +159,12 @@ export async function renameTagAction(
 
     const outcome = await renameOrMergeTag(userId, tagId, newName);
     if (outcome.kind === "merged") {
-      return { ok: true, kind: "merged", target: outcome.target, mergedBookCount: outcome.mergedBookCount };
+      return {
+        ok: true,
+        kind: "merged",
+        target: outcome.target,
+        mergedBookCount: outcome.mergedBookCount,
+      };
     }
     return { ok: true, kind: "renamed", tag: outcome.tag };
   } catch {

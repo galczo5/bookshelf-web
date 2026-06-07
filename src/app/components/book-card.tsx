@@ -43,11 +43,7 @@ export function BookCard({
         >
           <div className="aspect-[2/3] w-full overflow-hidden bg-zinc-100">
             {book.hasCover ? (
-              <img
-                src={coverUrl}
-                alt={book.title}
-                className="h-full w-full object-cover"
-              />
+              <img src={coverUrl} alt={book.title} className="h-full w-full object-cover" />
             ) : (
               <CoverPlaceholder title={book.title} className="h-full w-full" />
             )}
@@ -76,11 +72,7 @@ export function BookCard({
         <Link href={`/books/${book.id}`} className="flex flex-col">
           <div className="aspect-[2/3] w-full overflow-hidden bg-zinc-100">
             {book.hasCover ? (
-              <img
-                src={coverUrl}
-                alt={book.title}
-                className="h-full w-full object-cover"
-              />
+              <img src={coverUrl} alt={book.title} className="h-full w-full object-cover" />
             ) : (
               <CoverPlaceholder title={book.title} className="h-full w-full" />
             )}
@@ -133,11 +125,7 @@ export function BookCard({
         </div>
         <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded bg-zinc-100">
           {book.hasCover ? (
-            <img
-              src={coverUrl}
-              alt={book.title}
-              className="h-full w-full object-cover"
-            />
+            <img src={coverUrl} alt={book.title} className="h-full w-full object-cover" />
           ) : (
             <CoverPlaceholder title={book.title} className="h-full w-full" />
           )}
@@ -158,17 +146,10 @@ export function BookCard({
 
   return (
     <div className="group relative flex items-center gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
-      <Link
-        href={`/books/${book.id}`}
-        className="flex min-w-0 flex-1 items-center gap-3"
-      >
+      <Link href={`/books/${book.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded bg-zinc-100">
           {book.hasCover ? (
-            <img
-              src={coverUrl}
-              alt={book.title}
-              className="h-full w-full object-cover"
-            />
+            <img src={coverUrl} alt={book.title} className="h-full w-full object-cover" />
           ) : (
             <CoverPlaceholder title={book.title} className="h-full w-full" />
           )}

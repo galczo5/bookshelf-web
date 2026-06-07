@@ -3,9 +3,7 @@ import { Kysely, sql } from "kysely";
 export async function up(db: Kysely<unknown>): Promise<void> {
   await db.schema
     .alterTable("books")
-    .addColumn("review_state", "text", (col) =>
-      col.notNull().defaultTo("confirmed")
-    )
+    .addColumn("review_state", "text", (col) => col.notNull().defaultTo("confirmed"))
     .execute();
 
   await db.schema
@@ -21,9 +19,7 @@ export async function up(db: Kysely<unknown>): Promise<void> {
     .addColumn("filename", "text", (col) => col.notNull())
     .addColumn("staged_bytes", "bytea", (col) => col.notNull())
     .addColumn("proposals", "jsonb")
-    .addColumn("created_at", "timestamptz", (col) =>
-      col.notNull().defaultTo(sql`NOW()`)
-    )
+    .addColumn("created_at", "timestamptz", (col) => col.notNull().defaultTo(sql`NOW()`))
     .execute();
 }
 

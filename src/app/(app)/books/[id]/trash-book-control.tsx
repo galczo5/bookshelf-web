@@ -6,13 +6,7 @@ import { Dialog } from "radix-ui";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { trashBookAction } from "@/app/actions/books";
 
-export default function TrashBookControl({
-  bookId,
-  title,
-}: {
-  bookId: string;
-  title: string;
-}) {
+export default function TrashBookControl({ bookId, title }: { bookId: string; title: string }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,8 +51,7 @@ export default function TrashBookControl({
               Move to trash?
             </Dialog.Title>
             <p className="mb-4 text-sm text-zinc-600">
-              Move <span className="font-medium">{title}</span> to trash? You
-              can restore it later.
+              Move <span className="font-medium">{title}</span> to trash? You can restore it later.
             </p>
 
             {error && (

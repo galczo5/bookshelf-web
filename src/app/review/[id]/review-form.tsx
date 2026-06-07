@@ -1,10 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  confirmReviewAction,
-  type ConfirmReviewState,
-} from "@/app/actions/confirm-review";
+import { confirmReviewAction, type ConfirmReviewState } from "@/app/actions/confirm-review";
 import { cancelReviewAction } from "@/app/actions/cancel-review";
 import type { EnrichmentProposals, FieldProposal } from "@/lib/enrichment/types";
 
@@ -23,9 +20,7 @@ function ConfidenceChip({ level }: { level: "high" | "low" }) {
   return (
     <span
       className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${
-        level === "high"
-          ? "bg-green-100 text-green-700"
-          : "bg-amber-100 text-amber-700"
+        level === "high" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
       }`}
     >
       {level === "high" ? "High confidence" : "Low confidence"}
@@ -105,10 +100,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
     ConfirmReviewState,
     FormData
   >(confirmReviewAction, null);
-  const [, cancelAction, cancelPending] = useActionState<null, FormData>(
-    cancelReviewAction,
-    null
-  );
+  const [, cancelAction, cancelPending] = useActionState<null, FormData>(cancelReviewAction, null);
 
   const titleDefault = embedded.title || proposals?.title?.value || "";
   const authorDefault = embedded.author ?? proposals?.author?.value ?? "";
@@ -171,13 +163,9 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                     {embedded.coverDataUrl && (
                       <button
                         type="button"
-                        onClick={() =>
-                          selectCover(embedded.coverDataUrl!, "embedded")
-                        }
+                        onClick={() => selectCover(embedded.coverDataUrl!, "embedded")}
                         className={`rounded border p-0.5 ${
-                          coverChoice === "embedded"
-                            ? "border-blue-500"
-                            : "border-zinc-200"
+                          coverChoice === "embedded" ? "border-blue-500" : "border-zinc-200"
                         }`}
                         title="Embedded cover"
                       >
@@ -195,9 +183,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                         type="button"
                         onClick={() => selectCover(url, `ai:${url}`)}
                         className={`rounded border p-0.5 ${
-                          coverChoice === `ai:${url}`
-                            ? "border-blue-500"
-                            : "border-zinc-200"
+                          coverChoice === `ai:${url}` ? "border-blue-500" : "border-zinc-200"
                         }`}
                         title={url}
                       >
@@ -207,8 +193,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                           alt="AI proposed cover"
                           className="h-16 w-12 object-contain"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display =
-                              "none";
+                            (e.target as HTMLImageElement).style.display = "none";
                           }}
                         />
                       </button>
@@ -224,9 +209,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
           <div className="space-y-2">
             <p className="text-xs text-zinc-500">
               {proposals?.cover?.provenance}{" "}
-              {proposals?.cover && (
-                <ConfidenceChip level={proposals.cover.confidence} />
-              )}
+              {proposals?.cover && <ConfidenceChip level={proposals.cover.confidence} />}
             </p>
             <div className="flex flex-wrap gap-2 rounded border border-zinc-200 bg-zinc-50 p-2">
               {allCoverUrls.map((url) => (
@@ -235,9 +218,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                   type="button"
                   onClick={() => selectCover(url, `ai:${url}`)}
                   className={`rounded border p-0.5 ${
-                    coverChoice === `ai:${url}`
-                      ? "border-blue-500"
-                      : "border-zinc-200"
+                    coverChoice === `ai:${url}` ? "border-blue-500" : "border-zinc-200"
                   }`}
                   title={url}
                 >
@@ -271,12 +252,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
           proposal={proposals?.author}
         />
 
-        <TextField
-          name="isbn"
-          label="ISBN"
-          defaultValue={isbnDefault}
-          proposal={proposals?.isbn}
-        />
+        <TextField name="isbn" label="ISBN" defaultValue={isbnDefault} proposal={proposals?.isbn} />
 
         {confirmState?.ok === false && (
           <p className="text-sm text-red-600">{confirmState.message}</p>

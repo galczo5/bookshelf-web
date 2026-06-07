@@ -109,10 +109,7 @@ export async function getDraftWithBook(
   };
 }
 
-export async function deleteDraftAndBook(
-  bookId: string,
-  userId: string
-): Promise<void> {
+export async function deleteDraftAndBook(bookId: string, userId: string): Promise<void> {
   await db
     .deleteFrom("books")
     .where("id", "=", bookId)
@@ -125,11 +122,7 @@ export async function updateProposals(
   bookId: string,
   proposals: EnrichmentProposals
 ): Promise<void> {
-  await db
-    .updateTable("book_drafts")
-    .set({ proposals })
-    .where("book_id", "=", bookId)
-    .execute();
+  await db.updateTable("book_drafts").set({ proposals }).where("book_id", "=", bookId).execute();
 }
 
 export async function confirmDraft(
@@ -159,9 +152,6 @@ export async function confirmDraft(
       throw new Error(`Draft not found or already confirmed: ${bookId}`);
     }
 
-    await trx
-      .deleteFrom("book_drafts")
-      .where("book_id", "=", bookId)
-      .execute();
+    await trx.deleteFrom("book_drafts").where("book_id", "=", bookId).execute();
   });
 }

@@ -28,9 +28,7 @@ function isValidResponse(v: unknown): v is TagSuggestionsResponse {
   return Array.isArray(obj.tags);
 }
 
-export async function suggestTags(
-  input: TagSuggestionInput
-): Promise<TagSuggestionsResponse> {
+export async function suggestTags(input: TagSuggestionInput): Promise<TagSuggestionsResponse> {
   const prompt = buildTagSuggestionPrompt(input);
 
   try {
@@ -69,10 +67,7 @@ export async function suggestTags(
     return parsed;
   } catch (err) {
     if (err instanceof TagSuggestionFailedError) throw err;
-    if (
-      err instanceof Error &&
-      (err.name === "AbortError" || err.name === "TimeoutError")
-    ) {
+    if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) {
       throw new TagSuggestionFailedError("timeout");
     }
     throw new TagSuggestionFailedError("network");

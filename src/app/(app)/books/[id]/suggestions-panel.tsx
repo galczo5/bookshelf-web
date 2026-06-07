@@ -6,11 +6,7 @@ import { suggestTagsAction } from "@/app/actions/tag-suggestions";
 import { addTagAction } from "@/app/actions/tags";
 import type { TagProposal } from "@/lib/tag-suggestions/types";
 
-export function SuggestionsPanel({
-  bookId,
-}: {
-  bookId: string;
-}): React.JSX.Element {
+export function SuggestionsPanel({ bookId }: { bookId: string }): React.JSX.Element {
   const router = useRouter();
   const [proposals, setProposals] = useState<TagProposal[] | null>(null);
   const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());

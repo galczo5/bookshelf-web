@@ -22,9 +22,7 @@ export function QuickTagPopover({
   const [isPending, startTransition] = useTransition();
 
   const suggestions = input
-    ? allUserTags.filter((t) =>
-        t.name.toLowerCase().includes(input.toLowerCase())
-      )
+    ? allUserTags.filter((t) => t.name.toLowerCase().includes(input.toLowerCase()))
     : allUserTags.slice(0, 8);
 
   function handleAdd(tagName: string) {

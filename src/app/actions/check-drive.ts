@@ -2,10 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
-import {
-  checkDriveConnection,
-  type ConnectionCheckResult,
-} from "@/lib/drive/connection-check";
+import { checkDriveConnection, type ConnectionCheckResult } from "@/lib/drive/connection-check";
 import { DriveAuthError } from "@/lib/drive/errors";
 
 export type CheckDriveState =

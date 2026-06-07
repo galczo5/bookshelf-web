@@ -12,12 +12,7 @@ export async function listBookNotes(bookId: string, userId: string): Promise<Not
   const rows = await db
     .selectFrom("notes")
     .innerJoin("books", "books.id", "notes.book_id")
-    .select([
-      "notes.id",
-      "notes.body",
-      "notes.created_at",
-      "notes.updated_at",
-    ])
+    .select(["notes.id", "notes.body", "notes.created_at", "notes.updated_at"])
     .where("notes.book_id", "=", bookId)
     .where("books.user_id", "=", userId)
     .orderBy("notes.created_at", "asc")
@@ -31,11 +26,7 @@ export async function listBookNotes(bookId: string, userId: string): Promise<Not
   }));
 }
 
-export async function createNote(
-  bookId: string,
-  userId: string,
-  body: string
-): Promise<Note> {
+export async function createNote(bookId: string, userId: string, body: string): Promise<Note> {
   const book = await db
     .selectFrom("books")
     .select("id")
@@ -59,11 +50,7 @@ export async function createNote(
   };
 }
 
-export async function updateNote(
-  noteId: string,
-  userId: string,
-  body: string
-): Promise<Note> {
+export async function updateNote(noteId: string, userId: string, body: string): Promise<Note> {
   const row = await db
     .updateTable("notes")
     .set({ body, updated_at: new Date().toISOString() })

@@ -59,16 +59,10 @@ async function EnrichedReviewForm({
     redirect("/?error=enrichment_failed");
   }
 
-  return (
-    <ReviewForm bookId={bookId} embedded={embedded} proposals={proposals} />
-  );
+  return <ReviewForm bookId={bookId} embedded={embedded} proposals={proposals} />;
 }
 
-export default async function ReviewPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
@@ -98,13 +92,9 @@ export default async function ReviewPage({
   let formContent: React.ReactNode;
 
   if (draft.proposals !== null) {
-    formContent = (
-      <ReviewForm bookId={id} embedded={embedded} proposals={draft.proposals} />
-    );
+    formContent = <ReviewForm bookId={id} embedded={embedded} proposals={draft.proposals} />;
   } else if (!isMissing) {
-    formContent = (
-      <ReviewForm bookId={id} embedded={embedded} proposals={null} />
-    );
+    formContent = <ReviewForm bookId={id} embedded={embedded} proposals={null} />;
   } else {
     formContent = (
       <Suspense fallback={<ReviewFormSkeleton />}>

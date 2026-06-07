@@ -59,10 +59,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
         return token;
       }
-      if (
-        typeof token.expires_at === "number" &&
-        Date.now() < token.expires_at * 1000
-      ) {
+      if (typeof token.expires_at === "number" && Date.now() < token.expires_at * 1000) {
         return token;
       }
       return refreshAccessToken(token);

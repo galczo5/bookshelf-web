@@ -34,7 +34,11 @@ export interface BookDraftsTable {
   book_id: string;
   filename: string;
   staged_bytes: Buffer;
-  proposals: ColumnType<EnrichmentProposals | null, EnrichmentProposals | null, EnrichmentProposals | null>;
+  proposals: ColumnType<
+    EnrichmentProposals | null,
+    EnrichmentProposals | null,
+    EnrichmentProposals | null
+  >;
   created_at: Generated<Date>;
 }
 

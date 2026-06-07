@@ -46,9 +46,7 @@ export default async function TrashPage() {
                 >
                   {book.title}
                 </Link>
-                {book.author && (
-                  <p className="text-sm text-zinc-500">{book.author}</p>
-                )}
+                {book.author && <p className="text-sm text-zinc-500">{book.author}</p>}
                 <p className="text-xs text-zinc-400">
                   Trashed {book.trashedAt.toLocaleDateString()}
                 </p>

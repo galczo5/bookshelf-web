@@ -20,11 +20,7 @@ type MergedNotice = {
   mergedBookCount: number;
 };
 
-export function TagsManager({
-  initialTags,
-}: {
-  initialTags: TagWithCount[];
-}): React.JSX.Element {
+export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): React.JSX.Element {
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -125,7 +121,10 @@ export function TagsManager({
   return (
     <ul className="divide-y divide-zinc-100">
       {mergedNotice && (
-        <li key={`merged-notice-${mergedNotice.sourceTagId}`} className="flex items-center gap-4 py-3">
+        <li
+          key={`merged-notice-${mergedNotice.sourceTagId}`}
+          className="flex items-center gap-4 py-3"
+        >
           <span className="flex-1 text-sm text-green-700">
             Merged into &ldquo;{mergedNotice.target.name}&rdquo; — {mergedNotice.mergedBookCount}{" "}
             {mergedNotice.mergedBookCount === 1 ? "book" : "books"}
@@ -151,7 +150,8 @@ export function TagsManager({
                       disabled={isPending}
                       className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
                     >
-                      Merge into &ldquo;{pendingMerge.target.name}&rdquo; ({pendingMerge.targetBookCount}{" "}
+                      Merge into &ldquo;{pendingMerge.target.name}&rdquo; (
+                      {pendingMerge.targetBookCount}{" "}
                       {pendingMerge.targetBookCount === 1 ? "book" : "books"})
                     </button>
                     <button
@@ -202,9 +202,7 @@ export function TagsManager({
             </div>
           ) : (
             <>
-              <span className="flex-1 text-sm font-medium text-zinc-900">
-                {tag.name}
-              </span>
+              <span className="flex-1 text-sm font-medium text-zinc-900">{tag.name}</span>
               <span className="text-xs text-zinc-400">
                 {tag.bookCount} {tag.bookCount === 1 ? "book" : "books"}
               </span>
