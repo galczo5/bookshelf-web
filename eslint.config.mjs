@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // Playwright fixtures use a `use(value)` callback that the react-hooks rule
+    // mistakes for a React Hook. These files never run in React.
+    files: ["e2e/**"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -15,6 +15,7 @@
     "db:migrate:down": "tsx scripts/migrate.mts down",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
     "test:migrate-replay": "tsx scripts/test-migrate-replay.mts",
     "prepare": "husky"
   },
@@ -52,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
