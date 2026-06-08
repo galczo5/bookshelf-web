@@ -47,7 +47,32 @@ export async function seedConfirmedBook(input: { userId: string; title: string }
   return rows[0].id;
 }
 
-/** Remove a seeded book; notes/tags cascade. Safe to call in cleanup. */
+/**
+ * Seed a PENDING draft (a book mid-import, sitting at the review step) plus its
+ * book_drafts row. All four embedded fields are set so the review page renders
+ * the form directly instead of taking the AI-enrichment path (which calls the
+ * unreachable-in-e2e OpenAI client). `title` carries the per-test unique id so
+ * cleanup is exact. Returns the book id. book_drafts cascades on book delete.
+ */
+export async function seedPendingDraft(input: { userId: string; title: string }): Promise<string> {
+  const { rows } = await pool.query<{ id: string }>(
+    `INSERT INTO books (user_id, drive_file_id, title, author, isbn, cover_bytes, cover_mime, review_state)
+     VALUES ($1, NULL, $2, 'E2E Author', '9780000000000', $3, 'image/png', 'pending')
+     RETURNING id`,
+    [input.userId, input.title, Buffer.from("e2e-cover")]
+  );
+  const bookId = rows[0].id;
+  // stagedBytes is never read on the failing-confirm path (getDriveClient throws
+  // before the upload), so a placeholder buffer is sufficient.
+  await pool.query(
+    `INSERT INTO book_drafts (book_id, filename, staged_bytes, proposals)
+     VALUES ($1, $2, $3, NULL)`,
+    [bookId, `${input.title}.epub`, Buffer.from("e2e-epub")]
+  );
+  return bookId;
+}
+
+/** Remove a seeded book; notes/tags/drafts cascade. Safe to call in cleanup. */
 export async function deleteBook(bookId: string): Promise<void> {
   await pool.query(`DELETE FROM books WHERE id = $1`, [bookId]);
 }
