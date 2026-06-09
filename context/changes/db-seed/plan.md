@@ -259,30 +259,30 @@ No schema migration. Existing databases need no changes; the seed is additive an
 
 #### Automated
 
-- [x] 1.1 Manifest parses and has exactly 50 entries
-- [x] 1.2 Every non-incomplete coverFile exists on disk
-- [x] 1.3 Slugs are unique
-- [x] 1.4 Prettier/lint clean on the JSON
+- [x] 1.1 Manifest parses and has exactly 50 entries — 8623503
+- [x] 1.2 Every non-incomplete coverFile exists on disk — 8623503
+- [x] 1.3 Slugs are unique — 8623503
+- [x] 1.4 Prettier/lint clean on the JSON — 8623503
 
 #### Manual
 
-- [x] 1.5 Spot-check 5 covers render and match titles
-- [x] 1.6 Genres spread across the ~6–8 tags
-- [x] 1.7 All covers are public-domain/CC0
+- [x] 1.5 Spot-check 5 covers render and match titles — 8623503
+- [x] 1.6 Genres spread across the ~6–8 tags — 8623503
+- [x] 1.7 All covers are public-domain/CC0 — 8623503
 
 ### Phase 2: Generate mock epubs
 
 #### Automated
 
-- [ ] 2.1 Generator runs clean
-- [ ] 2.2 50 epub files produced
-- [ ] 2.3 Each epub is a valid zip with mimetype first/uncompressed
-- [ ] 2.4 Type check passes
-- [ ] 2.5 Lint passes
+- [x] 2.1 Generator runs clean
+- [x] 2.2 50 epub files produced
+- [x] 2.3 Each epub is a valid zip with mimetype first/uncompressed
+- [x] 2.4 Type check passes
+- [x] 2.5 Lint passes
 
 #### Manual
 
-- [ ] 2.6 Open 2–3 epubs; metadata/cover correct (and absent for incomplete)
+- [x] 2.6 Open 2–3 epubs; metadata/cover correct (and absent for incomplete)
 
 ### Phase 3: Seed script & npm wiring
 
