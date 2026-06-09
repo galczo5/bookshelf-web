@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BookOpen, Tag, Trash2, LogOut, User } from "lucide-react";
 import { signOutAction } from "@/app/actions/sign-out";
+import { SidebarImport } from "@/app/components/sidebar-import";
 import {
   Sidebar,
   SidebarContent,
@@ -52,6 +53,9 @@ export function AppSidebar({ email }: { email: string }) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarImport />
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

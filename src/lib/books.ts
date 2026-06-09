@@ -15,6 +15,7 @@ export interface BookDetail extends BookSummary {
   isbn: string | null;
   coverMime: string | null;
   trashedAt: Date | null;
+  updatedAt: Date;
 }
 
 export interface TrashedBookSummary extends BookSummary {
@@ -74,6 +75,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
       "isbn",
       "cover_mime",
       "created_at",
+      "updated_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
     ])
     .where("id", "=", bookId)
@@ -99,6 +101,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     coverMime: book.cover_mime,
     hasCover: book.has_cover,
     createdAt: book.created_at,
+    updatedAt: book.updated_at,
     trashedAt: null,
     tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
   };
@@ -159,6 +162,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
       "isbn",
       "cover_mime",
       "created_at",
+      "updated_at",
       "trashed_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
     ])
@@ -184,9 +188,49 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     coverMime: book.cover_mime,
     hasCover: book.has_cover,
     createdAt: book.created_at,
+    updatedAt: book.updated_at,
     trashedAt: book.trashed_at ?? null,
     tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
   };
+}
+
+export interface UpdateBookMetadataFields {
+  title: string;
+  author: string | null;
+  isbn: string | null;
+  /** When provided, replaces the stored cover. When omitted, the cover is left unchanged. */
+  cover?: { bytes: Buffer; mime: string };
+}
+
+export async function updateBookMetadata(
+  bookId: string,
+  userId: string,
+  fields: UpdateBookMetadataFields
+): Promise<{ updated: true } | null> {
+  const values: Record<string, unknown> = {
+    title: fields.title,
+    author: fields.author,
+    isbn: fields.isbn,
+    updated_at: sql`NOW()`,
+  };
+
+  if (fields.cover) {
+    values.cover_bytes = fields.cover.bytes;
+    values.cover_mime = fields.cover.mime;
+  }
+
+  const row = await db
+    .updateTable("books")
+    .set(values)
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .returning("id")
+    .executeTakeFirst();
+
+  if (!row) return null;
+  return { updated: true };
 }
 
 export async function trashConfirmedBook(

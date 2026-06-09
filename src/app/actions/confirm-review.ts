@@ -8,47 +8,9 @@ import { getOrCreateLibraryFolder } from "@/lib/drive/library-folder";
 import { uploadBookToDrive, findAvailableFilename, composeFilename } from "@/lib/drive/upload";
 import { getUserIdByEmail } from "@/lib/users";
 import { getDraftWithBook, confirmDraft } from "@/lib/book-drafts";
+import { fetchCover } from "@/lib/enrichment/fetch-cover";
 
 export type ConfirmReviewState = null | { ok: false; message: string };
-
-async function fetchCover(url: string): Promise<{ bytes: Buffer; mime: string }> {
-  if (!url.startsWith("https://")) {
-    throw new Error("Cover URL must use HTTPS");
-  }
-
-  const resp = await fetch(url, { signal: AbortSignal.timeout(5000) });
-  if (!resp.ok) {
-    throw new Error(`Cover fetch failed with status ${resp.status}`);
-  }
-
-  const contentType = resp.headers.get("content-type") ?? "";
-  if (!contentType.startsWith("image/")) {
-    throw new Error(`Cover URL did not return an image (got ${contentType})`);
-  }
-
-  const mime = contentType.split(";")[0].trim();
-  const reader = resp.body?.getReader();
-  if (!reader) throw new Error("No response body");
-
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  const MAX = 5 * 1024 * 1024;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (value) {
-      total += value.byteLength;
-      if (total > MAX) {
-        await reader.cancel();
-        throw new Error("Cover image exceeds 5 MB limit");
-      }
-      chunks.push(value);
-    }
-  }
-
-  return { bytes: Buffer.concat(chunks), mime };
-}
 
 export async function confirmReviewAction(
   _prev: ConfirmReviewState,
