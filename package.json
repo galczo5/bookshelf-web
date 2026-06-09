@@ -13,6 +13,7 @@
     "lint": "eslint",
     "db:migrate": "tsx scripts/migrate.mts",
     "db:migrate:down": "tsx scripts/migrate.mts down",
+    "db:seed": "tsx scripts/seed.mts",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",

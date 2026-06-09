@@ -274,30 +274,30 @@ No schema migration. Existing databases need no changes; the seed is additive an
 
 #### Automated
 
-- [x] 2.1 Generator runs clean
-- [x] 2.2 50 epub files produced
-- [x] 2.3 Each epub is a valid zip with mimetype first/uncompressed
-- [x] 2.4 Type check passes
-- [x] 2.5 Lint passes
+- [x] 2.1 Generator runs clean — abec007
+- [x] 2.2 50 epub files produced — abec007
+- [x] 2.3 Each epub is a valid zip with mimetype first/uncompressed — abec007
+- [x] 2.4 Type check passes — abec007
+- [x] 2.5 Lint passes — abec007
 
 #### Manual
 
-- [x] 2.6 Open 2–3 epubs; metadata/cover correct (and absent for incomplete)
+- [x] 2.6 Open 2–3 epubs; metadata/cover correct (and absent for incomplete) — abec007
 
 ### Phase 3: Seed script & npm wiring
 
 #### Automated
 
-- [ ] 3.1 Seed runs clean and prints "Seeded 50 books"
-- [ ] 3.2 Idempotent: second run keeps count at 50
-- [ ] 3.3 Prod guard exits non-zero without --force
-- [ ] 3.4 Missing-creds guard exits non-zero
-- [ ] 3.5 Type check + lint pass
+- [x] 3.1 Seed runs clean and prints "Seeded 50 books"
+- [x] 3.2 Idempotent: second run keeps count at 50
+- [x] 3.3 Prod guard exits non-zero without --force
+- [x] 3.4 Missing-creds guard exits non-zero
+- [x] 3.5 Type check + lint pass
 
 #### Manual
 
-- [ ] 3.6 Library shows 50 books with covers when signed in
-- [ ] 3.7 Tag filter narrows; noted books render Markdown
-- [ ] 3.8 Incomplete books show empty-state cover/author
-- [ ] 3.9 Trash + restore a seeded book succeeds (no Drive error)
-- [ ] 3.10 Non-seed imported books are untouched
+- [x] 3.6 Library shows 50 books with covers when signed in
+- [x] 3.7 Tag filter narrows; noted books render Markdown
+- [x] 3.8 Incomplete books show empty-state cover/author
+- [x] 3.9 Trash + restore a seeded book succeeds (no Drive error)
+- [x] 3.10 Non-seed imported books are untouched
