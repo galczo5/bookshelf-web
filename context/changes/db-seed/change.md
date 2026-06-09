@@ -1,7 +1,7 @@
 ---
 change_id: db-seed
 title: Add a db seed action to prefill local dev with 50 example books
-status: implementing
+status: implemented
 created: 2026-06-08
 updated: 2026-06-09
 archived_at: null

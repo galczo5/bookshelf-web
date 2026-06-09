@@ -288,16 +288,16 @@ No schema migration. Existing databases need no changes; the seed is additive an
 
 #### Automated
 
-- [x] 3.1 Seed runs clean and prints "Seeded 50 books"
-- [x] 3.2 Idempotent: second run keeps count at 50
-- [x] 3.3 Prod guard exits non-zero without --force
-- [x] 3.4 Missing-creds guard exits non-zero
-- [x] 3.5 Type check + lint pass
+- [x] 3.1 Seed runs clean and prints "Seeded 50 books" — bfbf515
+- [x] 3.2 Idempotent: second run keeps count at 50 — bfbf515
+- [x] 3.3 Prod guard exits non-zero without --force — bfbf515
+- [x] 3.4 Missing-creds guard exits non-zero — bfbf515
+- [x] 3.5 Type check + lint pass — bfbf515
 
 #### Manual
 
-- [x] 3.6 Library shows 50 books with covers when signed in
-- [x] 3.7 Tag filter narrows; noted books render Markdown
-- [x] 3.8 Incomplete books show empty-state cover/author
-- [x] 3.9 Trash + restore a seeded book succeeds (no Drive error)
-- [x] 3.10 Non-seed imported books are untouched
+- [x] 3.6 Library shows 50 books with covers when signed in — bfbf515
+- [x] 3.7 Tag filter narrows; noted books render Markdown — bfbf515
+- [x] 3.8 Incomplete books show empty-state cover/author — bfbf515
+- [x] 3.9 Trash + restore a seeded book succeeds (no Drive error) — bfbf515
+- [x] 3.10 Non-seed imported books are untouched — bfbf515
