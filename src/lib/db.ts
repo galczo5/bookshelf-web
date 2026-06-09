@@ -24,6 +24,10 @@ export interface BooksTable {
   isbn: string | null;
   cover_bytes: Buffer | null;
   cover_mime: string | null;
+  publisher: string | null;
+  language: string | null;
+  published_date: string | null;
+  description: string | null;
   trashed_at: ColumnType<Date | null, string | null | undefined, string | null>;
   review_state: Generated<"pending" | "confirmed">;
   created_at: Generated<Date>;

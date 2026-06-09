@@ -16,6 +16,10 @@ export interface BookDetail extends BookSummary {
   coverMime: string | null;
   trashedAt: Date | null;
   updatedAt: Date;
+  publisher: string | null;
+  language: string | null;
+  publishedDate: string | null;
+  description: string | null;
 }
 
 export interface TrashedBookSummary extends BookSummary {
@@ -74,6 +78,10 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
       "author",
       "isbn",
       "cover_mime",
+      "publisher",
+      "language",
+      "published_date",
+      "description",
       "created_at",
       "updated_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
@@ -99,6 +107,10 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     author: book.author,
     isbn: book.isbn,
     coverMime: book.cover_mime,
+    publisher: book.publisher,
+    language: book.language,
+    publishedDate: book.published_date,
+    description: book.description,
     hasCover: book.has_cover,
     createdAt: book.created_at,
     updatedAt: book.updated_at,
@@ -161,6 +173,10 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
       "author",
       "isbn",
       "cover_mime",
+      "publisher",
+      "language",
+      "published_date",
+      "description",
       "created_at",
       "updated_at",
       "trashed_at",
@@ -186,6 +202,10 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     author: book.author,
     isbn: book.isbn,
     coverMime: book.cover_mime,
+    publisher: book.publisher,
+    language: book.language,
+    publishedDate: book.published_date,
+    description: book.description,
     hasCover: book.has_cover,
     createdAt: book.created_at,
     updatedAt: book.updated_at,
@@ -198,6 +218,10 @@ export interface UpdateBookMetadataFields {
   title: string;
   author: string | null;
   isbn: string | null;
+  publisher?: string | null;
+  language?: string | null;
+  publishedDate?: string | null;
+  description?: string | null;
   /** When provided, replaces the stored cover. When omitted, the cover is left unchanged. */
   cover?: { bytes: Buffer; mime: string };
 }
@@ -213,6 +237,11 @@ export async function updateBookMetadata(
     isbn: fields.isbn,
     updated_at: sql`NOW()`,
   };
+
+  if ("publisher" in fields) values.publisher = fields.publisher;
+  if ("language" in fields) values.language = fields.language;
+  if ("publishedDate" in fields) values.published_date = fields.publishedDate;
+  if ("description" in fields) values.description = fields.description;
 
   if (fields.cover) {
     values.cover_bytes = fields.cover.bytes;

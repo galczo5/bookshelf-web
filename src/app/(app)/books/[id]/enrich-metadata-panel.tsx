@@ -23,12 +23,14 @@ function MetaField({
   onChange,
   proposal,
   required,
+  multiLine,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   proposal: FieldProposal<string> | null | undefined;
   required?: boolean;
+  multiLine?: boolean;
 }) {
   const [showAlts, setShowAlts] = useState(false);
   const suggestion = proposal?.value;
@@ -38,13 +40,22 @@ function MetaField({
     <div className="space-y-1">
       <label className="block text-sm">
         <span className="mb-1 block font-medium text-zinc-700">{label}</span>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          className="w-full rounded border border-zinc-300 px-3 py-2 text-sm"
-        />
+        {multiLine ? (
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={3}
+            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm"
+          />
+        ) : (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            required={required}
+            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm"
+          />
+        )}
       </label>
 
       {proposal && (
@@ -98,7 +109,16 @@ export function EnrichMetadataPanel({
   current,
 }: {
   bookId: string;
-  current: { title: string; author: string | null; isbn: string | null; hasCover: boolean };
+  current: {
+    title: string;
+    author: string | null;
+    isbn: string | null;
+    hasCover: boolean;
+    publisher: string | null;
+    language: string | null;
+    publishedDate: string | null;
+    description: string | null;
+  };
 }): React.JSX.Element {
   const router = useRouter();
   const [proposals, setProposals] = useState<EnrichmentProposals | null>(null);
@@ -109,12 +129,23 @@ export function EnrichMetadataPanel({
   const [title, setTitle] = useState(current.title);
   const [author, setAuthor] = useState(current.author ?? "");
   const [isbn, setIsbn] = useState(current.isbn ?? "");
+  const [publisher, setPublisher] = useState(current.publisher ?? "");
+  const [language, setLanguage] = useState(current.language ?? "");
+  const [publishedDate, setPublishedDate] = useState(current.publishedDate ?? "");
+  const [description, setDescription] = useState(current.description ?? "");
   // "keep" leaves the current cover; "ai:<url>" replaces it.
   const [coverChoice, setCoverChoice] = useState("keep");
 
   const hasAnyProposal =
     !!proposals &&
-    (!!proposals.title || !!proposals.author || !!proposals.isbn || !!proposals.cover);
+    (!!proposals.title ||
+      !!proposals.author ||
+      !!proposals.isbn ||
+      !!proposals.cover ||
+      !!proposals.publisher ||
+      !!proposals.language ||
+      !!proposals.publishedDate ||
+      !!proposals.description);
 
   function handleEnrich() {
     setError(null);
@@ -130,6 +161,10 @@ export function EnrichMetadataPanel({
       setTitle(current.title);
       setAuthor(current.author ?? "");
       setIsbn(current.isbn ?? "");
+      setPublisher(current.publisher ?? "");
+      setLanguage(current.language ?? "");
+      setPublishedDate(current.publishedDate ?? "");
+      setDescription(current.description ?? "");
       setCoverChoice("keep");
     });
   }
@@ -146,6 +181,10 @@ export function EnrichMetadataPanel({
     fd.set("title", title);
     fd.set("author", author);
     fd.set("isbn", isbn);
+    fd.set("publisher", publisher);
+    fd.set("language", language);
+    fd.set("publishedDate", publishedDate);
+    fd.set("description", description);
     fd.set("coverChoice", coverChoice);
     startApplying(async () => {
       const result = await applyMetadataAction(null, fd);
@@ -270,6 +309,31 @@ export function EnrichMetadataPanel({
       />
       <MetaField label="Author" value={author} onChange={setAuthor} proposal={proposals.author} />
       <MetaField label="ISBN" value={isbn} onChange={setIsbn} proposal={proposals.isbn} />
+      <MetaField
+        label="Publisher"
+        value={publisher}
+        onChange={setPublisher}
+        proposal={proposals.publisher}
+      />
+      <MetaField
+        label="Language"
+        value={language}
+        onChange={setLanguage}
+        proposal={proposals.language}
+      />
+      <MetaField
+        label="Published date"
+        value={publishedDate}
+        onChange={setPublishedDate}
+        proposal={proposals.publishedDate}
+      />
+      <MetaField
+        label="Description"
+        value={description}
+        onChange={setDescription}
+        proposal={proposals.description}
+        multiLine
+      />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

@@ -259,6 +259,30 @@
           "type": "text",
           "nullable": false,
           "default": "'confirmed'::text"
+        },
+        {
+          "name": "publisher",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "language",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "published_date",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "default": null
         }
       ],
       "constraints": [

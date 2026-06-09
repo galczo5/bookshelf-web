@@ -62,6 +62,10 @@ export async function applyMetadataAction(
   const title = String(formData.get("title") ?? "").trim();
   const author = String(formData.get("author") ?? "").trim();
   const isbn = String(formData.get("isbn") ?? "").trim();
+  const publisher = String(formData.get("publisher") ?? "").trim();
+  const language = String(formData.get("language") ?? "").trim();
+  const publishedDate = String(formData.get("publishedDate") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
   const coverChoice = String(formData.get("coverChoice") ?? "").trim();
 
   if (!bookId) return { ok: false, message: "Missing book id" };
@@ -82,6 +86,10 @@ export async function applyMetadataAction(
     title,
     author: author || null,
     isbn: isbn || null,
+    publisher: publisher || null,
+    language: language || null,
+    publishedDate: publishedDate || null,
+    description: description || null,
     cover,
   });
 

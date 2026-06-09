@@ -65,8 +65,28 @@ export default async function BookPage({
           <div>
             <h2 className="text-2xl font-bold text-zinc-900">{book.title}</h2>
             {book.author && <p className="mt-1 text-zinc-600">{book.author}</p>}
-            {book.isbn && <p className="mt-1 text-sm text-zinc-400">ISBN: {book.isbn}</p>}
           </div>
+
+          <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
+            {(
+              [
+                ["ISBN", book.isbn],
+                ["Publisher", book.publisher],
+                ["Language", book.language],
+                ["Published", book.publishedDate],
+                ["Description", book.description],
+              ] as [string, string | null][]
+            ).map(([label, value]) => (
+              <>
+                <dt key={`dt-${label}`} className="font-medium text-zinc-400">
+                  {label}
+                </dt>
+                <dd key={`dd-${label}`} className={value ? "text-zinc-700" : "text-zinc-300"}>
+                  {value ?? "<empty>"}
+                </dd>
+              </>
+            ))}
+          </dl>
 
           <div>
             {isTrashed ? (
@@ -131,6 +151,10 @@ export default async function BookPage({
                   author: book.author,
                   isbn: book.isbn,
                   hasCover: book.hasCover,
+                  publisher: book.publisher,
+                  language: book.language,
+                  publishedDate: book.publishedDate,
+                  description: book.description,
                 }}
               />
             </div>

@@ -11,10 +11,7 @@ export async function resetDb(): Promise<void> {
   await sql`TRUNCATE TABLE notes, book_tags, book_drafts, books, tags, users RESTART IDENTITY CASCADE`.execute(
     db
   );
-  await db
-    .insertInto("users")
-    .values({ id: TEST_USER.id, email: TEST_USER.email })
-    .execute();
+  await db.insertInto("users").values({ id: TEST_USER.id, email: TEST_USER.email }).execute();
 }
 
 export async function seedDraft(input: {
@@ -38,6 +35,10 @@ export async function seedDraft(input: {
       isbn: input.embedded?.isbn ?? null,
       coverBytes: input.embedded?.coverBytes ?? null,
       coverMime: input.embedded?.coverMime ?? null,
+      publisher: null,
+      language: null,
+      publishedDate: null,
+      description: null,
     },
   });
 }

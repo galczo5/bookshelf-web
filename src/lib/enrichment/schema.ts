@@ -81,7 +81,96 @@ export const enrichmentProposalsSchema = {
         { type: "null" },
       ],
     },
+    publisher: {
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            value: { type: "string" },
+            provenance: { type: "string" },
+            confidence: { type: "string", enum: ["high", "low"] },
+            alternatives: {
+              type: "array",
+              items: { type: "string" },
+              maxItems: 3,
+            },
+          },
+          required: ["value", "provenance", "confidence", "alternatives"],
+          additionalProperties: false,
+        },
+        { type: "null" },
+      ],
+    },
+    language: {
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            value: { type: "string" },
+            provenance: { type: "string" },
+            confidence: { type: "string", enum: ["high", "low"] },
+            alternatives: {
+              type: "array",
+              items: { type: "string" },
+              maxItems: 3,
+            },
+          },
+          required: ["value", "provenance", "confidence", "alternatives"],
+          additionalProperties: false,
+        },
+        { type: "null" },
+      ],
+    },
+    publishedDate: {
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            value: { type: "string" },
+            provenance: { type: "string" },
+            confidence: { type: "string", enum: ["high", "low"] },
+            alternatives: {
+              type: "array",
+              items: { type: "string" },
+              maxItems: 3,
+            },
+          },
+          required: ["value", "provenance", "confidence", "alternatives"],
+          additionalProperties: false,
+        },
+        { type: "null" },
+      ],
+    },
+    description: {
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            value: { type: "string" },
+            provenance: { type: "string" },
+            confidence: { type: "string", enum: ["high", "low"] },
+            alternatives: {
+              type: "array",
+              items: { type: "string" },
+              maxItems: 3,
+            },
+          },
+          required: ["value", "provenance", "confidence", "alternatives"],
+          additionalProperties: false,
+        },
+        { type: "null" },
+      ],
+    },
   },
-  required: ["title", "author", "isbn", "cover"],
+  required: [
+    "title",
+    "author",
+    "isbn",
+    "cover",
+    "publisher",
+    "language",
+    "publishedDate",
+    "description",
+  ],
   additionalProperties: false,
 };

@@ -30,6 +30,12 @@ export function buildEnrichmentPrompt(input: EnrichmentInput): string {
     "- Up to 3 URLs in 'urls'; 'primary' must be one of them.",
     "- Return null if no reliable cover image URL is found.",
     "",
+    "For publisher, language, publishedDate, and description:",
+    "- publisher: the original publisher name (e.g. 'Penguin Books').",
+    "- language: the primary language as a short tag or name (e.g. 'en', 'English', 'Polish').",
+    "- publishedDate: the original publication date; prefer ISO format (e.g. '2004', '2004-03-01').",
+    "- description: a short plain-text synopsis (no HTML tags). Return null if none is reliably known.",
+    "",
     "Do NOT include any content from the book body. Only use filename, title, author, and ISBN to ground your search.",
     "Do NOT invent values; if uncertain and no web results confirm a value, return null for that field."
   );

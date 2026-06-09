@@ -25,7 +25,16 @@ function getClient(): OpenAI {
 function isValidProposals(v: unknown): v is EnrichmentProposals {
   if (typeof v !== "object" || v === null) return false;
   const obj = v as Record<string, unknown>;
-  return "title" in obj && "author" in obj && "isbn" in obj && "cover" in obj;
+  return (
+    "title" in obj &&
+    "author" in obj &&
+    "isbn" in obj &&
+    "cover" in obj &&
+    "publisher" in obj &&
+    "language" in obj &&
+    "publishedDate" in obj &&
+    "description" in obj
+  );
 }
 
 export async function enrichBook(input: EnrichmentInput): Promise<EnrichmentProposals> {

@@ -11,6 +11,10 @@ export interface CreateDraftInput {
     isbn: string | null;
     coverBytes: Buffer | null;
     coverMime: string | null;
+    publisher: string | null;
+    language: string | null;
+    publishedDate: string | null;
+    description: string | null;
   };
   stagedBytes: Buffer;
 }
@@ -50,6 +54,10 @@ export async function createDraft(input: CreateDraftInput): Promise<string> {
         isbn: input.embeddedMetadata.isbn,
         cover_bytes: input.embeddedMetadata.coverBytes,
         cover_mime: input.embeddedMetadata.coverMime,
+        publisher: input.embeddedMetadata.publisher,
+        language: input.embeddedMetadata.language,
+        published_date: input.embeddedMetadata.publishedDate,
+        description: input.embeddedMetadata.description,
         review_state: "pending",
       })
       .returning("id")
