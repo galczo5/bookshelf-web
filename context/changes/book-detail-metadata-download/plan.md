@@ -237,13 +237,13 @@ Migration `0004` only adds nullable columns, so it applies to a populated DB wit
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 2bdd50d
+- [x] 2.2 Linting passes: `npm run lint` — 2bdd50d
+- [x] 2.3 Tests pass: `npm test` — 2bdd50d
 
 #### Manual
 
-- [x] 2.4 Download on a book with a Drive file saves the `.epub` locally
-- [x] 2.5 Download works for a trashed book
-- [x] 2.6 Null `drive_file_id` / non-owner id returns 404
-- [x] 2.7 Expired/disconnected Drive session sends user to re-auth or clear error
+- [x] 2.4 Download on a book with a Drive file saves the `.epub` locally — 2bdd50d
+- [x] 2.5 Download works for a trashed book — 2bdd50d
+- [x] 2.6 Null `drive_file_id` / non-owner id returns 404 — 2bdd50d
+- [x] 2.7 Expired/disconnected Drive session sends user to re-auth or clear error — 2bdd50d
