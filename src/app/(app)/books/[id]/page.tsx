@@ -67,6 +67,13 @@ export default async function BookPage({
             {book.author && <p className="mt-1 text-zinc-600">{book.author}</p>}
           </div>
 
+          <a
+            href={`/api/books/${book.id}/download`}
+            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50 self-start"
+          >
+            Download
+          </a>
+
           <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
             {(
               [

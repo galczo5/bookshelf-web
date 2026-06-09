@@ -1,7 +1,7 @@
 ---
 change_id: book-detail-metadata-download
 title: Show all metadata fields on book detail and add a Drive download button
-status: implementing
+status: implemented
 created: 2026-06-09
 updated: 2026-06-09
 archived_at: null

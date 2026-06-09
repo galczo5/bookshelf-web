@@ -219,31 +219,31 @@ Migration `0004` only adds nullable columns, so it applies to a populated DB wit
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npm run db:migrate`
-- [x] 1.2 Migration replay (up/down/up) passes: `npm run test:migrate-replay`
-- [x] 1.3 Type checking passes: `npx tsc --noEmit`
-- [x] 1.4 Linting passes: `npm run lint`
-- [x] 1.5 Unit/integration tests pass: `npm test`
+- [x] 1.1 Migration applies cleanly: `npm run db:migrate` — 8407228
+- [x] 1.2 Migration replay (up/down/up) passes: `npm run test:migrate-replay` — 8407228
+- [x] 1.3 Type checking passes: `npx tsc --noEmit` — 8407228
+- [x] 1.4 Linting passes: `npm run lint` — 8407228
+- [x] 1.5 Unit/integration tests pass: `npm test` — 8407228
 
 #### Manual
 
-- [x] 1.6 Import with full `dc:` metadata shows all four new fields after confirm
-- [x] 1.7 Import missing fields shows `<empty>` for those rows
-- [x] 1.8 Existing seed book renders new rows as `<empty>` without error
-- [x] 1.9 Details card appears for a trashed book
-- [x] 1.10 Description with embedded HTML renders as clean plain text
+- [x] 1.6 Import with full `dc:` metadata shows all four new fields after confirm — 8407228
+- [x] 1.7 Import missing fields shows `<empty>` for those rows — 8407228
+- [x] 1.8 Existing seed book renders new rows as `<empty>` without error — 8407228
+- [x] 1.9 Details card appears for a trashed book — 8407228
+- [x] 1.10 Description with embedded HTML renders as clean plain text — 8407228
 
 ### Phase 2: Drive download
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Tests pass: `npm test`
 
 #### Manual
 
-- [ ] 2.4 Download on a book with a Drive file saves the `.epub` locally
-- [ ] 2.5 Download works for a trashed book
-- [ ] 2.6 Null `drive_file_id` / non-owner id returns 404
-- [ ] 2.7 Expired/disconnected Drive session sends user to re-auth or clear error
+- [x] 2.4 Download on a book with a Drive file saves the `.epub` locally
+- [x] 2.5 Download works for a trashed book
+- [x] 2.6 Null `drive_file_id` / non-owner id returns 404
+- [x] 2.7 Expired/disconnected Drive session sends user to re-auth or clear error
