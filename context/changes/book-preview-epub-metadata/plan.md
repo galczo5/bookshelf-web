@@ -232,8 +232,8 @@ Replace the existing `<dl>` metadata block in `page.tsx` with the new `EpubMetad
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compiles: `npm run build` — 59ad814
+- [x] 2.2 Lint passes: `npm run lint` — 59ad814
 
 #### Manual
 
@@ -245,9 +245,9 @@ Replace the existing `<dl>` metadata block in `page.tsx` with the new `EpubMetad
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles: `npm run build`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 E2e harness stays green: `npm run test:e2e`
+- [x] 3.1 TypeScript compiles: `npm run build`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 E2e harness stays green: `npm run test:e2e`
 
 #### Manual
 

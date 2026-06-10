@@ -13,6 +13,7 @@ import { EnrichMetadataPanel } from "./enrich-metadata-panel";
 import { NotesSection, NoteReader } from "./notes-section";
 import TrashBookControl from "./trash-book-control";
 import RestoreBookControl from "@/app/(app)/trash/restore-book-control";
+import { EpubMetadataComparison } from "./epub-metadata-comparison";
 
 export default async function BookPage({
   params,
@@ -74,26 +75,18 @@ export default async function BookPage({
             Download
           </a>
 
-          <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
-            {(
-              [
-                ["ISBN", book.isbn],
-                ["Publisher", book.publisher],
-                ["Language", book.language],
-                ["Published", book.publishedDate],
-                ["Description", book.description],
-              ] as [string, string | null][]
-            ).map(([label, value]) => (
-              <>
-                <dt key={`dt-${label}`} className="font-medium text-zinc-400">
-                  {label}
-                </dt>
-                <dd key={`dd-${label}`} className={value ? "text-zinc-700" : "text-zinc-300"}>
-                  {value ?? "<empty>"}
-                </dd>
-              </>
-            ))}
-          </dl>
+          <EpubMetadataComparison
+            bookId={book.id}
+            db={{
+              title: book.title,
+              author: book.author,
+              isbn: book.isbn,
+              publisher: book.publisher,
+              language: book.language,
+              publishedDate: book.publishedDate,
+              description: book.description,
+            }}
+          />
 
           <div>
             {isTrashed ? (
