@@ -225,8 +225,8 @@ Replace the existing `<dl>` metadata block in `page.tsx` with the new `EpubMetad
 
 #### Manual
 
-- [ ] 1.3 `GET /api/books/<valid-id>/epub-metadata` returns `{ available: true, ... }` for owned book
-- [ ] 1.4 Returns 404 for unowned book; 401 for unauthenticated request
+- [x] 1.3 `GET /api/books/<valid-id>/epub-metadata` returns `{ available: true, ... }` for owned book
+- [x] 1.4 Returns 404 for unowned book; 401 for unauthenticated request
 
 ### Phase 2: EpubMetadataComparison client component
 
@@ -237,20 +237,20 @@ Replace the existing `<dl>` metadata block in `page.tsx` with the new `EpubMetad
 
 #### Manual
 
-- [ ] 2.3 Epub column shows skeleton then fills in
-- [ ] 2.4 Differing values show amber highlight
-- [ ] 2.5 Unavailable state renders "—" cells + note
+- [x] 2.3 Epub column shows skeleton then fills in
+- [x] 2.4 Differing values show amber highlight
+- [x] 2.5 Unavailable state renders "—" cells + note
 
 ### Phase 3: Wire into book detail page
 
 #### Automated
 
-- [x] 3.1 TypeScript compiles: `npm run build`
-- [x] 3.2 Lint passes: `npm run lint`
-- [x] 3.3 E2e harness stays green: `npm run test:e2e`
+- [x] 3.1 TypeScript compiles: `npm run build` — b9cc31b
+- [x] 3.2 Lint passes: `npm run lint` — b9cc31b
+- [x] 3.3 E2e harness stays green: `npm run test:e2e` — b9cc31b
 
 #### Manual
 
-- [ ] 3.4 Opening `/books/<id>` shows DB column immediately + epub skeleton resolving
-- [ ] 3.5 Cover/title area unchanged; no console errors
-- [ ] 3.6 Trashed books render correctly
+- [x] 3.4 Opening `/books/<id>` shows DB column immediately + epub skeleton resolving
+- [x] 3.5 Cover/title area unchanged; no console errors
+- [x] 3.6 Trashed books render correctly
