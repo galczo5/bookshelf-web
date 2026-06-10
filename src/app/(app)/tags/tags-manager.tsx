@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import { renameTagAction } from "@/app/actions/tags";
 import type { RenameTagActionState } from "@/app/actions/tags";
 import type { Tag } from "@/lib/tags";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type TagWithCount = Tag & { bookCount: number };
 
@@ -119,104 +127,118 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
   }
 
   return (
-    <ul className="divide-y divide-zinc-100">
-      {mergedNotice && (
-        <li
-          key={`merged-notice-${mergedNotice.sourceTagId}`}
-          className="flex items-center gap-4 py-3"
-        >
-          <span className="flex-1 text-sm text-green-700">
-            Merged into &ldquo;{mergedNotice.target.name}&rdquo; — {mergedNotice.mergedBookCount}{" "}
-            {mergedNotice.mergedBookCount === 1 ? "book" : "books"}
-          </span>
-        </li>
-      )}
-      {initialTags.map((tag) => (
-        <li key={tag.id} className="flex items-center gap-4 py-3">
-          {editingId === tag.id ? (
-            <div className="flex flex-1 flex-col gap-1">
-              {pendingMerge ? (
+    <div>
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-full">Tag</TableHead>
+            <TableHead className="w-28" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {mergedNotice && (
+            <TableRow key={`merged-notice-${mergedNotice.sourceTagId}`}>
+              <TableCell colSpan={2} className="text-sm text-green-700">
+                Merged into &ldquo;{mergedNotice.target.name}&rdquo; —{" "}
+                {mergedNotice.mergedBookCount}{" "}
+                {mergedNotice.mergedBookCount === 1 ? "book" : "books"}
+              </TableCell>
+            </TableRow>
+          )}
+          {initialTags.map((tag) => (
+            <TableRow key={tag.id}>
+              {editingId === tag.id ? (
+                <TableCell colSpan={2} className="py-2">
+                  <div className="flex flex-col gap-1">
+                    {pendingMerge ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editValue}
+                            readOnly
+                            className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRename(tag)}
+                            disabled={isPending}
+                            className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                          >
+                            Merge into &ldquo;{pendingMerge.target.name}&rdquo; (
+                            {pendingMerge.targetBookCount}{" "}
+                            {pendingMerge.targetBookCount === 1 ? "book" : "books"})
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEdit}
+                            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <p className="text-xs text-zinc-500">
+                          This tag ({pendingMerge.sourceBookCount}{" "}
+                          {pendingMerge.sourceBookCount === 1 ? "book" : "books"}) will be merged
+                          into the existing &ldquo;{pendingMerge.target.name}&rdquo; tag.
+                        </p>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRename(tag);
+                            if (e.key === "Escape") cancelEdit();
+                          }}
+                          autoFocus
+                          className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-900 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRename(tag)}
+                          disabled={isPending}
+                          className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEdit}
+                          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                    {error && <p className="text-xs text-red-600">{error}</p>}
+                  </div>
+                </TableCell>
+              ) : (
                 <>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={editValue}
-                      readOnly
-                      className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-500"
-                    />
+                  <TableCell className="font-medium text-zinc-900">
+                    {tag.name}
+                    <span className="ml-2 text-sm font-normal text-zinc-400">
+                      Books: {tag.bookCount}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
                     <button
                       type="button"
-                      onClick={() => handleRename(tag)}
-                      disabled={isPending}
-                      className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
-                    >
-                      Merge into &ldquo;{pendingMerge.target.name}&rdquo; (
-                      {pendingMerge.targetBookCount}{" "}
-                      {pendingMerge.targetBookCount === 1 ? "book" : "books"})
-                    </button>
-                    <button
-                      type="button"
-                      onClick={cancelEdit}
+                      onClick={() => startEdit(tag)}
                       className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
                     >
-                      Cancel
+                      Rename
                     </button>
-                  </div>
-                  <p className="text-xs text-zinc-500">
-                    This tag ({pendingMerge.sourceBookCount}{" "}
-                    {pendingMerge.sourceBookCount === 1 ? "book" : "books"}) will be merged into the
-                    existing &ldquo;{pendingMerge.target.name}&rdquo; tag.
-                  </p>
+                  </TableCell>
                 </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleRename(tag);
-                      if (e.key === "Escape") cancelEdit();
-                    }}
-                    autoFocus
-                    className="min-w-0 flex-1 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-900 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRename(tag)}
-                    disabled={isPending}
-                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={cancelEdit}
-                    className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
-                  >
-                    Cancel
-                  </button>
-                </div>
               )}
-              {error && <p className="text-xs text-red-600">{error}</p>}
-            </div>
-          ) : (
-            <>
-              <span className="flex-1 text-sm font-medium text-zinc-900">{tag.name}</span>
-              <span className="text-xs text-zinc-400">
-                {tag.bookCount} {tag.bookCount === 1 ? "book" : "books"}
-              </span>
-              <button
-                type="button"
-                onClick={() => startEdit(tag)}
-                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
-              >
-                Rename
-              </button>
-            </>
-          )}
-        </li>
-      ))}
-    </ul>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
