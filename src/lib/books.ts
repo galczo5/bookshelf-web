@@ -8,7 +8,7 @@ export interface BookSummary {
   author: string | null;
   hasCover: boolean;
   createdAt: Date;
-  tags: Array<{ id: string; name: string }>;
+  tags: Array<{ id: string; name: string; color: string }>;
 }
 
 export interface BookDetail extends BookSummary {
@@ -48,14 +48,19 @@ export async function listConfirmedBooks(userId: string): Promise<BookSummary[]>
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["book_tags.book_id", "tags.id as tag_id", "tags.name as tag_name"])
+    .select([
+      "book_tags.book_id",
+      "tags.id as tag_id",
+      "tags.name as tag_name",
+      "tags.color as tag_color",
+    ])
     .where("book_tags.book_id", "in", bookIds)
     .execute();
 
-  const tagsByBookId = new Map<string, Array<{ id: string; name: string }>>();
+  const tagsByBookId = new Map<string, Array<{ id: string; name: string; color: string }>>();
   for (const row of tagRows) {
     const list = tagsByBookId.get(row.book_id) ?? [];
-    list.push({ id: row.tag_id, name: row.tag_name });
+    list.push({ id: row.tag_id, name: row.tag_name, color: row.tag_color });
     tagsByBookId.set(row.book_id, list);
   }
 
@@ -97,7 +102,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["tags.id as tag_id", "tags.name as tag_name"])
+    .select(["tags.id as tag_id", "tags.name as tag_name", "tags.color as tag_color"])
     .where("book_tags.book_id", "=", bookId)
     .execute();
 
@@ -115,7 +120,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     createdAt: book.created_at,
     updatedAt: book.updated_at,
     trashedAt: null,
-    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
+    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name, color: r.tag_color })),
   };
 }
 
@@ -142,14 +147,19 @@ export async function listTrashedBooks(userId: string): Promise<TrashedBookSumma
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["book_tags.book_id", "tags.id as tag_id", "tags.name as tag_name"])
+    .select([
+      "book_tags.book_id",
+      "tags.id as tag_id",
+      "tags.name as tag_name",
+      "tags.color as tag_color",
+    ])
     .where("book_tags.book_id", "in", bookIds)
     .execute();
 
-  const tagsByBookId = new Map<string, Array<{ id: string; name: string }>>();
+  const tagsByBookId = new Map<string, Array<{ id: string; name: string; color: string }>>();
   for (const row of tagRows) {
     const list = tagsByBookId.get(row.book_id) ?? [];
-    list.push({ id: row.tag_id, name: row.tag_name });
+    list.push({ id: row.tag_id, name: row.tag_name, color: row.tag_color });
     tagsByBookId.set(row.book_id, list);
   }
 
@@ -192,7 +202,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["tags.id as tag_id", "tags.name as tag_name"])
+    .select(["tags.id as tag_id", "tags.name as tag_name", "tags.color as tag_color"])
     .where("book_tags.book_id", "=", bookId)
     .execute();
 
@@ -210,7 +220,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     createdAt: book.created_at,
     updatedAt: book.updated_at,
     trashedAt: book.trashed_at ?? null,
-    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
+    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name, color: r.tag_color })),
   };
 }
 

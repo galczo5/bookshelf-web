@@ -50,6 +50,7 @@ export interface TagsTable {
   id: Generated<string>;
   user_id: string;
   name: string;
+  color: ColumnType<string, string | undefined, string>;
   created_at: Generated<Date>;
 }
 

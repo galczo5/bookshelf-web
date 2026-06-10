@@ -11,6 +11,9 @@
  *   - Mirrors scripts/migrate.mts for the raw `pg` Pool + CLI-entry shape. It
  *     MUST NOT import `@/lib/db` or `@/lib/epub/parse` — both are `server-only`
  *     and throw outside a React Server context.
+ *   - The production guard checks `NODE_ENV === 'production'`, not the target
+ *     database. Running with NODE_ENV unset but DATABASE_URL pointed at a prod
+ *     DB bypasses the guard, so keep DATABASE_URL pointed at local dev.
  *   - Seed books have `drive_file_id = NULL` by design: that routes trash/restore
  *     through the DB-only branch (src/app/actions/books.ts), so it works in dev
  *     with no Drive credentials. A non-null placeholder would force a failing

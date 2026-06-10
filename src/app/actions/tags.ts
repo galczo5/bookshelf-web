@@ -11,11 +11,12 @@ import {
   findCollidingTag,
   countBookTags,
   getTagById,
+  type Tag,
 } from "@/lib/tags";
 
 export type TagActionState = {
   ok: boolean;
-  tag?: { id: string; name: string };
+  tag?: Tag;
   message?: string;
 };
 

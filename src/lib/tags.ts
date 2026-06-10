@@ -1,16 +1,18 @@
 import "server-only";
 import { sql } from "kysely";
 import { db } from "@/lib/db";
+import { randomTagColor } from "@/lib/tag-colors";
 
 export interface Tag {
   id: string;
   name: string;
+  color: string;
 }
 
 export async function listUserTags(userId: string): Promise<Tag[]> {
   return db
     .selectFrom("tags")
-    .select(["id", "name"])
+    .select(["id", "name", "color"])
     .where("user_id", "=", userId)
     .orderBy("name", "asc")
     .execute();
@@ -25,16 +27,18 @@ export async function listUserTagsWithCount(
     .select([
       "tags.id",
       "tags.name",
+      "tags.color",
       (eb) => eb.fn.count<string>("book_tags.book_id").as("book_count"),
     ])
     .where("tags.user_id", "=", userId)
-    .groupBy(["tags.id", "tags.name"])
+    .groupBy(["tags.id", "tags.name", "tags.color"])
     .orderBy("tags.name", "asc")
     .execute();
 
   return rows.map((r) => ({
     id: r.id,
     name: r.name,
+    color: r.color,
     bookCount: Number(r.book_count),
   }));
 }
@@ -43,7 +47,7 @@ export async function listBookTags(bookId: string, userId: string): Promise<Tag[
   return db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["tags.id", "tags.name"])
+    .select(["tags.id", "tags.name", "tags.color"])
     .where("book_tags.book_id", "=", bookId)
     .where("tags.user_id", "=", userId)
     .orderBy("tags.name", "asc")
@@ -54,13 +58,13 @@ export async function addTagToBook(userId: string, bookId: string, tagName: stri
   return db.transaction().execute(async (trx) => {
     await trx
       .insertInto("tags")
-      .values({ user_id: userId, name: tagName })
+      .values({ user_id: userId, name: tagName, color: randomTagColor() })
       .onConflict((oc) => oc.columns(["user_id", "name"]).doNothing())
       .execute();
 
     const tag = await trx
       .selectFrom("tags")
-      .select(["id", "name"])
+      .select(["id", "name", "color"])
       .where("user_id", "=", userId)
       .where("name", "=", tagName)
       .executeTakeFirstOrThrow();
@@ -96,7 +100,7 @@ export async function getTagById(userId: string, tagId: string): Promise<Tag | n
   return (
     (await db
       .selectFrom("tags")
-      .select(["id", "name"])
+      .select(["id", "name", "color"])
       .where("id", "=", tagId)
       .where("user_id", "=", userId)
       .executeTakeFirst()) ?? null
@@ -116,7 +120,7 @@ export async function findCollidingTag(
   return (
     (await db
       .selectFrom("tags")
-      .select(["id", "name"])
+      .select(["id", "name", "color"])
       .where("user_id", "=", userId)
       .where("id", "!=", tagId)
       .where(sql`lower(trim(name))`, "=", trimmed)
@@ -143,19 +147,20 @@ export async function renameOrMergeTag(
   const collision = await findCollidingTag(userId, tagId, newName);
 
   if (!collision) {
-    await db
+    const row = await db
       .updateTable("tags")
       .set({ name: newName.trim() })
       .where("id", "=", tagId)
       .where("user_id", "=", userId)
-      .execute();
-    return { kind: "renamed", tag: { id: tagId, name: newName.trim() } };
+      .returning("color")
+      .executeTakeFirstOrThrow();
+    return { kind: "renamed", tag: { id: tagId, name: newName.trim(), color: row.color } };
   }
 
   return db.transaction().execute(async (trx) => {
     const source = await trx
       .selectFrom("tags")
-      .select(["id", "name"])
+      .select(["id", "name", "color"])
       .where("id", "=", tagId)
       .where("user_id", "=", userId)
       .executeTakeFirst();
@@ -164,7 +169,7 @@ export async function renameOrMergeTag(
     const trimmedLower = newName.trim().toLowerCase();
     const target = await trx
       .selectFrom("tags")
-      .select(["id", "name"])
+      .select(["id", "name", "color"])
       .where("user_id", "=", userId)
       .where("id", "!=", tagId)
       .where(sql`lower(trim(name))`, "=", trimmedLower)
@@ -178,7 +183,7 @@ export async function renameOrMergeTag(
         .where("id", "=", tagId)
         .where("user_id", "=", userId)
         .execute();
-      return { kind: "renamed", tag: { id: tagId, name: newName.trim() } };
+      return { kind: "renamed", tag: { id: tagId, name: newName.trim(), color: source.color } };
     }
 
     await trx
@@ -225,7 +230,7 @@ export async function applyTagsToBooks(
     for (const name of tagNames) {
       await trx
         .insertInto("tags")
-        .values({ user_id: userId, name })
+        .values({ user_id: userId, name, color: randomTagColor() })
         .onConflict((oc) => oc.columns(["user_id", "name"]).doNothing())
         .execute();
     }
