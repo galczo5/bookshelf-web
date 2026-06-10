@@ -2,9 +2,10 @@
 
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { renameTagAction } from "@/app/actions/tags";
+import { renameTagAction, updateTagColorAction } from "@/app/actions/tags";
 import type { RenameTagActionState } from "@/app/actions/tags";
 import type { Tag } from "@/lib/tags";
+import { TagColorPicker } from "@/components/tag-color-picker";
 import {
   Table,
   TableBody,
@@ -56,6 +57,16 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
     setEditValue("");
     setError(null);
     setPendingMerge(null);
+  }
+
+  function handleColorChange(tag: Tag, color: string) {
+    const formData = new FormData();
+    formData.set("tagId", tag.id);
+    formData.set("color", color);
+    startTransition(async () => {
+      await updateTagColorAction({ ok: true }, formData);
+      router.refresh();
+    });
   }
 
   function handleRename(tag: Tag) {
@@ -131,6 +142,7 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
+            <TableHead className="w-10" />
             <TableHead className="w-full">Tag</TableHead>
             <TableHead className="w-28" />
           </TableRow>
@@ -138,7 +150,7 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
         <TableBody>
           {mergedNotice && (
             <TableRow key={`merged-notice-${mergedNotice.sourceTagId}`}>
-              <TableCell colSpan={2} className="text-sm text-green-700">
+              <TableCell colSpan={3} className="text-sm text-green-700">
                 Merged into &ldquo;{mergedNotice.target.name}&rdquo; —{" "}
                 {mergedNotice.mergedBookCount}{" "}
                 {mergedNotice.mergedBookCount === 1 ? "book" : "books"}
@@ -148,7 +160,7 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
           {initialTags.map((tag) => (
             <TableRow key={tag.id}>
               {editingId === tag.id ? (
-                <TableCell colSpan={2} className="py-2">
+                <TableCell colSpan={3} className="py-2">
                   <div className="flex flex-col gap-1">
                     {pendingMerge ? (
                       <>
@@ -218,6 +230,13 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
                 </TableCell>
               ) : (
                 <>
+                  <TableCell className="w-10">
+                    <TagColorPicker
+                      currentColor={tag.color}
+                      onSelect={(color) => handleColorChange(tag, color)}
+                      disabled={isPending}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium text-zinc-900">
                     {tag.name}
                     <span className="ml-2 text-sm font-normal text-zinc-400">

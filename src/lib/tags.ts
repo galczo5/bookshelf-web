@@ -219,6 +219,15 @@ export async function renameOrMergeTag(
   });
 }
 
+export async function updateTagColor(userId: string, tagId: string, color: string): Promise<void> {
+  await db
+    .updateTable("tags")
+    .set({ color })
+    .where("id", "=", tagId)
+    .where("user_id", "=", userId)
+    .execute();
+}
+
 export async function applyTagsToBooks(
   userId: string,
   bookIds: string[],

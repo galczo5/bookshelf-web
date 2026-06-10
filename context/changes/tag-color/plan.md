@@ -345,9 +345,9 @@ The outer pill keeps its existing `bg-zinc-100` background. `Tag` now has `color
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npm run db:migrate`
-- [x] 1.2 TypeScript compiles: `npx tsc --noEmit`
-- [x] 1.3 Existing tests pass: `npm test`
+- [x] 1.1 Migration applies cleanly: `npm run db:migrate` — 2ddf05b
+- [x] 1.2 TypeScript compiles: `npx tsc --noEmit` — 2ddf05b
+- [x] 1.3 Existing tests pass: `npm test` — 2ddf05b
 
 #### Manual
 
@@ -357,8 +357,8 @@ The outer pill keeps its existing `bg-zinc-100` background. `Tag` now has `color
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles: `npx tsc --noEmit`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compiles: `npx tsc --noEmit`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
