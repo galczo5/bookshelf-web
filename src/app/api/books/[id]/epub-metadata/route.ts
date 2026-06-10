@@ -65,14 +65,17 @@ export async function GET(
     throw err;
   }
 
-  return Response.json({
-    available: true,
-    title: metadata.title,
-    author: metadata.author,
-    isbn: metadata.isbn,
-    publisher: metadata.publisher,
-    language: metadata.language,
-    publishedDate: metadata.publishedDate,
-    description: metadata.description,
-  });
+  return Response.json(
+    {
+      available: true,
+      title: metadata.title,
+      author: metadata.author,
+      isbn: metadata.isbn,
+      publisher: metadata.publisher,
+      language: metadata.language,
+      publishedDate: metadata.publishedDate,
+      description: metadata.description,
+    },
+    { headers: { "Cache-Control": "private, max-age=300" } }
+  );
 }

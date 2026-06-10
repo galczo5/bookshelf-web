@@ -66,19 +66,23 @@ export function EpubMetadataComparison({ bookId, db }: Props): React.JSX.Element
   const [fetchFailed, setFetchFailed] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/books/${bookId}/epub-metadata`)
+    const controller = new AbortController();
+    fetch(`/api/books/${bookId}/epub-metadata`, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json() as Promise<EpubResponse>;
       })
       .then(setEpubData)
-      .catch(() => setFetchFailed(true));
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === "AbortError") return;
+        setFetchFailed(true);
+      });
+    return () => controller.abort();
   }, [bookId]);
 
   const loading = epubData === null && !fetchFailed;
   const unavailable = fetchFailed || (epubData !== null && !epubData.available);
-  const failReason =
-    epubData !== null && !epubData.available ? (epubData as { reason: string }).reason : null;
+  const failReason = epubData !== null && !epubData.available ? epubData.reason : null;
 
   const epub: NullableMetadata | null =
     epubData !== null && epubData.available === true

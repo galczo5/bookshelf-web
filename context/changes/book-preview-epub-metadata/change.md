@@ -1,7 +1,7 @@
 ---
 change_id: book-preview-epub-metadata
 title: Show epub metadata vs DB metadata side-by-side on book preview page
-status: implemented
+status: impl_reviewed
 created: 2026-06-10
 updated: 2026-06-10
 archived_at: null
