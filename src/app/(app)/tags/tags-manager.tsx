@@ -64,7 +64,11 @@ export function TagsManager({ initialTags }: { initialTags: TagWithCount[] }): R
     formData.set("tagId", tag.id);
     formData.set("color", color);
     startTransition(async () => {
-      await updateTagColorAction({ ok: true }, formData);
+      const result = await updateTagColorAction({ ok: true }, formData);
+      if (!result.ok) {
+        setError(result.message ?? "Could not update tag color.");
+        return;
+      }
       router.refresh();
     });
   }

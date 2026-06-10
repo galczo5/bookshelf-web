@@ -44,7 +44,7 @@ export function TagColorPicker({
               <button
                 key={color}
                 type="button"
-                aria-label={color}
+                aria-label={`Color ${color}`}
                 onClick={() => handleSelect(color)}
                 className="h-6 w-6 rounded-full border border-white shadow-sm transition hover:scale-110"
                 style={{

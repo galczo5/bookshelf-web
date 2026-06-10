@@ -1,7 +1,7 @@
 import "server-only";
 import { sql } from "kysely";
 import { db } from "@/lib/db";
-import { randomTagColor } from "@/lib/tag-colors";
+import { randomTagColor, TAG_COLORS } from "@/lib/tag-colors";
 
 export interface Tag {
   id: string;
@@ -220,6 +220,9 @@ export async function renameOrMergeTag(
 }
 
 export async function updateTagColor(userId: string, tagId: string, color: string): Promise<void> {
+  if (!(TAG_COLORS as readonly string[]).includes(color)) {
+    throw new Error(`Invalid tag color: ${color}`);
+  }
   await db
     .updateTable("tags")
     .set({ color })
