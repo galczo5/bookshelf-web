@@ -71,6 +71,10 @@ export function TagPicker({
             key={t.id}
             className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700"
           >
+            <span
+              className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: t.color }}
+            />
             {t.name}
             <button
               type="button"

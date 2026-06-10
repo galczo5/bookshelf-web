@@ -247,12 +247,18 @@ export function LibraryView({
               type="button"
               onClick={() => toggleTag(t.name)}
               aria-pressed={activeTagNames.has(t.name)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 activeTagNames.has(t.name)
                   ? "bg-blue-600 text-white"
                   : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
               }`}
             >
+              {!activeTagNames.has(t.name) && (
+                <span
+                  className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+                  style={{ backgroundColor: t.color }}
+                />
+              )}
               {t.name}
             </button>
           ))}

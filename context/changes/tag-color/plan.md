@@ -357,8 +357,8 @@ The outer pill keeps its existing `bg-zinc-100` background. `Tag` now has `color
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles: `npx tsc --noEmit`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compiles: `npx tsc --noEmit` — 853b30e
+- [x] 2.2 Lint passes: `npm run lint` — 853b30e
 
 #### Manual
 
@@ -371,9 +371,9 @@ The outer pill keeps its existing `bg-zinc-100` background. `Tag` now has `color
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles: `npx tsc --noEmit`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Existing Playwright e2e tests pass: `npm run test:e2e`
+- [x] 3.1 TypeScript compiles: `npx tsc --noEmit`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Existing Playwright e2e tests pass: `npm run test:e2e`
 
 #### Manual
 

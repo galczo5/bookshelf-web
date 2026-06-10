@@ -79,8 +79,12 @@ export function QuickTagPopover({
                     <button
                       type="button"
                       onClick={() => handleAdd(t.name)}
-                      className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50"
+                      className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50"
                     >
+                      <span
+                        className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+                        style={{ backgroundColor: t.color }}
+                      />
                       {t.name}
                     </button>
                   </li>
