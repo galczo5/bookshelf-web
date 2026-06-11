@@ -364,9 +364,9 @@ Import adds one extra Drive upload (the pristine copy) and at most one extra fol
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx tsc --noEmit`
-- [x] 4.2 Linting passes: `npm run lint`
-- [x] 4.3 Production build succeeds: `npm run build`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit` — 8db256d
+- [x] 4.2 Linting passes: `npm run lint` — 8db256d
+- [x] 4.3 Production build succeeds: `npm run build` — 8db256d
 
 #### Manual
 

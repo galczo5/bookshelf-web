@@ -1,7 +1,7 @@
 ---
 change_id: book-structured-file-naming
 title: Dual-copy import with structured file naming and series/part metadata
-status: implementing
+status: implemented
 created: 2026-06-11
 updated: 2026-06-11
 
