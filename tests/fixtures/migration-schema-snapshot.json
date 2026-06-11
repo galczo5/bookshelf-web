@@ -283,6 +283,42 @@
           "type": "text",
           "nullable": true,
           "default": null
+        },
+        {
+          "name": "epub_metadata_snapshot",
+          "type": "jsonb",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "series",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "part",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "drive_file_name",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "original_drive_file_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "rename_pending",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
         }
       ],
       "constraints": [
@@ -300,6 +336,11 @@
           "name": "books_pkey",
           "type": "PRIMARY KEY",
           "definition": "books_pkey"
+        },
+        {
+          "name": "books_rename_pending_not_null",
+          "type": "CHECK",
+          "definition": "books_rename_pending_not_null"
         },
         {
           "name": "books_review_state_not_null",
@@ -438,9 +479,20 @@
           "type": "timestamp with time zone",
           "nullable": false,
           "default": "now()"
+        },
+        {
+          "name": "color",
+          "type": "text",
+          "nullable": false,
+          "default": "'#94a3b8'::text"
         }
       ],
       "constraints": [
+        {
+          "name": "tags_color_not_null",
+          "type": "CHECK",
+          "definition": "tags_color_not_null"
+        },
         {
           "name": "tags_created_at_not_null",
           "type": "CHECK",

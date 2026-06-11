@@ -13,8 +13,26 @@ function sanitizeSegment(raw: string | null | undefined): string {
   return s || "unknown";
 }
 
-export function composeFilename(author: string | null, title: string): string {
-  return `${sanitizeSegment(author)} — ${sanitizeSegment(title)}.epub`;
+export function composeFilename(fields: {
+  author: string | null;
+  series: string | null;
+  part: string | null;
+  title: string;
+}): string {
+  const segments: string[] = [];
+  const author = sanitizeSegment(fields.author);
+  segments.push(author);
+  if (fields.series && fields.series.trim()) segments.push(sanitizeSegment(fields.series));
+  if (fields.part && fields.part.trim()) segments.push(sanitizeSegment(fields.part));
+  segments.push(sanitizeSegment(fields.title));
+  return segments.join(" - ") + ".epub";
+}
+
+export function sanitizeOriginalFilename(filename: string): string {
+  const lower = filename.toLowerCase();
+  const hasEpub = lower.endsWith(".epub");
+  const base = hasEpub ? filename.slice(0, filename.length - 5) : filename;
+  return sanitizeSegment(base) + ".epub";
 }
 
 export async function findAvailableFilename(

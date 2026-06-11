@@ -57,7 +57,7 @@ export async function confirmReviewAction(
   try {
     const drive = await getDriveClient();
     const folderId = await getOrCreateLibraryFolder(drive, session.user.email);
-    const desired = composeFilename(author || null, title);
+    const desired = composeFilename({ author: author || null, series: null, part: null, title });
     const finalName = await findAvailableFilename(drive, folderId, desired);
     fileId = await uploadBookToDrive(drive, folderId, finalName, draft.stagedBytes);
 

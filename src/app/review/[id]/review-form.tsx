@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Check } from "lucide-react";
 import { confirmReviewAction, type ConfirmReviewState } from "@/app/actions/confirm-review";
 import { cancelReviewAction } from "@/app/actions/cancel-review";
-import type { EnrichmentProposals, FieldProposal } from "@/lib/enrichment/types";
+import type { EnrichmentProposals, FieldProposal, ConfidenceLevel } from "@/lib/enrichment/types";
 
 export interface ReviewFormProps {
   bookId: string;
@@ -16,11 +17,13 @@ export interface ReviewFormProps {
   proposals: EnrichmentProposals | null;
 }
 
-function ConfidenceChip({ level }: { level: "high" | "low" }) {
+function ConfidenceChip({ level }: { level: ConfidenceLevel }) {
   return (
     <span
-      className={`inline-block rounded px-1.5 py-0.5 text-xs font-medium ${
-        level === "high" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+        level === "high"
+          ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+          : "bg-amber-50 text-amber-700 ring-amber-200"
       }`}
     >
       {level === "high" ? "High confidence" : "Low confidence"}
@@ -42,52 +45,88 @@ function TextField({
   required?: boolean;
 }) {
   const [value, setValue] = useState(defaultValue);
-  const [open, setOpen] = useState(false);
+  const [showAlts, setShowAlts] = useState(false);
+
+  const isAccepted = proposal != null && proposal.value !== "" && value === proposal.value;
+  const canApply = proposal != null && proposal.value !== "" && !isAccepted;
 
   return (
-    <div className="space-y-1">
-      <label className="block text-sm">
-        <span className="mb-1 block font-medium text-zinc-700">{label}</span>
-        <input
-          type="text"
-          name={name}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          required={required}
-          className="w-full rounded border border-zinc-300 px-3 py-2 text-sm"
-        />
+    <div>
+      <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-zinc-700">
+        {label}
+        {required && <span className="text-red-400">*</span>}
       </label>
 
-      {proposal && (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-          <span>{proposal.provenance}</span>
-          <ConfidenceChip level={proposal.confidence} />
-        </div>
-      )}
+      <input
+        type="text"
+        name={name}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        required={required}
+        className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-offset-0 ${
+          proposal
+            ? "border-blue-200 bg-white focus:border-blue-400 focus:ring-blue-100"
+            : "border-zinc-300 bg-white focus:border-zinc-400 focus:ring-zinc-100"
+        }`}
+      />
 
-      {proposal && proposal.alternatives.length > 0 && (
-        <div>
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            className="text-xs text-blue-600 hover:underline"
-          >
-            {open ? "Hide alternatives" : "Show other options"}
-          </button>
-          {open && (
-            <ul className="mt-1 space-y-1 rounded border border-zinc-200 bg-zinc-50 p-2">
-              {proposal.alternatives.map((alt) => (
-                <li key={alt}>
-                  <button
-                    type="button"
-                    onClick={() => setValue(alt)}
-                    className="w-full rounded px-2 py-1 text-left text-xs hover:bg-zinc-200"
-                  >
-                    {alt}
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {proposal && (
+        <div className="mt-1.5 rounded-lg border border-blue-100 bg-blue-50/70 px-3 py-2.5">
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              {isAccepted ? (
+                <div className="flex items-center gap-1.5 text-xs font-medium text-blue-700">
+                  <Check className="size-3.5 shrink-0" />
+                  AI suggestion applied
+                </div>
+              ) : (
+                <p className="line-clamp-2 text-xs font-medium leading-snug text-zinc-800">
+                  {proposal.value}
+                </p>
+              )}
+              <p className="mt-0.5 text-xs leading-snug text-zinc-500">{proposal.provenance}</p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <ConfidenceChip level={proposal.confidence} />
+              {canApply && (
+                <button
+                  type="button"
+                  onClick={() => setValue(proposal.value)}
+                  className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700 active:bg-blue-800"
+                >
+                  Accept
+                </button>
+              )}
+            </div>
+          </div>
+
+          {proposal.alternatives.length > 0 && (
+            <div className="mt-2 border-t border-blue-100 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowAlts((o) => !o)}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                {showAlts
+                  ? "Hide alternatives"
+                  : `${proposal.alternatives.length} other option${proposal.alternatives.length > 1 ? "s" : ""}`}
+              </button>
+              {showAlts && (
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {proposal.alternatives.map((alt) => (
+                    <button
+                      key={alt}
+                      type="button"
+                      onClick={() => setValue(alt)}
+                      className="rounded-full border border-blue-200 bg-white px-2.5 py-0.5 text-xs text-blue-700 transition-colors hover:bg-blue-50 active:bg-blue-100"
+                    >
+                      {alt}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -127,7 +166,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
 
   return (
     <div className="space-y-6">
-      <form action={confirmAction} className="space-y-4">
+      <form action={confirmAction} className="space-y-5">
         <input type="hidden" name="bookId" value={bookId} />
         <input type="hidden" name="coverChoice" value={coverChoice} />
 
@@ -138,34 +177,36 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
               <img
                 src={coverSrc}
                 alt="Cover"
-                className="h-40 rounded border border-zinc-200 object-contain"
+                className="h-44 rounded-lg border border-zinc-200 object-contain shadow-sm"
               />
             </div>
 
             {proposals?.cover && (
-              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-zinc-500">
                 <span>{proposals.cover.provenance}</span>
                 <ConfidenceChip level={proposals.cover.confidence} />
               </div>
             )}
 
             {(embedded.coverDataUrl || allCoverUrls.length > 0) && (
-              <div>
+              <div className="text-center">
                 <button
                   type="button"
                   onClick={() => setCoverOpen((o) => !o)}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-xs text-blue-600 hover:text-blue-800"
                 >
                   {coverOpen ? "Hide cover options" : "Show cover options"}
                 </button>
                 {coverOpen && (
-                  <div className="mt-2 flex flex-wrap gap-2 rounded border border-zinc-200 bg-zinc-50 p-2">
+                  <div className="mt-2 flex flex-wrap justify-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
                     {embedded.coverDataUrl && (
                       <button
                         type="button"
                         onClick={() => selectCover(embedded.coverDataUrl!, "embedded")}
-                        className={`rounded border p-0.5 ${
-                          coverChoice === "embedded" ? "border-blue-500" : "border-zinc-200"
+                        className={`overflow-hidden rounded-lg transition-all ${
+                          coverChoice === "embedded"
+                            ? "ring-2 ring-blue-500 ring-offset-1"
+                            : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
                         }`}
                         title="Embedded cover"
                       >
@@ -173,7 +214,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                         <img
                           src={embedded.coverDataUrl}
                           alt="Embedded cover"
-                          className="h-16 w-12 object-contain"
+                          className="h-20 w-14 object-contain"
                         />
                       </button>
                     )}
@@ -182,8 +223,10 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                         key={url}
                         type="button"
                         onClick={() => selectCover(url, `ai:${url}`)}
-                        className={`rounded border p-0.5 ${
-                          coverChoice === `ai:${url}` ? "border-blue-500" : "border-zinc-200"
+                        className={`overflow-hidden rounded-lg transition-all ${
+                          coverChoice === `ai:${url}`
+                            ? "ring-2 ring-blue-500 ring-offset-1"
+                            : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
                         }`}
                         title={url}
                       >
@@ -191,7 +234,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                         <img
                           src={url}
                           alt="AI proposed cover"
-                          className="h-16 w-12 object-contain"
+                          className="h-20 w-14 object-contain"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display = "none";
                           }}
@@ -207,18 +250,22 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
 
         {!coverSrc && allCoverUrls.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs text-zinc-500">
-              {proposals?.cover?.provenance}{" "}
-              {proposals?.cover && <ConfidenceChip level={proposals.cover.confidence} />}
-            </p>
-            <div className="flex flex-wrap gap-2 rounded border border-zinc-200 bg-zinc-50 p-2">
+            {proposals?.cover && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                <span>{proposals.cover.provenance}</span>
+                <ConfidenceChip level={proposals.cover.confidence} />
+              </div>
+            )}
+            <div className="flex flex-wrap gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
               {allCoverUrls.map((url) => (
                 <button
                   key={url}
                   type="button"
                   onClick={() => selectCover(url, `ai:${url}`)}
-                  className={`rounded border p-0.5 ${
-                    coverChoice === `ai:${url}` ? "border-blue-500" : "border-zinc-200"
+                  className={`overflow-hidden rounded-lg transition-all ${
+                    coverChoice === `ai:${url}`
+                      ? "ring-2 ring-blue-500 ring-offset-1"
+                      : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
                   }`}
                   title={url}
                 >
@@ -226,7 +273,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
                   <img
                     src={url}
                     alt="AI proposed cover"
-                    className="h-16 w-12 object-contain"
+                    className="h-20 w-14 object-contain"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
@@ -255,13 +302,15 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
         <TextField name="isbn" label="ISBN" defaultValue={isbnDefault} proposal={proposals?.isbn} />
 
         {confirmState?.ok === false && (
-          <p className="text-sm text-red-600">{confirmState.message}</p>
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
+            {confirmState.message}
+          </div>
         )}
 
         <button
           type="submit"
           disabled={confirmPending || cancelPending}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50"
         >
           {confirmPending ? "Saving…" : "Save & import"}
         </button>
@@ -272,7 +321,7 @@ export function ReviewForm({ bookId, embedded, proposals }: ReviewFormProps) {
         <button
           type="submit"
           disabled={confirmPending || cancelPending}
-          className="w-full rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-200 px-4 py-2.5 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 active:bg-zinc-100 disabled:opacity-50"
         >
           Cancel
         </button>

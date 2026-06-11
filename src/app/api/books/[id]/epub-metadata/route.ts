@@ -7,6 +7,32 @@ import { getDriveClient } from "@/lib/drive/client";
 import { DriveAuthError } from "@/lib/drive/errors";
 import { parseEpub, EpubParseError } from "@/lib/epub/parse";
 
+const CACHE = { headers: { "Cache-Control": "private, max-age=300" } };
+
+function metadataResponse(m: {
+  title: string | null;
+  author: string | null;
+  isbn: string | null;
+  publisher: string | null;
+  language: string | null;
+  publishedDate: string | null;
+  description: string | null;
+}): Response {
+  return Response.json(
+    {
+      available: true,
+      title: m.title,
+      author: m.author,
+      isbn: m.isbn,
+      publisher: m.publisher,
+      language: m.language,
+      publishedDate: m.publishedDate,
+      description: m.description,
+    },
+    CACHE
+  );
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -21,7 +47,7 @@ export async function GET(
 
   const row = await db
     .selectFrom("books")
-    .select("drive_file_id")
+    .select(["drive_file_id", "epub_metadata_snapshot"])
     .where("id", "=", id)
     .where("user_id", "=", userId)
     .executeTakeFirst();
@@ -31,7 +57,10 @@ export async function GET(
   }
 
   if (!row.drive_file_id) {
-    return Response.json({ available: false, reason: "no_drive_file" });
+    if (!row.epub_metadata_snapshot) {
+      return Response.json({ available: false, reason: "no_drive_file" });
+    }
+    return metadataResponse(row.epub_metadata_snapshot);
   }
 
   let drive: Awaited<ReturnType<typeof getDriveClient>>;
@@ -65,17 +94,5 @@ export async function GET(
     throw err;
   }
 
-  return Response.json(
-    {
-      available: true,
-      title: metadata.title,
-      author: metadata.author,
-      isbn: metadata.isbn,
-      publisher: metadata.publisher,
-      language: metadata.language,
-      publishedDate: metadata.publishedDate,
-      description: metadata.description,
-    },
-    { headers: { "Cache-Control": "private, max-age=300" } }
-  );
+  return metadataResponse(metadata);
 }

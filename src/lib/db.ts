@@ -3,6 +3,16 @@ import { ColumnType, Generated, Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import type { EnrichmentProposals } from "@/lib/enrichment/types";
 
+export interface EpubMetadataSnapshot {
+  title: string | null;
+  author: string | null;
+  isbn: string | null;
+  publisher: string | null;
+  language: string | null;
+  publishedDate: string | null;
+  description: string | null;
+}
+
 export interface AuthTokensTable {
   email: string;
   refresh_token_ciphertext: Buffer;
@@ -24,10 +34,20 @@ export interface BooksTable {
   isbn: string | null;
   cover_bytes: Buffer | null;
   cover_mime: string | null;
+  epub_metadata_snapshot: ColumnType<
+    EpubMetadataSnapshot | null,
+    EpubMetadataSnapshot | null | undefined,
+    EpubMetadataSnapshot | null
+  >;
   publisher: string | null;
   language: string | null;
   published_date: string | null;
   description: string | null;
+  series: string | null;
+  part: string | null;
+  drive_file_name: string | null;
+  original_drive_file_id: string | null;
+  rename_pending: Generated<boolean>;
   trashed_at: ColumnType<Date | null, string | null | undefined, string | null>;
   review_state: Generated<"pending" | "confirmed">;
   created_at: Generated<Date>;

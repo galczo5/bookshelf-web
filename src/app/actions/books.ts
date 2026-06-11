@@ -23,7 +23,7 @@ export async function trashBookAction(
 
   const book = await db
     .selectFrom("books")
-    .select(["drive_file_id", "title", "author"])
+    .select(["drive_file_id", "title", "author", "series", "part"])
     .where("id", "=", bookId)
     .where("user_id", "=", userId)
     .where("review_state", "=", "confirmed")
@@ -55,7 +55,12 @@ export async function trashBookAction(
   const libraryFolderId = await getOrCreateLibraryFolder(drive, session.user.email);
   const trashFolderId = await getOrCreateTrashFolder(drive, libraryFolderId);
 
-  const desired = composeFilename(book.author, book.title);
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
   const driveFileId = book.drive_file_id;
 
   let originalName: string;
@@ -137,7 +142,7 @@ export async function restoreBookAction(
 
   const book = await db
     .selectFrom("books")
-    .select(["drive_file_id", "title", "author"])
+    .select(["drive_file_id", "title", "author", "series", "part"])
     .where("id", "=", bookId)
     .where("user_id", "=", userId)
     .where("review_state", "=", "confirmed")
@@ -175,7 +180,14 @@ export async function restoreBookAction(
   let originalName: string;
   try {
     const nameRes = await drive.files.get({ fileId: driveFileId, fields: "name" });
-    originalName = nameRes.data.name ?? composeFilename(book.author, book.title);
+    originalName =
+      nameRes.data.name ??
+      composeFilename({
+        author: book.author,
+        series: book.series,
+        part: book.part,
+        title: book.title,
+      });
   } catch (e: unknown) {
     const code = (e as { code?: number }).code;
     if (code === 404) {
@@ -193,7 +205,12 @@ export async function restoreBookAction(
     return { ok: false, message: `Drive file lookup failed: ${msg}` };
   }
 
-  const desired = composeFilename(book.author, book.title);
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
   const finalName = await findAvailableFilename(drive, libraryFolderId, desired);
 
   let driveMoveDone = false;

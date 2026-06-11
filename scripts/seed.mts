@@ -40,6 +40,19 @@ type Book = {
   title: string;
   author: string | null;
   isbn: string | null;
+  publisher?: string | null;
+  publishedDate?: string | null;
+  language?: string | null;
+  description?: string | null;
+  epubMetadata?: {
+    title: string | null;
+    author: string | null;
+    isbn: string | null;
+    publisher: string | null;
+    language: string | null;
+    publishedDate: string | null;
+    description: string | null;
+  };
   coverFile: string | null;
   coverSourceUrl: string | null;
   tags: string[];
@@ -131,13 +144,28 @@ async function seed(pool: Pool, email: string, books: Book[]): Promise<void> {
         ? readFileSync(path.join(COVERS_DIR, book.coverFile!))
         : null;
       const coverMime = hasCover(book) ? mimeForCover(book.coverFile!) : null;
+      const epubSnapshot = book.epubMetadata ? JSON.stringify(book.epubMetadata) : null;
 
       const { rows } = await client.query<{ id: string }>(
         `INSERT INTO books
-           (user_id, drive_file_id, title, author, isbn, cover_bytes, cover_mime, review_state)
-         VALUES ($1, NULL, $2, $3, $4, $5, $6, 'confirmed')
+           (user_id, drive_file_id, title, author, isbn,
+            publisher, language, published_date, description,
+            cover_bytes, cover_mime, epub_metadata_snapshot, review_state)
+         VALUES ($1, NULL, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'confirmed')
          RETURNING id`,
-        [userId, book.title, hasAuthor(book) ? book.author : null, book.isbn, coverBytes, coverMime]
+        [
+          userId,
+          book.title,
+          hasAuthor(book) ? book.author : null,
+          book.isbn,
+          book.publisher ?? null,
+          book.language ?? null,
+          book.publishedDate ?? null,
+          book.description ?? null,
+          coverBytes,
+          coverMime,
+          epubSnapshot,
+        ]
       );
       const bookId = rows[0].id;
 

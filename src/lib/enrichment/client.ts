@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import type { EnrichmentInput, EnrichmentProposals } from "./types";
 import { enrichmentProposalsSchema } from "./schema";
 import { buildEnrichmentPrompt } from "./prompt";
+import { fetchOpenLibraryData } from "./open-library";
 
 export class EnrichmentFailedError extends Error {
   code = "ENRICHMENT_FAILED" as const;
@@ -43,7 +44,13 @@ export async function enrichBook(input: EnrichmentInput): Promise<EnrichmentProp
     frontMatterStrings: input.frontMatterStrings.slice(0, 10).map((s) => s.slice(0, 200)),
   };
 
-  const prompt = buildEnrichmentPrompt(safeInput);
+  const openLibrary = input.embeddedIsbn
+    ? null
+    : await fetchOpenLibraryData(input.embeddedTitle ?? input.filename, input.embeddedAuthor).catch(
+        () => null
+      );
+
+  const prompt = buildEnrichmentPrompt(safeInput, openLibrary);
 
   try {
     const client = getClient();
@@ -84,6 +91,7 @@ export async function enrichBook(input: EnrichmentInput): Promise<EnrichmentProp
     if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) {
       throw new EnrichmentFailedError("timeout");
     }
+    console.error("[enrichBook] unexpected error:", err);
     throw new EnrichmentFailedError("network");
   }
 }

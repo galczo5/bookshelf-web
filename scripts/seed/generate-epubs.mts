@@ -37,6 +37,9 @@ type Book = {
   title: string;
   author: string | null;
   isbn: string | null;
+  publisher?: string | null;
+  publishedDate?: string | null;
+  description?: string | null;
   coverFile: string | null;
   incomplete?: ("author" | "cover")[];
 };
@@ -78,6 +81,10 @@ function contentOpf(book: Book, cover: { file: string; mime: string } | null): s
   if (book.isbn) {
     metadata.push(`    <dc:identifier scheme="ISBN">${xml(book.isbn)}</dc:identifier>`);
   }
+  if (book.publisher) metadata.push(`    <dc:publisher>${xml(book.publisher)}</dc:publisher>`);
+  if (book.publishedDate) metadata.push(`    <dc:date>${xml(book.publishedDate)}</dc:date>`);
+  if (book.description)
+    metadata.push(`    <dc:description>${xml(book.description)}</dc:description>`);
   const manifest = [];
   if (cover) {
     manifest.push(

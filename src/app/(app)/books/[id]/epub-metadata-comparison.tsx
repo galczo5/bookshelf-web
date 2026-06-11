@@ -32,14 +32,13 @@ interface Props {
   db: DbMetadata;
 }
 
-const ROWS: { label: string; key: keyof DbMetadata }[] = [
+const COMPACT_ROWS: { label: string; key: keyof DbMetadata }[] = [
   { label: "Title", key: "title" },
   { label: "Author", key: "author" },
   { label: "ISBN", key: "isbn" },
   { label: "Publisher", key: "publisher" },
   { label: "Language", key: "language" },
   { label: "Published", key: "publishedDate" },
-  { label: "Description", key: "description" },
 ];
 
 const REASON_LABELS: Record<string, string> = {
@@ -58,12 +57,13 @@ function valuesMatch(a: string | null | undefined, b: string | null | undefined)
 }
 
 function Skeleton() {
-  return <div className="h-4 w-20 animate-pulse rounded bg-zinc-200" />;
+  return <span className="inline-block h-3.5 w-16 animate-pulse rounded bg-zinc-200" />;
 }
 
 export function EpubMetadataComparison({ bookId, db }: Props): React.JSX.Element {
   const [epubData, setEpubData] = useState<EpubResponse | null>(null);
   const [fetchFailed, setFetchFailed] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -97,34 +97,57 @@ export function EpubMetadataComparison({ bookId, db }: Props): React.JSX.Element
         }
       : null;
 
+  const showEpubCol = !unavailable;
+  const longDesc = (db.description?.length ?? 0) > 160;
+
   return (
     <div>
-      <div className="grid grid-cols-[max-content_1fr_1fr] gap-x-4 text-sm">
-        <div />
-        <div className="pb-2 font-medium text-zinc-400">In library</div>
-        <div className="pb-2 font-medium text-zinc-400">From epub</div>
+      {showEpubCol && (
+        <div className="mb-1 flex gap-4 text-xs font-medium text-zinc-400">
+          <div className="w-20 shrink-0" />
+          <div className="flex-1">Library</div>
+          <div className="flex-1">Epub</div>
+        </div>
+      )}
 
-        {ROWS.map(({ label, key }) => {
+      <div className="divide-y divide-zinc-100">
+        {COMPACT_ROWS.map(({ label, key }) => {
           const dbVal = db[key] as string | null;
           const epubVal = epub ? (epub[key] as string | null) : null;
           const differs = epub !== null && !valuesMatch(dbVal, epubVal);
 
           return (
             <Fragment key={key}>
-              <div className="py-1 pr-2 font-medium text-zinc-400">{label}</div>
-              <div
-                className={`py-1 ${dbVal ? "text-zinc-700" : "text-zinc-300"} ${differs ? "rounded bg-amber-50 px-1 text-amber-900" : ""}`}
-              >
-                {displayValue(dbVal)}
-              </div>
-              <div className={`py-1 ${differs ? "rounded bg-amber-50 px-1 text-amber-900" : ""}`}>
-                {loading ? (
-                  <Skeleton />
-                ) : unavailable ? (
-                  <span className="text-zinc-300">—</span>
-                ) : (
-                  <span className={epubVal ? "text-zinc-700" : "text-zinc-300"}>
-                    {displayValue(epubVal)}
+              <div className="flex items-baseline gap-4 py-1.5">
+                <span className="w-20 shrink-0 text-xs font-medium text-zinc-400">{label}</span>
+                <span
+                  className={`flex-1 min-w-0 text-sm ${
+                    dbVal
+                      ? differs
+                        ? "font-medium text-amber-700"
+                        : "text-zinc-800"
+                      : "text-zinc-300"
+                  }`}
+                >
+                  {displayValue(dbVal)}
+                </span>
+                {showEpubCol && (
+                  <span className="flex-1 min-w-0 text-sm">
+                    {loading ? (
+                      <Skeleton />
+                    ) : (
+                      <span
+                        className={
+                          epubVal
+                            ? differs
+                              ? "font-medium text-amber-700"
+                              : "text-zinc-400"
+                            : "text-zinc-300"
+                        }
+                      >
+                        {displayValue(epubVal)}
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
@@ -132,6 +155,32 @@ export function EpubMetadataComparison({ bookId, db }: Props): React.JSX.Element
           );
         })}
       </div>
+
+      {db.description && (
+        <div className="mt-2 border-t border-zinc-100 pt-2.5">
+          <div className="flex items-start gap-4">
+            <span className="w-20 shrink-0 pt-px text-xs font-medium text-zinc-400">
+              Description
+            </span>
+            <div className="min-w-0 flex-1">
+              <p
+                className={`text-sm leading-relaxed text-zinc-700 ${descExpanded ? "" : "line-clamp-3"}`}
+              >
+                {db.description}
+              </p>
+              {longDesc && (
+                <button
+                  type="button"
+                  onClick={() => setDescExpanded((o) => !o)}
+                  className="mt-1 text-xs text-zinc-400 hover:text-zinc-600"
+                >
+                  {descExpanded ? "Show less" : "Show more"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {unavailable && (
         <p className="mt-2 text-xs italic text-zinc-400">

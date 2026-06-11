@@ -68,13 +68,6 @@ export default async function BookPage({
             {book.author && <p className="mt-1 text-zinc-600">{book.author}</p>}
           </div>
 
-          <a
-            href={`/api/books/${book.id}/download`}
-            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50 self-start"
-          >
-            Download
-          </a>
-
           <EpubMetadataComparison
             bookId={book.id}
             db={{
@@ -88,7 +81,13 @@ export default async function BookPage({
             }}
           />
 
-          <div>
+          <div className="flex items-center gap-2">
+            <a
+              href={`/api/books/${book.id}/download`}
+              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50"
+            >
+              Download
+            </a>
             {isTrashed ? (
               <RestoreBookControl bookId={book.id} title={book.title} />
             ) : (
