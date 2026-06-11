@@ -349,9 +349,9 @@ Import adds one extra Drive upload (the pristine copy) and at most one extra fol
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Unit/integration tests pass: `npm test` and `npm run test:integration`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — f44c218
+- [x] 3.2 Linting passes: `npm run lint` — f44c218
+- [x] 3.3 Unit/integration tests pass: `npm test` and `npm run test:integration` — f44c218
 
 #### Manual
 
@@ -364,9 +364,9 @@ Import adds one extra Drive upload (the pristine copy) and at most one extra fol
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Production build succeeds: `npm run build`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Production build succeeds: `npm run build`
 
 #### Manual
 

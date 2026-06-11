@@ -12,6 +12,8 @@ import { SuggestionsPanel } from "./suggestions-panel";
 import { EnrichMetadataPanel } from "./enrich-metadata-panel";
 import { NotesSection, NoteReader } from "./notes-section";
 import TrashBookControl from "./trash-book-control";
+import RenameRetryControl from "./rename-retry-control";
+import EditMetadataDialog from "./edit-metadata-dialog";
 import RestoreBookControl from "@/app/(app)/trash/restore-book-control";
 import { EpubMetadataComparison } from "./epub-metadata-comparison";
 
@@ -47,25 +49,37 @@ export default async function BookPage({
         </div>
       )}
 
+      {!isTrashed && book.renamePending && (
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-2 text-sm text-yellow-800">
+          <span>File name on Drive is out of date.</span>
+          <RenameRetryControl bookId={book.id} />
+        </div>
+      )}
+
       {/* Cover with title/author beside it, trash action */}
-      <div className="flex w-full gap-5">
-        <div className="aspect-[2/3] w-44 shrink-0 overflow-hidden rounded-xl shadow-md sm:w-56">
+      <div className="flex w-full items-stretch gap-5">
+        <div className="shrink-0">
           {book.hasCover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`/api/books/${book.id}/cover?v=${book.updatedAt.getTime()}`}
               alt={book.title}
-              className="h-full w-full object-cover"
+              className="rounded-xl shadow-md"
             />
           ) : (
-            <CoverPlaceholder title={book.title} className="h-full w-full" />
+            <CoverPlaceholder title={book.title} className="h-full min-w-32 rounded-xl shadow-md" />
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <div className="flex grow flex-col gap-4">
           <div>
             <h2 className="text-2xl font-bold text-zinc-900">{book.title}</h2>
-            {book.author && <p className="mt-1 text-zinc-600">{book.author}</p>}
+            {book.series && (
+              <p className="mt-1 text-sm text-zinc-500">
+                {book.part ? `${book.series} · Part ${book.part}` : book.series}
+              </p>
+            )}
+            {book.author && <p className="mt-0.5 text-zinc-600">{book.author}</p>}
           </div>
 
           <EpubMetadataComparison
@@ -88,6 +102,22 @@ export default async function BookPage({
             >
               Download
             </a>
+            {!isTrashed && (
+              <EditMetadataDialog
+                bookId={book.id}
+                initial={{
+                  title: book.title,
+                  author: book.author,
+                  isbn: book.isbn,
+                  publisher: book.publisher,
+                  language: book.language,
+                  publishedDate: book.publishedDate,
+                  description: book.description,
+                  series: book.series,
+                  part: book.part,
+                }}
+              />
+            )}
             {isTrashed ? (
               <RestoreBookControl bookId={book.id} title={book.title} />
             ) : (
@@ -154,6 +184,8 @@ export default async function BookPage({
                   language: book.language,
                   publishedDate: book.publishedDate,
                   description: book.description,
+                  series: book.series,
+                  part: book.part,
                 }}
               />
             </div>

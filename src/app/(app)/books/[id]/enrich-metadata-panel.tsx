@@ -147,6 +147,8 @@ export function EnrichMetadataPanel({
     language: string | null;
     publishedDate: string | null;
     description: string | null;
+    series: string | null;
+    part: string | null;
   };
 }): React.JSX.Element {
   const router = useRouter();
@@ -162,6 +164,8 @@ export function EnrichMetadataPanel({
   const [language, setLanguage] = useState(current.language ?? "");
   const [publishedDate, setPublishedDate] = useState(current.publishedDate ?? "");
   const [description, setDescription] = useState(current.description ?? "");
+  const [series, setSeries] = useState(current.series ?? "");
+  const [part, setPart] = useState(current.part ?? "");
   // "keep" leaves the current cover; "ai:<url>" replaces it.
   const [coverChoice, setCoverChoice] = useState("keep");
 
@@ -194,6 +198,8 @@ export function EnrichMetadataPanel({
       setLanguage(current.language ?? "");
       setPublishedDate(current.publishedDate ?? "");
       setDescription(current.description ?? "");
+      setSeries(current.series ?? "");
+      setPart(current.part ?? "");
       setCoverChoice("keep");
     });
   }
@@ -214,6 +220,8 @@ export function EnrichMetadataPanel({
     fd.set("language", language);
     fd.set("publishedDate", publishedDate);
     fd.set("description", description);
+    fd.set("series", series);
+    fd.set("part", part);
     fd.set("coverChoice", coverChoice);
     startApplying(async () => {
       const result = await applyMetadataAction(null, fd);
@@ -256,27 +264,12 @@ export function EnrichMetadataPanel({
     );
   }
 
-  if (!hasAnyProposal) {
-    return (
-      <div className="space-y-3">
-        <p className="text-sm text-zinc-600">
-          AI found no changes to suggest — the current metadata looks complete.
-        </p>
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-50"
-        >
-          Dismiss
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-5">
       <p className="text-sm text-zinc-500">
-        Review the proposals below. Edit any field, then apply — nothing is saved until you do.
+        {hasAnyProposal
+          ? "Review the proposals below. Edit any field, then apply — nothing is saved until you do."
+          : "AI found no changes to suggest — the current metadata looks complete. You can still edit series and part below."}
       </p>
 
       {proposals.cover && coverUrls.length > 0 && (
@@ -367,6 +360,8 @@ export function EnrichMetadataPanel({
         proposal={proposals.description}
         multiLine
       />
+      <MetaField label="Series" value={series} onChange={setSeries} proposal={undefined} />
+      <MetaField label="Part" value={part} onChange={setPart} proposal={undefined} />
 
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
