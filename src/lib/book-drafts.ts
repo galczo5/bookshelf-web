@@ -40,6 +40,8 @@ export interface ConfirmDraftInput {
   coverBytes: Buffer | null;
   coverMime: string | null;
   driveFileId: string;
+  driveFileName: string;
+  originalDriveFileId: string;
 }
 
 export async function createDraft(input: CreateDraftInput): Promise<string> {
@@ -143,6 +145,8 @@ export async function confirmDraft(
       .updateTable("books")
       .set({
         drive_file_id: confirmed.driveFileId,
+        drive_file_name: confirmed.driveFileName,
+        original_drive_file_id: confirmed.originalDriveFileId,
         title: confirmed.title,
         author: confirmed.author,
         isbn: confirmed.isbn,

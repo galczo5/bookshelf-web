@@ -56,8 +56,12 @@ describe("confirmReviewAction", () => {
     const state = await readState(bookId);
     expect(state.reviewState).toBe("confirmed");
     expect(state.driveFileId).not.toBeNull();
+    expect(state.driveFileName).not.toBeNull();
+    expect(state.originalDriveFileId).not.toBeNull();
+    expect(state.renamePending).toBe(false);
     expect(state.hasDraft).toBe(false);
     expect(driveFake.files.has(state.driveFileId!)).toBe(true);
+    expect(driveFake.files.has(state.originalDriveFileId!)).toBe(true);
   });
 
   it("mid-upload Drive failure: books row stays pending, draft present, delete never called", async () => {
@@ -101,9 +105,7 @@ describe("confirmReviewAction", () => {
     });
 
     // Force confirmDraft to fail after the Drive upload has already succeeded.
-    vi.mocked(confirmDraft).mockRejectedValueOnce(
-      new Error("simulated DB failure")
-    );
+    vi.mocked(confirmDraft).mockRejectedValueOnce(new Error("simulated DB failure"));
 
     const fd = new FormData();
     fd.set("bookId", bookId);
@@ -122,8 +124,8 @@ describe("confirmReviewAction", () => {
     expect(state.driveFileId).toBeNull();
     expect(state.hasDraft).toBe(true);
 
-    // Rollback delete was called and succeeded — Drive fake is now empty.
-    expect(driveFake.deleteCallCount).toBe(1);
+    // Rollback deleted both the working copy and the original copy.
+    expect(driveFake.deleteCallCount).toBe(2);
     expect(driveFake.files.size).toBe(0);
   });
 
@@ -134,9 +136,7 @@ describe("confirmReviewAction", () => {
       stagedBytes: fixtureBytes,
     });
 
-    vi.mocked(confirmDraft).mockRejectedValueOnce(
-      new Error("simulated DB failure")
-    );
+    vi.mocked(confirmDraft).mockRejectedValueOnce(new Error("simulated DB failure"));
     // The rollback delete will also fail — orphan file is intentionally left behind.
     // This is consistent with the app-independent library guardrail: the file remains
     // navigable in Google Drive even without the app. See epub-import-to-drive plan §rollback.
@@ -159,8 +159,8 @@ describe("confirmReviewAction", () => {
     expect(state.driveFileId).toBeNull();
     expect(state.hasDraft).toBe(true);
 
-    // Orphan: rollback delete was attempted but failed → file still present in Drive.
-    expect(driveFake.deleteCallCount).toBe(1);
+    // First rollback delete failed (working copy orphaned); second succeeded (original removed).
+    expect(driveFake.deleteCallCount).toBe(2);
     expect(driveFake.files.size).toBeGreaterThanOrEqual(1);
   });
 

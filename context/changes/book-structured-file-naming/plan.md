@@ -321,29 +321,29 @@ Import adds one extra Drive upload (the pristine copy) and at most one extra fol
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npm run db:migrate`
-- [x] 1.2 Migration down/up replays cleanly: `npm run test:migrate-replay`
-- [x] 1.3 Type checking passes: `npx tsc --noEmit`
-- [x] 1.4 Linting passes: `npm run lint`
-- [x] 1.5 `composeFilename` + `sanitizeOriginalFilename` unit tests pass: `npm test`
+- [x] 1.1 Migration applies cleanly: `npm run db:migrate` — aa9fe70
+- [x] 1.2 Migration down/up replays cleanly: `npm run test:migrate-replay` — aa9fe70
+- [x] 1.3 Type checking passes: `npx tsc --noEmit` — aa9fe70
+- [x] 1.4 Linting passes: `npm run lint` — aa9fe70
+- [x] 1.5 `composeFilename` + `sanitizeOriginalFilename` unit tests pass: `npm test` — aa9fe70
 
 #### Manual
 
-- [x] 1.6 `books` table shows the five new columns with expected nullability/defaults
+- [x] 1.6 `books` table shows the five new columns with expected nullability/defaults — aa9fe70
 
 ### Phase 2: Dual-copy import
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Existing import/integration tests pass: `npm run test:integration`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Existing import/integration tests pass: `npm run test:integration`
 
 #### Manual
 
-- [ ] 2.4 Import produces both the working copy and the `Original files/` pristine copy on Drive
-- [ ] 2.5 Book row has `drive_file_id`, `drive_file_name`, `original_drive_file_id`; `rename_pending` false
-- [ ] 2.6 Forced second-upload failure leaves no orphaned working copy and no confirmed book row
+- [x] 2.4 Import produces both the working copy and the `Original files/` pristine copy on Drive
+- [x] 2.5 Book row has `drive_file_id`, `drive_file_name`, `original_drive_file_id`; `rename_pending` false
+- [x] 2.6 Forced second-upload failure leaves no orphaned working copy and no confirmed book row
 
 ### Phase 3: Rename-on-edit, retry & store wiring
 

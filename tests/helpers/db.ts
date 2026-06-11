@@ -46,6 +46,9 @@ export async function seedDraft(input: {
 export async function readState(bookId: string): Promise<{
   reviewState: string;
   driveFileId: string | null;
+  driveFileName: string | null;
+  originalDriveFileId: string | null;
+  renamePending: boolean;
   hasDraft: boolean;
 }> {
   const row = await db
@@ -54,6 +57,9 @@ export async function readState(bookId: string): Promise<{
     .select([
       "books.review_state as reviewState",
       "books.drive_file_id as driveFileId",
+      "books.drive_file_name as driveFileName",
+      "books.original_drive_file_id as originalDriveFileId",
+      "books.rename_pending as renamePending",
       "book_drafts.book_id as draftBookId",
     ])
     .where("books.id", "=", bookId)
@@ -62,6 +68,9 @@ export async function readState(bookId: string): Promise<{
   return {
     reviewState: row.reviewState,
     driveFileId: row.driveFileId,
+    driveFileName: row.driveFileName,
+    originalDriveFileId: row.originalDriveFileId,
+    renamePending: row.renamePending,
     hasDraft: row.draftBookId !== null,
   };
 }
