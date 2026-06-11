@@ -20,6 +20,11 @@ export interface BookDetail extends BookSummary {
   language: string | null;
   publishedDate: string | null;
   description: string | null;
+  series: string | null;
+  part: string | null;
+  driveFileId: string | null;
+  driveFileName: string | null;
+  renamePending: boolean;
 }
 
 export interface TrashedBookSummary extends BookSummary {
@@ -87,6 +92,11 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
       "language",
       "published_date",
       "description",
+      "series",
+      "part",
+      "drive_file_id",
+      "drive_file_name",
+      "rename_pending",
       "created_at",
       "updated_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
@@ -116,6 +126,11 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     language: book.language,
     publishedDate: book.published_date,
     description: book.description,
+    series: book.series,
+    part: book.part,
+    driveFileId: book.drive_file_id,
+    driveFileName: book.drive_file_name,
+    renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,
     updatedAt: book.updated_at,
@@ -187,6 +202,11 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
       "language",
       "published_date",
       "description",
+      "series",
+      "part",
+      "drive_file_id",
+      "drive_file_name",
+      "rename_pending",
       "created_at",
       "updated_at",
       "trashed_at",
@@ -216,6 +236,11 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     language: book.language,
     publishedDate: book.published_date,
     description: book.description,
+    series: book.series,
+    part: book.part,
+    driveFileId: book.drive_file_id,
+    driveFileName: book.drive_file_name,
+    renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,
     updatedAt: book.updated_at,
@@ -232,6 +257,8 @@ export interface UpdateBookMetadataFields {
   language?: string | null;
   publishedDate?: string | null;
   description?: string | null;
+  series?: string | null;
+  part?: string | null;
   /** When provided, replaces the stored cover. When omitted, the cover is left unchanged. */
   cover?: { bytes: Buffer; mime: string };
 }
@@ -252,6 +279,8 @@ export async function updateBookMetadata(
   if ("language" in fields) values.language = fields.language;
   if ("publishedDate" in fields) values.published_date = fields.publishedDate;
   if ("description" in fields) values.description = fields.description;
+  if ("series" in fields) values.series = fields.series;
+  if ("part" in fields) values.part = fields.part;
 
   if (fields.cover) {
     values.cover_bytes = fields.cover.bytes;
@@ -270,6 +299,25 @@ export async function updateBookMetadata(
 
   if (!row) return null;
   return { updated: true };
+}
+
+export async function setWorkingCopyFilename(
+  bookId: string,
+  userId: string,
+  opts: { driveFileName?: string; renamePending: boolean }
+): Promise<void> {
+  const values: Record<string, unknown> = {
+    rename_pending: opts.renamePending,
+    updated_at: sql`NOW()`,
+  };
+  if (opts.driveFileName !== undefined) values.drive_file_name = opts.driveFileName;
+  await db
+    .updateTable("books")
+    .set(values)
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .execute();
 }
 
 export async function trashConfirmedBook(

@@ -8,9 +8,10 @@ import { getDriveClient } from "@/lib/drive/client";
 import { DriveAuthError } from "@/lib/drive/errors";
 import { getOrCreateLibraryFolder, getOrCreateTrashFolder } from "@/lib/drive/library-folder";
 import { composeFilename, findAvailableFilename } from "@/lib/drive/upload";
+import { renameWorkingCopy } from "@/lib/drive/rename";
 import { moveDriveFile } from "@/lib/drive/trash";
 import { getUserIdByEmail } from "@/lib/users";
-import { trashConfirmedBook, restoreTrashedBook } from "@/lib/books";
+import { trashConfirmedBook, restoreTrashedBook, setWorkingCopyFilename } from "@/lib/books";
 import { db } from "@/lib/db";
 
 export async function trashBookAction(
@@ -259,4 +260,63 @@ export async function restoreBookAction(
   revalidatePath("/trash");
   revalidatePath(`/books/${bookId}`);
   return { ok: true };
+}
+
+export async function retryRenameAction(
+  bookId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/signin");
+
+  const userId = await getUserIdByEmail(session.user.email);
+
+  const book = await db
+    .selectFrom("books")
+    .select(["drive_file_id", "title", "author", "series", "part"])
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("rename_pending", "=", true)
+    .executeTakeFirst();
+
+  if (!book?.drive_file_id) {
+    return { ok: false, message: "Book not found or rename not pending." };
+  }
+
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
+
+  let drive: drive_v3.Drive;
+  try {
+    drive = await getDriveClient();
+  } catch (e) {
+    if (e instanceof DriveAuthError) {
+      await signOut({ redirect: false });
+      redirect("/signin?expired=1");
+    }
+    throw e;
+  }
+
+  const libraryFolderId = await getOrCreateLibraryFolder(drive, session.user.email);
+
+  try {
+    const finalName = await renameWorkingCopy(drive, book.drive_file_id, libraryFolderId, desired);
+    await setWorkingCopyFilename(bookId, userId, {
+      driveFileName: finalName,
+      renamePending: false,
+    });
+    revalidatePath(`/books/${bookId}`);
+    return { ok: true };
+  } catch (e) {
+    if (e instanceof DriveAuthError) {
+      await signOut({ redirect: false });
+      redirect("/signin?expired=1");
+    }
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, message: `Rename failed: ${msg}` };
+  }
 }

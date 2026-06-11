@@ -82,9 +82,7 @@ export function createDriveFake(): DriveFake {
         name: params.requestBody?.name ?? "",
         parents: params.requestBody?.parents ?? [],
         mimeType:
-          params.media?.mimeType ??
-          params.requestBody?.mimeType ??
-          "application/octet-stream",
+          params.media?.mimeType ?? params.requestBody?.mimeType ?? "application/octet-stream",
         contentBytes,
       });
       return { data: { id } };
@@ -103,8 +101,30 @@ export function createDriveFake(): DriveFake {
       return { data: {} };
     },
 
+    async update(params: {
+      fileId?: string;
+      requestBody?: { name?: string; addParents?: string; removeParents?: string };
+      fields?: string;
+    }) {
+      if (!params.fileId) throw new Error("Drive fake: files.update requires fileId");
+      const file = filesMap.get(params.fileId);
+      if (!file) {
+        const err = new Error(`Drive fake: file not found: ${params.fileId}`);
+        (err as unknown as { code: number }).code = 404;
+        throw err;
+      }
+      if (params.requestBody?.name !== undefined) {
+        file.name = params.requestBody.name;
+      }
+      if (params.requestBody?.addParents) {
+        file.parents = [
+          ...file.parents.filter((p) => p !== params.requestBody?.removeParents),
+          params.requestBody.addParents,
+        ];
+      }
+      return { data: { id: params.fileId } };
+    },
     get: notImplemented("files.get"),
-    update: notImplemented("files.update"),
     copy: notImplemented("files.copy"),
     export: notImplemented("files.export"),
     generateIds: notImplemented("files.generateIds"),

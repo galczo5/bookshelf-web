@@ -335,23 +335,23 @@ Import adds one extra Drive upload (the pristine copy) and at most one extra fol
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Existing import/integration tests pass: `npm run test:integration`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 231f43c
+- [x] 2.2 Linting passes: `npm run lint` — 231f43c
+- [x] 2.3 Existing import/integration tests pass: `npm run test:integration` — 231f43c
 
 #### Manual
 
-- [x] 2.4 Import produces both the working copy and the `Original files/` pristine copy on Drive
-- [x] 2.5 Book row has `drive_file_id`, `drive_file_name`, `original_drive_file_id`; `rename_pending` false
-- [x] 2.6 Forced second-upload failure leaves no orphaned working copy and no confirmed book row
+- [x] 2.4 Import produces both the working copy and the `Original files/` pristine copy on Drive — 231f43c
+- [x] 2.5 Book row has `drive_file_id`, `drive_file_name`, `original_drive_file_id`; `rename_pending` false — 231f43c
+- [x] 2.6 Forced second-upload failure leaves no orphaned working copy and no confirmed book row — 231f43c
 
 ### Phase 3: Rename-on-edit, retry & store wiring
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Unit/integration tests pass: `npm test` and `npm run test:integration`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Unit/integration tests pass: `npm test` and `npm run test:integration`
 
 #### Manual
 
