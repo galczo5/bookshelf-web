@@ -24,6 +24,7 @@ export interface BookDetail extends BookSummary {
   part: string | null;
   driveFileId: string | null;
   driveFileName: string | null;
+  originalDriveFileId: string | null;
   renamePending: boolean;
 }
 
@@ -96,6 +97,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
       "part",
       "drive_file_id",
       "drive_file_name",
+      "original_drive_file_id",
       "rename_pending",
       "created_at",
       "updated_at",
@@ -130,6 +132,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     part: book.part,
     driveFileId: book.drive_file_id,
     driveFileName: book.drive_file_name,
+    originalDriveFileId: book.original_drive_file_id,
     renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,
@@ -206,6 +209,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
       "part",
       "drive_file_id",
       "drive_file_name",
+      "original_drive_file_id",
       "rename_pending",
       "created_at",
       "updated_at",
@@ -240,6 +244,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     part: book.part,
     driveFileId: book.drive_file_id,
     driveFileName: book.drive_file_name,
+    originalDriveFileId: book.original_drive_file_id,
     renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,

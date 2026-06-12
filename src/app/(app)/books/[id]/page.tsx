@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Check, HardDrive, Sparkles } from "lucide-react";
 import { auth } from "@/auth";
 import { getUserIdByEmail } from "@/lib/users";
 import { getOwnedBook } from "@/lib/books";
@@ -64,7 +64,7 @@ export default async function BookPage({
             <img
               src={`/api/books/${book.id}/cover?v=${book.updatedAt.getTime()}`}
               alt={book.title}
-              className="rounded-xl shadow-md"
+              className="rounded-xl shadow-md max-h-96"
             />
           ) : (
             <CoverPlaceholder title={book.title} className="h-full min-w-32 rounded-xl shadow-md" />
@@ -124,6 +124,24 @@ export default async function BookPage({
               <TrashBookControl bookId={book.id} title={book.title} />
             )}
           </div>
+
+          {book.driveFileName && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-xs">
+              <HardDrive className="size-3.5 shrink-0 text-zinc-400" />
+              <span className="text-zinc-400">Bookshelf /</span>
+              <span className="min-w-0 flex-1 truncate font-medium text-zinc-600">
+                {book.driveFileName}
+              </span>
+              {book.originalDriveFileId ? (
+                <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                  <Check className="size-3" />
+                  Original copy saved
+                </span>
+              ) : (
+                <span className="shrink-0 text-zinc-400">no original backup</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
