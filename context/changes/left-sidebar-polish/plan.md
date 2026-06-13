@@ -269,15 +269,15 @@ Three additional DB queries per navigation (stats, tags-with-count, recent books
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles with no errors: `npx tsc --noEmit`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compiles with no errors: `npx tsc --noEmit` — 0a58901
+- [x] 2.2 Lint passes: `npm run lint` — 0a58901
 
 #### Manual
 
-- [x] 2.3 Stats strip shows correct counts
-- [x] 2.4 Library nav item shows untagged badge; badge disappears when all books are tagged
-- [x] 2.5 Tag list links to `/?tags=<tagName>` and filters correctly
-- [x] 2.6 "+N more" link appears when > 8 tags and navigates to `/tags`
-- [x] 2.7 "Recently Added" shows 3 books with covers; clicking navigates to detail page
-- [x] 2.8 Collapsing sidebar hides Tags and Recently Added sections
-- [x] 2.9 No regressions in existing nav, Import button, or sign-out
+- [x] 2.3 Stats strip shows correct counts — 0a58901
+- [x] 2.4 Library nav item shows untagged badge; badge disappears when all books are tagged — 0a58901
+- [x] 2.5 Tag list links to `/?tags=<tagName>` and filters correctly — 0a58901
+- [x] 2.6 "+N more" link appears when > 8 tags and navigates to `/tags` — 0a58901
+- [x] 2.7 "Recently Added" shows 3 books with covers; clicking navigates to detail page — 0a58901
+- [x] 2.8 Collapsing sidebar hides Tags and Recently Added sections — 0a58901
+- [x] 2.9 No regressions in existing nav, Import button, or sign-out — 0a58901
