@@ -395,34 +395,34 @@ Remove the blocking SSR enrichment from `page.tsx` and refactor `review-form.tsx
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles
-- [x] 2.2 Linting passes
-- [x] 2.3 No references to `enrichMetadataAction` in panel file
+- [x] 2.1 TypeScript compiles — 1150415
+- [x] 2.2 Linting passes — 1150415
+- [x] 2.3 No references to `enrichMetadataAction` in panel file — 1150415
 
 #### Manual
 
-- [x] 2.4 Clicking "Enrich" shows per-field skeletons then proposals
-- [x] 2.5 Fields populate progressively (not all at once)
-- [x] 2.6 Series and part fields show AI proposals
-- [x] 2.7 Failed field shows inline error; other fields unaffected
-- [x] 2.8 "Apply changes" saves all fields correctly
+- [x] 2.4 Clicking "Enrich" shows per-field skeletons then proposals — 1150415
+- [x] 2.5 Fields populate progressively (not all at once) — 1150415
+- [x] 2.6 Series and part fields show AI proposals — 1150415
+- [x] 2.7 Failed field shows inline error; other fields unaffected — 1150415
+- [x] 2.8 "Apply changes" saves all fields correctly — 1150415
 
 ### Phase 3: Per-Field Chat Modal
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles
-- [ ] 3.2 `field-chat-modal.tsx` exists and exports `FieldChatModal`
-- [ ] 3.3 Linting passes
+- [x] 3.1 TypeScript compiles
+- [x] 3.2 `field-chat-modal.tsx` exists and exports `FieldChatModal`
+- [x] 3.3 Linting passes
 
 #### Manual
 
-- [ ] 3.4 Retry button opens chat modal with current proposal visible
-- [ ] 3.5 Typing + submitting shows loading then new proposal
-- [ ] 3.6 "Apply" closes modal and updates field in panel
-- [ ] 3.7 Other retry buttons disabled while modal is open
-- [ ] 3.8 Closing without applying preserves original proposal
-- [ ] 3.9 Failed retry shows error in modal without closing it
+- [x] 3.4 Retry button opens chat modal with current proposal visible
+- [x] 3.5 Typing + submitting shows loading then new proposal
+- [x] 3.6 "Apply" closes modal and updates field in panel
+- [x] 3.7 Other retry buttons disabled while modal is open
+- [x] 3.8 Closing without applying preserves original proposal
+- [x] 3.9 Failed retry shows error in modal without closing it
 
 ### Phase 4: Import Review Flow Refactor
 

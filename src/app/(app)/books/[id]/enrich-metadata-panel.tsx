@@ -5,12 +5,26 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { applyMetadataAction } from "@/app/actions/enrich-metadata";
 import { detectLanguageAction, enrichFieldAction } from "@/app/actions/enrich-field";
+import { FieldChatModal } from "@/app/components/field-chat-modal";
 import type {
   FieldProposal,
   CoverProposal,
   ConfidenceLevel,
   EnrichableField,
 } from "@/lib/enrichment/types";
+
+const FIELD_LABELS: Record<EnrichableField, string> = {
+  title: "Title",
+  author: "Author",
+  isbn: "ISBN",
+  cover: "Cover",
+  publisher: "Publisher",
+  language: "Language",
+  publishedDate: "Published date",
+  description: "Description",
+  series: "Series",
+  part: "Part",
+};
 
 type FieldSlotState = {
   status: "idle" | "loading" | "done" | "error";
@@ -208,6 +222,8 @@ export function EnrichMetadataPanel({
   const [languageError, setLanguageError] = useState<string | null>(null);
   const [isApplying, startApplying] = useTransition();
   const [applyError, setApplyError] = useState<string | null>(null);
+  const [detectedLang, setDetectedLang] = useState("English");
+  const [retryingField, setRetryingField] = useState<EnrichableField | null>(null);
 
   const [title, setTitle] = useState(current.title);
   const [author, setAuthor] = useState(current.author ?? "");
@@ -264,6 +280,7 @@ export function EnrichMetadataPanel({
 
     setLanguageStatus("done");
     const { language: detectedLanguage } = langResult;
+    setDetectedLang(detectedLanguage);
 
     ENRICHABLE_FIELDS.forEach((field) => {
       startTransition(async () => {
@@ -288,6 +305,7 @@ export function EnrichMetadataPanel({
     setLanguageStatus("idle");
     setLanguageError(null);
     setApplyError(null);
+    setRetryingField(null);
   }
 
   function handleApply() {
@@ -354,57 +372,73 @@ export function EnrichMetadataPanel({
           <div className="h-20 animate-pulse rounded-xl bg-zinc-100" />
         </div>
       )}
-      {coverState.status === "done" && coverUrls.length > 0 && (
+      {coverState.status === "done" && (coverUrls.length > 0 || coverState.proposal === null) && (
         <div>
-          <p className="mb-1.5 text-sm font-medium text-zinc-700">Cover</p>
-          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-            <span>{coverProposal!.provenance}</span>
-            <ConfidenceChip level={coverProposal!.confidence} />
+          <div className="mb-1.5 flex items-center justify-between">
+            <p className="text-sm font-medium text-zinc-700">Cover</p>
+            <button
+              type="button"
+              disabled={retryingField !== null}
+              onClick={() => setRetryingField("cover")}
+              className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-40"
+            >
+              Retry
+            </button>
           </div>
-          <div className="flex flex-wrap gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-            {current.hasCover && (
-              <button
-                type="button"
-                onClick={() => setCoverChoice("keep")}
-                className={`overflow-hidden rounded-lg transition-all ${
-                  coverChoice === "keep"
-                    ? "ring-2 ring-blue-500 ring-offset-1"
-                    : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
-                }`}
-                title="Keep current cover"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/api/books/${bookId}/cover`}
-                  alt="Current cover"
-                  className="h-20 w-14 object-contain"
-                />
-              </button>
-            )}
-            {coverUrls.map((url) => (
-              <button
-                key={url}
-                type="button"
-                onClick={() => setCoverChoice(`ai:${url}`)}
-                className={`overflow-hidden rounded-lg transition-all ${
-                  coverChoice === `ai:${url}`
-                    ? "ring-2 ring-blue-500 ring-offset-1"
-                    : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
-                }`}
-                title={url}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={url}
-                  alt="AI proposed cover"
-                  className="h-20 w-14 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </button>
-            ))}
-          </div>
+          {coverProposal ? (
+            <>
+              <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                <span>{coverProposal.provenance}</span>
+                <ConfidenceChip level={coverProposal.confidence} />
+              </div>
+              <div className="flex flex-wrap gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
+                {current.hasCover && (
+                  <button
+                    type="button"
+                    onClick={() => setCoverChoice("keep")}
+                    className={`overflow-hidden rounded-lg transition-all ${
+                      coverChoice === "keep"
+                        ? "ring-2 ring-blue-500 ring-offset-1"
+                        : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
+                    }`}
+                    title="Keep current cover"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/books/${bookId}/cover`}
+                      alt="Current cover"
+                      className="h-20 w-14 object-contain"
+                    />
+                  </button>
+                )}
+                {coverUrls.map((url) => (
+                  <button
+                    key={url}
+                    type="button"
+                    onClick={() => setCoverChoice(`ai:${url}`)}
+                    className={`overflow-hidden rounded-lg transition-all ${
+                      coverChoice === `ai:${url}`
+                        ? "ring-2 ring-blue-500 ring-offset-1"
+                        : "ring-1 ring-zinc-200 hover:ring-2 hover:ring-zinc-300 hover:ring-offset-1"
+                    }`}
+                    title={url}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt="AI proposed cover"
+                      className="h-20 w-14 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-xs text-zinc-500">No cover found.</p>
+          )}
         </div>
       )}
       {coverState.status === "error" && (
@@ -443,6 +477,18 @@ export function EnrichMetadataPanel({
           };
           return (
             <div key={field}>
+              <div className="mb-1 flex items-center justify-between">
+                {state.status === "done" && (
+                  <button
+                    type="button"
+                    disabled={retryingField !== null}
+                    onClick={() => setRetryingField(field)}
+                    className="ml-auto text-xs text-blue-600 hover:text-blue-800 disabled:opacity-40"
+                  >
+                    Retry
+                  </button>
+                )}
+              </div>
               <MetaField
                 label={labelMap[field]}
                 value={valueMap[field]}
@@ -464,6 +510,18 @@ export function EnrichMetadataPanel({
       )}
 
       <div>
+        {fieldStates.description.status === "done" && (
+          <div className="mb-1 flex justify-end">
+            <button
+              type="button"
+              disabled={retryingField !== null}
+              onClick={() => setRetryingField("description")}
+              className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-40"
+            >
+              Retry
+            </button>
+          </div>
+        )}
         <MetaField
           label="Description"
           value={description}
@@ -482,6 +540,18 @@ export function EnrichMetadataPanel({
       </div>
 
       <div>
+        {fieldStates.series.status === "done" && (
+          <div className="mb-1 flex justify-end">
+            <button
+              type="button"
+              disabled={retryingField !== null}
+              onClick={() => setRetryingField("series")}
+              className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-40"
+            >
+              Retry
+            </button>
+          </div>
+        )}
         <MetaField
           label="Series"
           value={series}
@@ -499,6 +569,18 @@ export function EnrichMetadataPanel({
       </div>
 
       <div>
+        {fieldStates.part.status === "done" && (
+          <div className="mb-1 flex justify-end">
+            <button
+              type="button"
+              disabled={retryingField !== null}
+              onClick={() => setRetryingField("part")}
+              className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-40"
+            >
+              Retry
+            </button>
+          </div>
+        )}
         <MetaField
           label="Part"
           value={part}
@@ -539,6 +621,27 @@ export function EnrichMetadataPanel({
           Dismiss
         </button>
       </div>
+
+      {retryingField && (
+        <FieldChatModal
+          field={retryingField}
+          label={FIELD_LABELS[retryingField]}
+          sourceId={bookId}
+          isDraft={false}
+          language={detectedLang}
+          currentProposal={fieldStates[retryingField].proposal}
+          responseId={fieldStates[retryingField].responseId}
+          open={true}
+          onClose={() => setRetryingField(null)}
+          onApply={(proposal, responseId) => {
+            setFieldStates((prev) => ({
+              ...prev,
+              [retryingField]: { status: "done", proposal, responseId, error: null },
+            }));
+            setRetryingField(null);
+          }}
+        />
+      )}
     </div>
   );
 }
