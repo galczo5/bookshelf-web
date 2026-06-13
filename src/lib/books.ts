@@ -306,6 +306,73 @@ export async function updateBookMetadata(
   return { updated: true };
 }
 
+export interface BookStats {
+  totalBooks: number;
+  totalTags: number;
+  untaggedBooks: number;
+}
+
+export async function listUserBookStats(userId: string): Promise<BookStats> {
+  const [booksRow, tagsRow, untaggedRow] = await Promise.all([
+    db
+      .selectFrom("books")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .where("review_state", "=", "confirmed")
+      .where("trashed_at", "is", null)
+      .executeTakeFirstOrThrow(),
+    db
+      .selectFrom("tags")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .executeTakeFirstOrThrow(),
+    db
+      .selectFrom("books")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .where("review_state", "=", "confirmed")
+      .where("trashed_at", "is", null)
+      .where((eb) =>
+        eb.not(
+          eb.exists(
+            eb.selectFrom("book_tags").select("book_id").whereRef("book_id", "=", "books.id")
+          )
+        )
+      )
+      .executeTakeFirstOrThrow(),
+  ]);
+
+  return {
+    totalBooks: Number(booksRow.count),
+    totalTags: Number(tagsRow.count),
+    untaggedBooks: Number(untaggedRow.count),
+  };
+}
+
+export interface RecentBook {
+  id: string;
+  title: string;
+  hasCover: boolean;
+}
+
+export async function listRecentBooks(userId: string, limit = 3): Promise<RecentBook[]> {
+  const rows = await db
+    .selectFrom("books")
+    .select(["id", "title", sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover")])
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .orderBy("created_at", "desc")
+    .limit(limit)
+    .execute();
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    hasCover: r.has_cover,
+  }));
+}
+
 export async function setWorkingCopyFilename(
   bookId: string,
   userId: string,
