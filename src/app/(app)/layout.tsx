@@ -3,14 +3,26 @@ import { auth } from "@/auth";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/app/components/app-sidebar";
 import { Breadcrumbs } from "@/app/components/breadcrumbs";
+import { upsertUserByEmail, getUserIdByEmail } from "@/lib/users";
+import { listUserBookStats, listRecentBooks } from "@/lib/books";
+import { listUserTagsWithCount } from "@/lib/tags";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
 
+  await upsertUserByEmail(session.user.email);
+  const userId = await getUserIdByEmail(session.user.email);
+
+  const [stats, tags, recentBooks] = await Promise.all([
+    listUserBookStats(userId),
+    listUserTagsWithCount(userId),
+    listRecentBooks(userId),
+  ]);
+
   return (
     <SidebarProvider>
-      <AppSidebar email={session.user.email} />
+      <AppSidebar email={session.user.email} stats={stats} tags={tags} recentBooks={recentBooks} />
       <SidebarInset>
         <header className="flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4">
           <SidebarTrigger className="-ml-1" />
