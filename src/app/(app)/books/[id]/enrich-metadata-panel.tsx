@@ -1,10 +1,42 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, startTransition, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
-import { enrichMetadataAction, applyMetadataAction } from "@/app/actions/enrich-metadata";
-import type { EnrichmentProposals, FieldProposal, ConfidenceLevel } from "@/lib/enrichment/types";
+import { applyMetadataAction } from "@/app/actions/enrich-metadata";
+import { detectLanguageAction, enrichFieldAction } from "@/app/actions/enrich-field";
+import type {
+  FieldProposal,
+  CoverProposal,
+  ConfidenceLevel,
+  EnrichableField,
+} from "@/lib/enrichment/types";
+
+type FieldSlotState = {
+  status: "idle" | "loading" | "done" | "error";
+  proposal: FieldProposal<string> | CoverProposal | null;
+  responseId: string | null;
+  error: string | null;
+};
+
+const ENRICHABLE_FIELDS: EnrichableField[] = [
+  "title",
+  "author",
+  "isbn",
+  "cover",
+  "publisher",
+  "language",
+  "publishedDate",
+  "description",
+  "series",
+  "part",
+];
+
+function makeStates(status: FieldSlotState["status"]): Record<EnrichableField, FieldSlotState> {
+  return Object.fromEntries(
+    ENRICHABLE_FIELDS.map((f) => [f, { status, proposal: null, responseId: null, error: null }])
+  ) as Record<EnrichableField, FieldSlotState>;
+}
 
 function ConfidenceChip({ level }: { level: ConfidenceLevel }) {
   return (
@@ -27,6 +59,7 @@ function MetaField({
   proposal,
   required,
   multiLine,
+  loading,
 }: {
   label: string;
   value: string;
@@ -34,8 +67,22 @@ function MetaField({
   proposal: FieldProposal<string> | null | undefined;
   required?: boolean;
   multiLine?: boolean;
+  loading?: boolean;
 }) {
   const [showAlts, setShowAlts] = useState(false);
+
+  if (loading) {
+    return (
+      <div>
+        <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-zinc-700">
+          {label}
+          {required && <span className="text-red-400">*</span>}
+        </label>
+        <div className="h-9 animate-pulse rounded-lg bg-zinc-100" />
+      </div>
+    );
+  }
+
   const isAccepted = proposal != null && proposal.value !== "" && value === proposal.value;
   const canApply = proposal != null && proposal.value !== "" && !isAccepted;
 
@@ -152,10 +199,15 @@ export function EnrichMetadataPanel({
   };
 }): React.JSX.Element {
   const router = useRouter();
-  const [proposals, setProposals] = useState<EnrichmentProposals | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isEnriching, startEnriching] = useTransition();
+  const [fieldStates, setFieldStates] = useState<Record<EnrichableField, FieldSlotState>>(() =>
+    makeStates("idle")
+  );
+  const [languageStatus, setLanguageStatus] = useState<"idle" | "loading" | "done" | "error">(
+    "idle"
+  );
+  const [languageError, setLanguageError] = useState<string | null>(null);
   const [isApplying, startApplying] = useTransition();
+  const [applyError, setApplyError] = useState<string | null>(null);
 
   const [title, setTitle] = useState(current.title);
   const [author, setAuthor] = useState(current.author ?? "");
@@ -166,51 +218,80 @@ export function EnrichMetadataPanel({
   const [description, setDescription] = useState(current.description ?? "");
   const [series, setSeries] = useState(current.series ?? "");
   const [part, setPart] = useState(current.part ?? "");
-  // "keep" leaves the current cover; "ai:<url>" replaces it.
   const [coverChoice, setCoverChoice] = useState("keep");
 
-  const hasAnyProposal =
-    !!proposals &&
-    (!!proposals.title ||
-      !!proposals.author ||
-      !!proposals.isbn ||
-      !!proposals.cover ||
-      !!proposals.publisher ||
-      !!proposals.language ||
-      !!proposals.publishedDate ||
-      !!proposals.description);
+  const isActive = languageStatus !== "idle";
+  const allDone = ENRICHABLE_FIELDS.every((f) => fieldStates[f].status !== "loading");
+  const coverState = fieldStates.cover;
+  const coverProposal =
+    coverState.status === "done" && coverState.proposal
+      ? (coverState.proposal as CoverProposal)
+      : null;
+  const coverUrls = coverProposal?.urls ?? [];
+  const hasAnyProposal = ENRICHABLE_FIELDS.some(
+    (f) => f !== "cover" && fieldStates[f].status === "done" && fieldStates[f].proposal !== null
+  );
 
-  function handleEnrich() {
-    setError(null);
-    const fd = new FormData();
-    fd.set("bookId", bookId);
-    startEnriching(async () => {
-      const result = await enrichMetadataAction({ ok: false }, fd);
-      if (!result.ok || !result.proposals) {
-        setError(result.message ?? "Enrichment failed.");
-        return;
-      }
-      setProposals(result.proposals);
-      setTitle(current.title);
-      setAuthor(current.author ?? "");
-      setIsbn(current.isbn ?? "");
-      setPublisher(current.publisher ?? "");
-      setLanguage(current.language ?? "");
-      setPublishedDate(current.publishedDate ?? "");
-      setDescription(current.description ?? "");
-      setSeries(current.series ?? "");
-      setPart(current.part ?? "");
-      setCoverChoice("keep");
+  async function handleEnrich() {
+    setLanguageStatus("loading");
+    setLanguageError(null);
+    setFieldStates(makeStates("loading"));
+    setTitle(current.title);
+    setAuthor(current.author ?? "");
+    setIsbn(current.isbn ?? "");
+    setPublisher(current.publisher ?? "");
+    setLanguage(current.language ?? "");
+    setPublishedDate(current.publishedDate ?? "");
+    setDescription(current.description ?? "");
+    setSeries(current.series ?? "");
+    setPart(current.part ?? "");
+    setCoverChoice("keep");
+
+    const langResult = await detectLanguageAction(bookId);
+    if (!langResult.ok) {
+      setLanguageStatus("error");
+      setLanguageError(langResult.message);
+      setFieldStates(
+        Object.fromEntries(
+          ENRICHABLE_FIELDS.map((f) => [
+            f,
+            { status: "error", proposal: null, responseId: null, error: langResult.message },
+          ])
+        ) as Record<EnrichableField, FieldSlotState>
+      );
+      return;
+    }
+
+    setLanguageStatus("done");
+    const { language: detectedLanguage } = langResult;
+
+    ENRICHABLE_FIELDS.forEach((field) => {
+      startTransition(async () => {
+        const result = await enrichFieldAction(bookId, field, detectedLanguage);
+        setFieldStates((prev) => ({
+          ...prev,
+          [field]: result.ok
+            ? {
+                status: "done",
+                proposal: result.proposal,
+                responseId: result.responseId,
+                error: null,
+              }
+            : { status: "error", proposal: null, responseId: null, error: result.message },
+        }));
+      });
     });
   }
 
   function reset() {
-    setProposals(null);
-    setError(null);
+    setFieldStates(makeStates("idle"));
+    setLanguageStatus("idle");
+    setLanguageError(null);
+    setApplyError(null);
   }
 
   function handleApply() {
-    setError(null);
+    setApplyError(null);
     const fd = new FormData();
     fd.set("bookId", bookId);
     fd.set("title", title);
@@ -226,7 +307,7 @@ export function EnrichMetadataPanel({
     startApplying(async () => {
       const result = await applyMetadataAction(null, fd);
       if (!result || result.ok === false) {
-        setError(result?.message ?? "Could not save changes.");
+        setApplyError(result?.message ?? "Could not save changes.");
         return;
       }
       reset();
@@ -234,30 +315,19 @@ export function EnrichMetadataPanel({
     });
   }
 
-  const coverUrls = proposals?.cover?.urls ?? [];
-  const isPending = isEnriching || isApplying;
-
-  if (!proposals) {
+  if (!isActive) {
     return (
       <div>
         <button
           type="button"
           onClick={handleEnrich}
-          disabled={isPending}
           className="flex items-center gap-2 rounded-lg border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
         >
-          {isEnriching ? (
-            <>
-              <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-400 border-t-zinc-700" />
-              Looking up metadata…
-            </>
-          ) : (
-            "Re-enrich metadata"
-          )}
+          Re-enrich metadata
         </button>
-        {error && (
+        {languageError && (
           <p className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error}
+            {languageError}
           </p>
         )}
       </div>
@@ -266,18 +336,30 @@ export function EnrichMetadataPanel({
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-zinc-500">
-        {hasAnyProposal
-          ? "Review the proposals below. Edit any field, then apply — nothing is saved until you do."
-          : "AI found no changes to suggest — the current metadata looks complete. You can still edit series and part below."}
-      </p>
+      {languageStatus === "loading" && <p className="text-sm text-zinc-500">Detecting language…</p>}
+      {languageStatus === "done" && (
+        <p className="text-sm text-zinc-500">
+          {!allDone
+            ? "Enriching fields — proposals will appear as they load."
+            : hasAnyProposal
+              ? "Review the proposals below. Edit any field, then apply — nothing is saved until you do."
+              : "AI found no changes to suggest — the current metadata looks complete. You can still edit series and part below."}
+        </p>
+      )}
 
-      {proposals.cover && coverUrls.length > 0 && (
+      {/* Cover */}
+      {coverState.status === "loading" && (
+        <div>
+          <p className="mb-1.5 text-sm font-medium text-zinc-700">Cover</p>
+          <div className="h-20 animate-pulse rounded-xl bg-zinc-100" />
+        </div>
+      )}
+      {coverState.status === "done" && coverUrls.length > 0 && (
         <div>
           <p className="mb-1.5 text-sm font-medium text-zinc-700">Cover</p>
           <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-            <span>{proposals.cover.provenance}</span>
-            <ConfidenceChip level={proposals.cover.confidence} />
+            <span>{coverProposal!.provenance}</span>
+            <ConfidenceChip level={coverProposal!.confidence} />
           </div>
           <div className="flex flex-wrap gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
             {current.hasCover && (
@@ -325,47 +407,117 @@ export function EnrichMetadataPanel({
           </div>
         </div>
       )}
+      {coverState.status === "error" && (
+        <div>
+          <p className="mb-1.5 text-sm font-medium text-zinc-700">Cover</p>
+          <p className="text-xs text-red-600">{coverState.error}</p>
+        </div>
+      )}
 
-      <MetaField
-        label="Title"
-        value={title}
-        onChange={setTitle}
-        proposal={proposals.title}
-        required
-      />
-      <MetaField label="Author" value={author} onChange={setAuthor} proposal={proposals.author} />
-      <MetaField label="ISBN" value={isbn} onChange={setIsbn} proposal={proposals.isbn} />
-      <MetaField
-        label="Publisher"
-        value={publisher}
-        onChange={setPublisher}
-        proposal={proposals.publisher}
-      />
-      <MetaField
-        label="Language"
-        value={language}
-        onChange={setLanguage}
-        proposal={proposals.language}
-      />
-      <MetaField
-        label="Published date"
-        value={publishedDate}
-        onChange={setPublishedDate}
-        proposal={proposals.publishedDate}
-      />
-      <MetaField
-        label="Description"
-        value={description}
-        onChange={setDescription}
-        proposal={proposals.description}
-        multiLine
-      />
-      <MetaField label="Series" value={series} onChange={setSeries} proposal={undefined} />
-      <MetaField label="Part" value={part} onChange={setPart} proposal={undefined} />
+      {(["title", "author", "isbn", "publisher", "language", "publishedDate"] as const).map(
+        (field) => {
+          const state = fieldStates[field];
+          const labelMap: Record<string, string> = {
+            title: "Title",
+            author: "Author",
+            isbn: "ISBN",
+            publisher: "Publisher",
+            language: "Language",
+            publishedDate: "Published date",
+          };
+          const valueMap: Record<string, string> = {
+            title,
+            author,
+            isbn,
+            publisher,
+            language,
+            publishedDate,
+          };
+          const setterMap: Record<string, (v: string) => void> = {
+            title: setTitle,
+            author: setAuthor,
+            isbn: setIsbn,
+            publisher: setPublisher,
+            language: setLanguage,
+            publishedDate: setPublishedDate,
+          };
+          return (
+            <div key={field}>
+              <MetaField
+                label={labelMap[field]}
+                value={valueMap[field]}
+                onChange={setterMap[field]}
+                proposal={
+                  state.status === "done"
+                    ? (state.proposal as FieldProposal<string> | null)
+                    : undefined
+                }
+                loading={state.status === "loading"}
+                required={field === "title"}
+              />
+              {state.status === "error" && (
+                <p className="mt-1 text-xs text-red-600">{state.error}</p>
+              )}
+            </div>
+          );
+        }
+      )}
 
-      {error && (
+      <div>
+        <MetaField
+          label="Description"
+          value={description}
+          onChange={setDescription}
+          proposal={
+            fieldStates.description.status === "done"
+              ? (fieldStates.description.proposal as FieldProposal<string> | null)
+              : undefined
+          }
+          loading={fieldStates.description.status === "loading"}
+          multiLine
+        />
+        {fieldStates.description.status === "error" && (
+          <p className="mt-1 text-xs text-red-600">{fieldStates.description.error}</p>
+        )}
+      </div>
+
+      <div>
+        <MetaField
+          label="Series"
+          value={series}
+          onChange={setSeries}
+          proposal={
+            fieldStates.series.status === "done"
+              ? (fieldStates.series.proposal as FieldProposal<string> | null)
+              : undefined
+          }
+          loading={fieldStates.series.status === "loading"}
+        />
+        {fieldStates.series.status === "error" && (
+          <p className="mt-1 text-xs text-red-600">{fieldStates.series.error}</p>
+        )}
+      </div>
+
+      <div>
+        <MetaField
+          label="Part"
+          value={part}
+          onChange={setPart}
+          proposal={
+            fieldStates.part.status === "done"
+              ? (fieldStates.part.proposal as FieldProposal<string> | null)
+              : undefined
+          }
+          loading={fieldStates.part.status === "loading"}
+        />
+        {fieldStates.part.status === "error" && (
+          <p className="mt-1 text-xs text-red-600">{fieldStates.part.error}</p>
+        )}
+      </div>
+
+      {applyError && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
-          {error}
+          {applyError}
         </div>
       )}
 
@@ -373,7 +525,7 @@ export function EnrichMetadataPanel({
         <button
           type="button"
           onClick={handleApply}
-          disabled={isPending || !title.trim()}
+          disabled={isApplying || !title.trim()}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50"
         >
           {isApplying ? "Saving…" : "Apply changes"}
@@ -381,7 +533,7 @@ export function EnrichMetadataPanel({
         <button
           type="button"
           onClick={reset}
-          disabled={isPending}
+          disabled={isApplying}
           className="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 active:bg-zinc-100 disabled:opacity-50"
         >
           Dismiss

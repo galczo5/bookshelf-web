@@ -377,35 +377,35 @@ Remove the blocking SSR enrichment from `page.tsx` and refactor `review-form.tsx
 
 #### Automated
 
-- [x] 1.1 TypeScript compiles with no errors
-- [x] 1.2 `language-classifier.ts` exists and exports `detectLanguage`
-- [x] 1.3 `field-agent.ts` exists and exports `enrichField`
-- [x] 1.4 `enrich-field.ts` exports all four server actions
-- [x] 1.5 `EnrichmentProposals` type includes `series` and `part`
-- [x] 1.6 Linting passes
+- [x] 1.1 TypeScript compiles with no errors — c3403fc
+- [x] 1.2 `language-classifier.ts` exists and exports `detectLanguage` — c3403fc
+- [x] 1.3 `field-agent.ts` exists and exports `enrichField` — c3403fc
+- [x] 1.4 `enrich-field.ts` exports all four server actions — c3403fc
+- [x] 1.5 `EnrichmentProposals` type includes `series` and `part` — c3403fc
+- [x] 1.6 Linting passes — c3403fc
 
 #### Manual
 
-- [x] 1.7 `enrichField` returns valid proposal and non-empty `responseId`
-- [x] 1.8 `enrichField` for `series` field returns series name without part number
-- [x] 1.9 `enrichField` with `prevResponseId` succeeds without error
-- [x] 1.10 `detectLanguage` with Polish-language input returns `language: 'Polish'`
+- [x] 1.7 `enrichField` returns valid proposal and non-empty `responseId` — c3403fc
+- [x] 1.8 `enrichField` for `series` field returns series name without part number — c3403fc
+- [x] 1.9 `enrichField` with `prevResponseId` succeeds without error — c3403fc
+- [x] 1.10 `detectLanguage` with Polish-language input returns `language: 'Polish'` — c3403fc
 
 ### Phase 2: Re-enrichment Panel — Per-Field Loading
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles
-- [ ] 2.2 Linting passes
-- [ ] 2.3 No references to `enrichMetadataAction` in panel file
+- [x] 2.1 TypeScript compiles
+- [x] 2.2 Linting passes
+- [x] 2.3 No references to `enrichMetadataAction` in panel file
 
 #### Manual
 
-- [ ] 2.4 Clicking "Enrich" shows per-field skeletons then proposals
-- [ ] 2.5 Fields populate progressively (not all at once)
-- [ ] 2.6 Series and part fields show AI proposals
-- [ ] 2.7 Failed field shows inline error; other fields unaffected
-- [ ] 2.8 "Apply changes" saves all fields correctly
+- [x] 2.4 Clicking "Enrich" shows per-field skeletons then proposals
+- [x] 2.5 Fields populate progressively (not all at once)
+- [x] 2.6 Series and part fields show AI proposals
+- [x] 2.7 Failed field shows inline error; other fields unaffected
+- [x] 2.8 "Apply changes" saves all fields correctly
 
 ### Phase 3: Per-Field Chat Modal
 
