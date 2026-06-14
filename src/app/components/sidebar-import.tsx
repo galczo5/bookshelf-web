@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useActionState } from "react";
+import { Upload } from "lucide-react";
 import { importEpubAction, type ImportEpubState } from "@/app/actions/import-epub";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
-export function ImportButton() {
+export function SidebarImport() {
   const [, formAction, isPending] = useActionState<ImportEpubState, FormData>(
     importEpubAction,
     null
@@ -22,14 +24,15 @@ export function ImportButton() {
         onChange={() => formRef.current?.requestSubmit()}
         disabled={isPending}
       />
-      <button
+      <SidebarMenuButton
         type="button"
+        tooltip="Import"
         onClick={() => !isPending && inputRef.current?.click()}
         disabled={isPending}
-        className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
       >
-        {isPending ? "Importing…" : "Import"}
-      </button>
+        <Upload />
+        <span>{isPending ? "Importing…" : "Import"}</span>
+      </SidebarMenuButton>
     </form>
   );
 }

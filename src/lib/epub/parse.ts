@@ -7,6 +7,10 @@ export interface EpubMetadata {
   author: string | null;
   isbn: string | null;
   cover: { bytes: Buffer; mime: string } | null;
+  publisher: string | null;
+  language: string | null;
+  publishedDate: string | null;
+  description: string | null;
 }
 
 export class EpubParseError extends Error {
@@ -66,8 +70,10 @@ export async function parseEpub(buffer: Buffer): Promise<EpubMetadata> {
   }
 
   const pkg = opfDoc?.package ?? opfDoc?.["opf:package"];
-  const metadata = pkg?.metadata ?? pkg?.["opf:metadata"];
-  const manifest = pkg?.manifest ?? pkg?.["opf:manifest"];
+  const metadataRaw = pkg?.metadata ?? pkg?.["opf:metadata"];
+  const metadata = Array.isArray(metadataRaw) ? metadataRaw[0] : metadataRaw;
+  const manifestRaw = pkg?.manifest ?? pkg?.["opf:manifest"];
+  const manifest = Array.isArray(manifestRaw) ? manifestRaw[0] : manifestRaw;
 
   // --- title ---
   const titleRaw = metadata?.["dc:title"];
@@ -81,6 +87,21 @@ export async function parseEpub(buffer: Buffer): Promise<EpubMetadata> {
   const identifiers: unknown[] = asArray(metadata?.["dc:identifier"]);
   const isbn: string | null = extractIsbn(identifiers);
 
+  // --- publisher ---
+  const publisher: string | null = extractFirst(metadata?.["dc:publisher"]);
+
+  // --- language ---
+  const language: string | null = extractFirst(metadata?.["dc:language"]);
+
+  // --- published date ---
+  const publishedDate: string | null = extractFirst(metadata?.["dc:date"]);
+
+  // --- description (strip HTML tags to plain text) ---
+  const descriptionRaw = extractFirst(metadata?.["dc:description"]);
+  const description: string | null = descriptionRaw
+    ? descriptionRaw.replace(/<[^>]*>/g, "").trim() || null
+    : null;
+
   // --- cover ---
   const opfDir = rootfilePath.includes("/")
     ? rootfilePath.substring(0, rootfilePath.lastIndexOf("/") + 1)
@@ -89,7 +110,7 @@ export async function parseEpub(buffer: Buffer): Promise<EpubMetadata> {
   const items: unknown[] = asArray(manifest?.item);
   const cover = await extractCover(zip, opfDir, items, metadata);
 
-  return { title, author, isbn, cover };
+  return { title, author, isbn, cover, publisher, language, publishedDate, description };
 }
 
 function extractFirst(raw: unknown): string | null {

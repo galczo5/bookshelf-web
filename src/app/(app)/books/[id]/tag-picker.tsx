@@ -71,6 +71,10 @@ export function TagPicker({
             key={t.id}
             className="flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700"
           >
+            <span
+              className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: t.color }}
+            />
             {t.name}
             <button
               type="button"
@@ -117,8 +121,12 @@ export function TagPicker({
                 <button
                   type="button"
                   onClick={() => handleAdd(t.name)}
-                  className="w-full px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50"
                 >
+                  <span
+                    className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+                    style={{ backgroundColor: t.color }}
+                  />
                   {t.name}
                 </button>
               </li>

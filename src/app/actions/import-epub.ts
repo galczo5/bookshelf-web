@@ -45,6 +45,10 @@ export async function importEpubAction(
       isbn: metadata.isbn,
       coverBytes: metadata.cover?.bytes ?? null,
       coverMime: metadata.cover?.mime ?? null,
+      publisher: metadata.publisher,
+      language: metadata.language,
+      publishedDate: metadata.publishedDate,
+      description: metadata.description,
     },
     stagedBytes: buffer,
   });

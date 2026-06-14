@@ -168,8 +168,12 @@ export function BookCard({
               {book.tags.map((t) => (
                 <span
                   key={t.id}
-                  className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600"
+                  className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600"
                 >
+                  <span
+                    className="inline-block h-2 w-2 flex-shrink-0 rounded-full"
+                    style={{ backgroundColor: t.color }}
+                  />
                   {t.name}
                 </span>
               ))}

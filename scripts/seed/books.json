@@ -1,0 +1,599 @@
+[
+  {
+    "slug": "pride-and-prejudice",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "isbn": null,
+    "publisher": "T. Egerton, Whitehall",
+    "publishedDate": "1813-01-28",
+    "language": "en",
+    "description": "A romantic comedy of manners following the Bennet sisters — particularly Elizabeth — as they navigate love and marriage in Regency England.",
+    "coverFile": "pride-and-prejudice.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jane-austen/pride-and-prejudice/downloads/cover.jpg",
+    "tags": ["Romance", "Favorites"],
+    "notes": [
+      "## First read 2019\n\nRe-reading for the dialogue. Elizabeth and Darcy's verbal sparring still holds up — the **free indirect speech** is doing all the heavy lifting.\n\n- [ ] Compare the 1995 adaptation's pacing\n- [x] Note the irony in the opening line"
+    ],
+    "epubMetadata": {
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "isbn": null,
+      "publisher": "T. Egerton, Whitehall",
+      "language": "en",
+      "publishedDate": "1813-01-28",
+      "description": "A romantic comedy of manners following the Bennet sisters — particularly Elizabeth — as they navigate love and marriage in Regency England."
+    }
+  },
+  {
+    "slug": "sense-and-sensibility",
+    "title": "Sense and Sensibility",
+    "author": "Jane Austen",
+    "isbn": null,
+    "coverFile": "sense-and-sensibility.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jane-austen/sense-and-sensibility/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "emma",
+    "title": "Emma",
+    "author": "Jane Austen",
+    "isbn": null,
+    "coverFile": "emma.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jane-austen/emma/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "persuasion",
+    "title": "Persuasion",
+    "author": "Jane Austen",
+    "isbn": null,
+    "coverFile": "persuasion.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jane-austen/persuasion/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "northanger-abbey",
+    "title": "Northanger Abbey",
+    "author": "Jane Austen",
+    "isbn": null,
+    "coverFile": "northanger-abbey.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jane-austen/northanger-abbey/downloads/cover.jpg",
+    "tags": ["Romance", "Gothic"]
+  },
+  {
+    "slug": "jane-eyre",
+    "title": "Jane Eyre",
+    "author": "Charlotte Brontë",
+    "isbn": null,
+    "publisher": "Smith, Elder & Co.",
+    "publishedDate": "1847-10-16",
+    "language": "en",
+    "description": "An orphaned girl grows up to become a governess and falls in love with the brooding Mr. Rochester, only to uncover dark secrets at Thornfield Hall.",
+    "coverFile": "jane-eyre.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/charlotte-bronte/jane-eyre/downloads/cover.jpg",
+    "tags": ["Romance", "Gothic", "Favorites"],
+    "epubMetadata": {
+      "title": "Jane Eyre",
+      "author": "Charlotte Brontë",
+      "isbn": null,
+      "publisher": "Smith, Elder & Co.",
+      "language": "en",
+      "publishedDate": "1847-10-16",
+      "description": "An orphaned girl grows up to become a governess and falls in love with the brooding Mr. Rochester, only to uncover dark secrets at Thornfield Hall."
+    }
+  },
+  {
+    "slug": "wuthering-heights",
+    "title": "Wuthering Heights",
+    "author": "Emily Brontë",
+    "isbn": null,
+    "publisher": "Thomas Newby",
+    "publishedDate": "1847-12-01",
+    "language": "en",
+    "description": "A dark tale of revenge and obsession set on the Yorkshire moors, tracing the stormy relationship between Heathcliff and Catherine Earnshaw across two generations.",
+    "coverFile": "wuthering-heights.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/emily-bronte/wuthering-heights/downloads/cover.jpg",
+    "tags": ["Romance", "Gothic"],
+    "epubMetadata": {
+      "title": "Wuthering Heights",
+      "author": "Emily Brontë",
+      "isbn": null,
+      "publisher": "Thomas Newby",
+      "language": "en",
+      "publishedDate": "1847-12-01",
+      "description": "A dark tale of revenge and obsession set on the Yorkshire moors, tracing the stormy relationship between Heathcliff and Catherine Earnshaw across two generations."
+    }
+  },
+  {
+    "slug": "the-tenant-of-wildfell-hall",
+    "title": "The Tenant of Wildfell Hall",
+    "author": "Anne Brontë",
+    "isbn": null,
+    "coverFile": "the-tenant-of-wildfell-hall.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/anne-bronte/the-tenant-of-wildfell-hall/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "tess-of-the-durbervilles",
+    "title": "Tess of the d’Urbervilles",
+    "author": "Thomas Hardy",
+    "isbn": null,
+    "coverFile": "tess-of-the-durbervilles.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/thomas-hardy/tess-of-the-durbervilles/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "far-from-the-madding-crowd",
+    "title": "Far from the Madding Crowd",
+    "author": "Thomas Hardy",
+    "isbn": null,
+    "coverFile": "far-from-the-madding-crowd.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/thomas-hardy/far-from-the-madding-crowd/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "north-and-south",
+    "title": "North and South",
+    "author": "Elizabeth Gaskell",
+    "isbn": null,
+    "coverFile": "north-and-south.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/elizabeth-gaskell/north-and-south/downloads/cover.jpg",
+    "tags": ["Romance"]
+  },
+  {
+    "slug": "middlemarch",
+    "title": "Middlemarch",
+    "author": "George Eliot",
+    "isbn": null,
+    "coverFile": null,
+    "coverSourceUrl": null,
+    "tags": ["Romance"],
+    "incomplete": ["cover"]
+  },
+  {
+    "slug": "the-age-of-innocence",
+    "title": "The Age of Innocence",
+    "author": "Edith Wharton",
+    "isbn": null,
+    "coverFile": "the-age-of-innocence.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/edith-wharton/the-age-of-innocence/downloads/cover.jpg",
+    "tags": ["Romance", "American Literature"]
+  },
+  {
+    "slug": "a-room-with-a-view",
+    "title": "A Room with a View",
+    "author": null,
+    "isbn": null,
+    "coverFile": "a-room-with-a-view.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/e-m-forster/a-room-with-a-view/downloads/cover.jpg",
+    "tags": ["Romance"],
+    "incomplete": ["author"]
+  },
+  {
+    "slug": "the-adventures-of-sherlock-holmes",
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "isbn": null,
+    "publisher": "George Newnes",
+    "publishedDate": "1892-10-14",
+    "language": "en",
+    "description": "Twelve short stories in which the brilliant consulting detective Sherlock Holmes — aided by Dr. Watson — solves crimes that baffle Scotland Yard.",
+    "coverFile": "the-adventures-of-sherlock-holmes.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/arthur-conan-doyle/the-adventures-of-sherlock-holmes/downloads/cover.jpg",
+    "tags": ["Mystery"],
+    "epubMetadata": {
+      "title": "The Adventures of Sherlock Holmes",
+      "author": "Arthur Conan Doyle",
+      "isbn": null,
+      "publisher": "George Newnes",
+      "language": "en",
+      "publishedDate": "1892-10-14",
+      "description": "Twelve short stories in which the brilliant consulting detective Sherlock Holmes — aided by Dr. Watson — solves crimes that baffle Scotland Yard."
+    }
+  },
+  {
+    "slug": "the-hound-of-the-baskervilles",
+    "title": "The Hound of the Baskervilles",
+    "author": "Arthur Conan Doyle",
+    "isbn": null,
+    "coverFile": "the-hound-of-the-baskervilles.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/arthur-conan-doyle/the-hound-of-the-baskervilles/downloads/cover.jpg",
+    "tags": ["Mystery"]
+  },
+  {
+    "slug": "a-study-in-scarlet",
+    "title": "A Study in Scarlet",
+    "author": "Arthur Conan Doyle",
+    "isbn": null,
+    "coverFile": "a-study-in-scarlet.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/arthur-conan-doyle/a-study-in-scarlet/downloads/cover.jpg",
+    "tags": ["Mystery"]
+  },
+  {
+    "slug": "the-sign-of-the-four",
+    "title": "The Sign of the Four",
+    "author": "Arthur Conan Doyle",
+    "isbn": null,
+    "coverFile": "the-sign-of-the-four.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/arthur-conan-doyle/the-sign-of-the-four/downloads/cover.jpg",
+    "tags": ["Mystery"]
+  },
+  {
+    "slug": "the-moonstone",
+    "title": "The Moonstone",
+    "author": "Wilkie Collins",
+    "isbn": null,
+    "coverFile": "the-moonstone.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/wilkie-collins/the-moonstone/downloads/cover.jpg",
+    "tags": ["Mystery"]
+  },
+  {
+    "slug": "the-woman-in-white",
+    "title": "The Woman in White",
+    "author": "Wilkie Collins",
+    "isbn": null,
+    "coverFile": "the-woman-in-white.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/wilkie-collins/the-woman-in-white/downloads/cover.jpg",
+    "tags": ["Mystery", "Gothic"]
+  },
+  {
+    "slug": "the-time-machine",
+    "title": "The Time Machine",
+    "author": "H. G. Wells",
+    "isbn": null,
+    "publisher": "William Heinemann",
+    "publishedDate": "1895-05-07",
+    "language": "en",
+    "description": "A Victorian inventor travels far into the future and discovers humanity divided into two degenerate species: the gentle Eloi and the subterranean Morlocks.",
+    "coverFile": "the-time-machine.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/h-g-wells/the-time-machine/downloads/cover.jpg",
+    "tags": ["Science Fiction", "Favorites"],
+    "epubMetadata": {
+      "title": "The Time Machine",
+      "author": "H. G. Wells",
+      "isbn": null,
+      "publisher": "William Heinemann",
+      "language": "en",
+      "publishedDate": "1895-05-07",
+      "description": "A Victorian inventor travels far into the future and discovers humanity divided into two degenerate species: the gentle Eloi and the subterranean Morlocks."
+    }
+  },
+  {
+    "slug": "the-war-of-the-worlds",
+    "title": "The War of the Worlds",
+    "author": "H. G. Wells",
+    "isbn": null,
+    "coverFile": "the-war-of-the-worlds.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/h-g-wells/the-war-of-the-worlds/downloads/cover.jpg",
+    "tags": ["Science Fiction"]
+  },
+  {
+    "slug": "the-invisible-man",
+    "title": "The Invisible Man",
+    "author": "H. G. Wells",
+    "isbn": null,
+    "coverFile": "the-invisible-man.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/h-g-wells/the-invisible-man/downloads/cover.jpg",
+    "tags": ["Science Fiction"]
+  },
+  {
+    "slug": "the-island-of-doctor-moreau",
+    "title": "The Island of Doctor Moreau",
+    "author": "H. G. Wells",
+    "isbn": null,
+    "coverFile": "the-island-of-doctor-moreau.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/h-g-wells/the-island-of-doctor-moreau/downloads/cover.jpg",
+    "tags": ["Science Fiction"]
+  },
+  {
+    "slug": "frankenstein",
+    "title": "Frankenstein",
+    "author": "Mary Shelley",
+    "isbn": null,
+    "publisher": "Lackington, Hughes, Harding, Mavor & Jones",
+    "publishedDate": "1818-01-01",
+    "language": "en",
+    "description": "A scientist creates life from dead matter, but his unnamed creature — rejected by all who see it — turns his creator's world to ruin and loss.",
+    "coverFile": "frankenstein.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/mary-shelley/frankenstein/downloads/cover.jpg",
+    "tags": ["Science Fiction", "Gothic", "Favorites"],
+    "notes": [
+      "Subtitle is *The Modern Prometheus* — worth keeping in mind. The framing narrative (Walton's letters) is easy to forget by the end.\n\n> I ought to be thy Adam, but I am rather the fallen angel."
+    ],
+    "epubMetadata": {
+      "title": "Frankenstein",
+      "author": "Mary Shelley",
+      "isbn": null,
+      "publisher": "Lackington, Hughes, Harding, Mavor & Jones",
+      "language": "en",
+      "publishedDate": "1818-01-01",
+      "description": "A scientist creates life from dead matter, but his unnamed creature — rejected by all who see it — turns his creator's world to ruin and loss."
+    }
+  },
+  {
+    "slug": "dracula",
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "isbn": null,
+    "publisher": "Archibald Constable and Company",
+    "publishedDate": "1897-05-26",
+    "language": "en",
+    "description": "An epistolary Gothic novel in which a solicitor's visit to Transylvania draws him and a band of companions into a desperate fight against Count Dracula.",
+    "coverFile": "dracula.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/bram-stoker/dracula/downloads/cover.jpg",
+    "tags": ["Gothic", "Favorites"],
+    "epubMetadata": {
+      "title": "Dracula",
+      "author": "Bram Stoker",
+      "isbn": null,
+      "publisher": "Archibald Constable and Company",
+      "language": "en",
+      "publishedDate": "1897-05-26",
+      "description": "An epistolary Gothic novel in which a solicitor's visit to Transylvania draws him and a band of companions into a desperate fight against Count Dracula."
+    }
+  },
+  {
+    "slug": "the-strange-case-of-dr-jekyll-and-mr-hyde",
+    "title": "The Strange Case of Dr. Jekyll and Mr. Hyde",
+    "author": "Robert Louis Stevenson",
+    "isbn": null,
+    "coverFile": "the-strange-case-of-dr-jekyll-and-mr-hyde.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/robert-louis-stevenson/the-strange-case-of-dr-jekyll-and-mr-hyde/downloads/cover.jpg",
+    "tags": ["Gothic", "Science Fiction"]
+  },
+  {
+    "slug": "the-picture-of-dorian-gray",
+    "title": "The Picture of Dorian Gray",
+    "author": "Oscar Wilde",
+    "isbn": null,
+    "publisher": "Ward, Lock and Company",
+    "publishedDate": "1890-07-01",
+    "language": "en",
+    "description": "A young man's soul is slowly corrupted by vanity as his portrait ages in his place, bearing the marks of every sin while he remains forever beautiful.",
+    "coverFile": "the-picture-of-dorian-gray.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/oscar-wilde/the-picture-of-dorian-gray/downloads/cover.jpg",
+    "tags": ["Gothic"],
+    "epubMetadata": {
+      "title": "The Picture of Dorian Gray",
+      "author": "Oscar Wilde",
+      "isbn": null,
+      "publisher": "Ward, Lock and Company",
+      "language": "en",
+      "publishedDate": "1890-07-01",
+      "description": "A young man's soul is slowly corrupted by vanity as his portrait ages in his place, bearing the marks of every sin while he remains forever beautiful."
+    }
+  },
+  {
+    "slug": "the-turn-of-the-screw",
+    "title": "The Turn of the Screw",
+    "author": null,
+    "isbn": null,
+    "coverFile": null,
+    "coverSourceUrl": null,
+    "tags": ["Gothic"],
+    "incomplete": ["cover", "author"]
+  },
+  {
+    "slug": "treasure-island",
+    "title": "Treasure Island",
+    "author": "Robert Louis Stevenson",
+    "isbn": null,
+    "coverFile": "treasure-island.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/robert-louis-stevenson/treasure-island/downloads/cover.jpg",
+    "tags": ["Adventure"]
+  },
+  {
+    "slug": "kidnapped",
+    "title": "Kidnapped",
+    "author": "Robert Louis Stevenson",
+    "isbn": null,
+    "coverFile": "kidnapped.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/robert-louis-stevenson/kidnapped/downloads/cover.jpg",
+    "tags": ["Adventure"]
+  },
+  {
+    "slug": "the-call-of-the-wild",
+    "title": "The Call of the Wild",
+    "author": "Jack London",
+    "isbn": null,
+    "coverFile": "the-call-of-the-wild.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jack-london/the-call-of-the-wild/downloads/cover.jpg",
+    "tags": ["Adventure", "American Literature", "Favorites"]
+  },
+  {
+    "slug": "white-fang",
+    "title": "White Fang",
+    "author": "Jack London",
+    "isbn": null,
+    "coverFile": "white-fang.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jack-london/white-fang/downloads/cover.jpg",
+    "tags": ["Adventure", "American Literature"]
+  },
+  {
+    "slug": "moby-dick",
+    "title": "Moby-Dick",
+    "author": "Herman Melville",
+    "isbn": null,
+    "publisher": "Harper & Brothers",
+    "publishedDate": "1851-10-18",
+    "language": "en",
+    "description": "The obsessive quest of Captain Ahab to hunt the white sperm whale that took his leg — a meditation on fate, obsession, and the indifferent sea.",
+    "coverFile": "moby-dick.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/herman-melville/moby-dick/downloads/cover.jpg",
+    "tags": ["Adventure", "American Literature", "Favorites"],
+    "notes": [
+      "Cetology chapters are a slog on first read but the digressions *are* the book. Tag this one to revisit Chapter 42 (*The Whiteness of the Whale*)."
+    ],
+    "epubMetadata": {
+      "title": "Moby-Dick",
+      "author": "Herman Melville",
+      "isbn": null,
+      "publisher": "Harper & Brothers",
+      "language": "en",
+      "publishedDate": "1851-10-18",
+      "description": "The obsessive quest of Captain Ahab to hunt the white sperm whale that took his leg — a meditation on fate, obsession, and the indifferent sea."
+    }
+  },
+  {
+    "slug": "gullivers-travels",
+    "title": "Gulliver’s Travels",
+    "author": "Jonathan Swift",
+    "isbn": null,
+    "coverFile": "gullivers-travels.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/jonathan-swift/gullivers-travels/downloads/cover.jpg",
+    "tags": ["Adventure"]
+  },
+  {
+    "slug": "the-scarlet-pimpernel",
+    "title": "The Scarlet Pimpernel",
+    "author": null,
+    "isbn": null,
+    "coverFile": "the-scarlet-pimpernel.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/baroness-orczy/the-scarlet-pimpernel/downloads/cover.jpg",
+    "tags": ["Adventure"],
+    "incomplete": ["author"]
+  },
+  {
+    "slug": "heart-of-darkness",
+    "title": "Heart of Darkness",
+    "author": "Joseph Conrad",
+    "isbn": null,
+    "coverFile": "heart-of-darkness.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/joseph-conrad/heart-of-darkness/downloads/cover.jpg",
+    "tags": ["Adventure"]
+  },
+  {
+    "slug": "anne-of-green-gables",
+    "title": "Anne of Green Gables",
+    "author": "L. M. Montgomery",
+    "isbn": null,
+    "coverFile": "anne-of-green-gables.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/l-m-montgomery/anne-of-green-gables/downloads/cover.jpg",
+    "tags": ["Children’s"]
+  },
+  {
+    "slug": "the-secret-garden",
+    "title": "The Secret Garden",
+    "author": "Frances Hodgson Burnett",
+    "isbn": null,
+    "coverFile": "the-secret-garden.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/frances-hodgson-burnett/the-secret-garden/downloads/cover.jpg",
+    "tags": ["Children’s"]
+  },
+  {
+    "slug": "a-little-princess",
+    "title": "A Little Princess",
+    "author": "Frances Hodgson Burnett",
+    "isbn": null,
+    "coverFile": "a-little-princess.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/frances-hodgson-burnett/a-little-princess/downloads/cover.jpg",
+    "tags": ["Children’s"]
+  },
+  {
+    "slug": "the-wind-in-the-willows",
+    "title": "The Wind in the Willows",
+    "author": "Kenneth Grahame",
+    "isbn": null,
+    "coverFile": "the-wind-in-the-willows.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/kenneth-grahame/the-wind-in-the-willows/downloads/cover.jpg",
+    "tags": ["Children’s"]
+  },
+  {
+    "slug": "the-jungle-book",
+    "title": "The Jungle Book",
+    "author": "Rudyard Kipling",
+    "isbn": null,
+    "coverFile": "the-jungle-book.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/rudyard-kipling/the-jungle-book/downloads/cover.jpg",
+    "tags": ["Children’s", "Adventure"]
+  },
+  {
+    "slug": "the-adventures-of-tom-sawyer",
+    "title": "The Adventures of Tom Sawyer",
+    "author": "Mark Twain",
+    "isbn": null,
+    "coverFile": "the-adventures-of-tom-sawyer.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/mark-twain/the-adventures-of-tom-sawyer/downloads/cover.jpg",
+    "tags": ["Children’s", "Adventure", "American Literature"]
+  },
+  {
+    "slug": "the-scarlet-letter",
+    "title": "The Scarlet Letter",
+    "author": "Nathaniel Hawthorne",
+    "isbn": null,
+    "coverFile": "the-scarlet-letter.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/nathaniel-hawthorne/the-scarlet-letter/downloads/cover.jpg",
+    "tags": ["American Literature"]
+  },
+  {
+    "slug": "the-great-gatsby",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "isbn": null,
+    "publisher": "Charles Scribner's Sons",
+    "publishedDate": "1925-04-10",
+    "language": "en",
+    "description": "Nick Carraway narrates the tragic story of the mysterious Jay Gatsby's pursuit of wealth, status, and a lost love in Jazz Age Long Island.",
+    "coverFile": "the-great-gatsby.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/f-scott-fitzgerald/the-great-gatsby/downloads/cover.jpg",
+    "tags": ["American Literature", "Favorites"],
+    "notes": [
+      "### Symbols to track\n\n- The green light at the end of Daisy's dock\n- The eyes of Doctor T. J. Eckleburg\n- The valley of ashes\n\nNick is an *unreliable* narrator — keep questioning his read on Gatsby."
+    ],
+    "epubMetadata": {
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "isbn": null,
+      "publisher": "Charles Scribner's Sons",
+      "language": "en",
+      "publishedDate": "1925-04-10",
+      "description": "Nick Carraway narrates the tragic story of the mysterious Jay Gatsby's pursuit of wealth, status, and a lost love in Jazz Age Long Island."
+    }
+  },
+  {
+    "slug": "the-awakening",
+    "title": "The Awakening",
+    "author": "Kate Chopin",
+    "isbn": null,
+    "coverFile": "the-awakening.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/kate-chopin/the-awakening/downloads/cover.jpg",
+    "tags": ["American Literature"]
+  },
+  {
+    "slug": "my-antonia",
+    "title": "My Ántonia",
+    "author": "Willa Cather",
+    "isbn": null,
+    "coverFile": "my-antonia.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/willa-cather/my-antonia/downloads/cover.jpg",
+    "tags": ["American Literature"]
+  },
+  {
+    "slug": "the-red-badge-of-courage",
+    "title": "The Red Badge of Courage",
+    "author": "Stephen Crane",
+    "isbn": null,
+    "coverFile": null,
+    "coverSourceUrl": null,
+    "tags": ["American Literature"],
+    "incomplete": ["cover"]
+  },
+  {
+    "slug": "leaves-of-grass",
+    "title": "Leaves of Grass",
+    "author": "Walt Whitman",
+    "isbn": null,
+    "coverFile": "leaves-of-grass.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/walt-whitman/leaves-of-grass/downloads/cover.jpg",
+    "tags": ["American Literature"]
+  },
+  {
+    "slug": "a-christmas-carol",
+    "title": "A Christmas Carol",
+    "author": "Charles Dickens",
+    "isbn": null,
+    "coverFile": "a-christmas-carol.jpg",
+    "coverSourceUrl": "https://standardebooks.org/ebooks/charles-dickens/a-christmas-carol/downloads/cover.jpg",
+    "tags": ["Gothic"]
+  }
+]

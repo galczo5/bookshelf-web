@@ -38,7 +38,7 @@ export default function TrashBookControl({ bookId, title }: { bookId: string; ti
           setError(null);
           setIsOpen(true);
         }}
-        className="text-sm text-red-600 hover:text-red-800"
+        className="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
       >
         Move to trash
       </button>

@@ -8,9 +8,10 @@ import { getDriveClient } from "@/lib/drive/client";
 import { DriveAuthError } from "@/lib/drive/errors";
 import { getOrCreateLibraryFolder, getOrCreateTrashFolder } from "@/lib/drive/library-folder";
 import { composeFilename, findAvailableFilename } from "@/lib/drive/upload";
+import { renameWorkingCopy } from "@/lib/drive/rename";
 import { moveDriveFile } from "@/lib/drive/trash";
 import { getUserIdByEmail } from "@/lib/users";
-import { trashConfirmedBook, restoreTrashedBook } from "@/lib/books";
+import { trashConfirmedBook, restoreTrashedBook, setWorkingCopyFilename } from "@/lib/books";
 import { db } from "@/lib/db";
 
 export async function trashBookAction(
@@ -23,7 +24,7 @@ export async function trashBookAction(
 
   const book = await db
     .selectFrom("books")
-    .select(["drive_file_id", "title", "author"])
+    .select(["drive_file_id", "title", "author", "series", "part"])
     .where("id", "=", bookId)
     .where("user_id", "=", userId)
     .where("review_state", "=", "confirmed")
@@ -55,7 +56,12 @@ export async function trashBookAction(
   const libraryFolderId = await getOrCreateLibraryFolder(drive, session.user.email);
   const trashFolderId = await getOrCreateTrashFolder(drive, libraryFolderId);
 
-  const desired = composeFilename(book.author, book.title);
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
   const driveFileId = book.drive_file_id;
 
   let originalName: string;
@@ -137,7 +143,7 @@ export async function restoreBookAction(
 
   const book = await db
     .selectFrom("books")
-    .select(["drive_file_id", "title", "author"])
+    .select(["drive_file_id", "title", "author", "series", "part"])
     .where("id", "=", bookId)
     .where("user_id", "=", userId)
     .where("review_state", "=", "confirmed")
@@ -175,7 +181,14 @@ export async function restoreBookAction(
   let originalName: string;
   try {
     const nameRes = await drive.files.get({ fileId: driveFileId, fields: "name" });
-    originalName = nameRes.data.name ?? composeFilename(book.author, book.title);
+    originalName =
+      nameRes.data.name ??
+      composeFilename({
+        author: book.author,
+        series: book.series,
+        part: book.part,
+        title: book.title,
+      });
   } catch (e: unknown) {
     const code = (e as { code?: number }).code;
     if (code === 404) {
@@ -193,7 +206,12 @@ export async function restoreBookAction(
     return { ok: false, message: `Drive file lookup failed: ${msg}` };
   }
 
-  const desired = composeFilename(book.author, book.title);
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
   const finalName = await findAvailableFilename(drive, libraryFolderId, desired);
 
   let driveMoveDone = false;
@@ -242,4 +260,63 @@ export async function restoreBookAction(
   revalidatePath("/trash");
   revalidatePath(`/books/${bookId}`);
   return { ok: true };
+}
+
+export async function retryRenameAction(
+  bookId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/signin");
+
+  const userId = await getUserIdByEmail(session.user.email);
+
+  const book = await db
+    .selectFrom("books")
+    .select(["drive_file_id", "title", "author", "series", "part"])
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("rename_pending", "=", true)
+    .executeTakeFirst();
+
+  if (!book?.drive_file_id) {
+    return { ok: false, message: "Book not found or rename not pending." };
+  }
+
+  const desired = composeFilename({
+    author: book.author,
+    series: book.series,
+    part: book.part,
+    title: book.title,
+  });
+
+  let drive: drive_v3.Drive;
+  try {
+    drive = await getDriveClient();
+  } catch (e) {
+    if (e instanceof DriveAuthError) {
+      await signOut({ redirect: false });
+      redirect("/signin?expired=1");
+    }
+    throw e;
+  }
+
+  const libraryFolderId = await getOrCreateLibraryFolder(drive, session.user.email);
+
+  try {
+    const finalName = await renameWorkingCopy(drive, book.drive_file_id, libraryFolderId, desired);
+    await setWorkingCopyFilename(bookId, userId, {
+      driveFileName: finalName,
+      renamePending: false,
+    });
+    revalidatePath(`/books/${bookId}`);
+    return { ok: true };
+  } catch (e) {
+    if (e instanceof DriveAuthError) {
+      await signOut({ redirect: false });
+      redirect("/signin?expired=1");
+    }
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, message: `Rename failed: ${msg}` };
+  }
 }

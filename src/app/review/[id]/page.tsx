@@ -1,66 +1,8 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getUserIdByEmail } from "@/lib/users";
-import { getDraftWithBook, deleteDraftAndBook, updateProposals } from "@/lib/book-drafts";
-import { enrichBook, EnrichmentFailedError } from "@/lib/enrichment/client";
-import type { EnrichmentInput } from "@/lib/enrichment/types";
-import type { EnrichmentProposals } from "@/lib/enrichment/types";
+import { getDraftWithBook } from "@/lib/book-drafts";
 import { ReviewForm } from "./review-form";
-
-function ReviewFormSkeleton() {
-  return (
-    <div className="space-y-4 animate-pulse">
-      <div className="h-6 w-3/4 rounded bg-zinc-200" />
-      <div className="h-10 rounded bg-zinc-100" />
-      <div className="h-6 w-1/2 rounded bg-zinc-200" />
-      <div className="h-10 rounded bg-zinc-100" />
-      <div className="h-6 w-1/3 rounded bg-zinc-200" />
-      <div className="h-10 rounded bg-zinc-100" />
-      <div className="h-10 rounded bg-zinc-200" />
-    </div>
-  );
-}
-
-async function EnrichedReviewForm({
-  bookId,
-  userId,
-  embedded,
-  filename,
-}: {
-  bookId: string;
-  userId: string;
-  embedded: {
-    title: string;
-    author: string | null;
-    isbn: string | null;
-    coverDataUrl: string | null;
-  };
-  filename: string;
-}) {
-  const input: EnrichmentInput = {
-    filename,
-    embeddedTitle: embedded.title || null,
-    embeddedAuthor: embedded.author,
-    embeddedIsbn: embedded.isbn,
-    frontMatterStrings: [],
-  };
-
-  let proposals: EnrichmentProposals | null = null;
-  try {
-    proposals = await enrichBook(input);
-    await updateProposals(bookId, proposals);
-  } catch (err) {
-    if (err instanceof EnrichmentFailedError) {
-      await deleteDraftAndBook(bookId, userId);
-      redirect("/?error=enrichment_failed");
-    }
-    await deleteDraftAndBook(bookId, userId);
-    redirect("/?error=enrichment_failed");
-  }
-
-  return <ReviewForm bookId={bookId} embedded={embedded} proposals={proposals} />;
-}
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -83,31 +25,6 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
     coverDataUrl,
   };
 
-  const isMissing =
-    !draft.embedded.title ||
-    !draft.embedded.author ||
-    !draft.embedded.isbn ||
-    !draft.embedded.coverBytes;
-
-  let formContent: React.ReactNode;
-
-  if (draft.proposals !== null) {
-    formContent = <ReviewForm bookId={id} embedded={embedded} proposals={draft.proposals} />;
-  } else if (!isMissing) {
-    formContent = <ReviewForm bookId={id} embedded={embedded} proposals={null} />;
-  } else {
-    formContent = (
-      <Suspense fallback={<ReviewFormSkeleton />}>
-        <EnrichedReviewForm
-          bookId={id}
-          userId={userId}
-          embedded={embedded}
-          filename={draft.filename}
-        />
-      </Suspense>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-start justify-center bg-zinc-50 pt-20">
       <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
@@ -116,7 +33,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           {draft.filename}
         </p>
 
-        {formContent}
+        <ReviewForm bookId={id} embedded={embedded} />
       </div>
     </div>
   );

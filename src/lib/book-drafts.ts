@@ -11,6 +11,10 @@ export interface CreateDraftInput {
     isbn: string | null;
     coverBytes: Buffer | null;
     coverMime: string | null;
+    publisher: string | null;
+    language: string | null;
+    publishedDate: string | null;
+    description: string | null;
   };
   stagedBytes: Buffer;
 }
@@ -36,6 +40,8 @@ export interface ConfirmDraftInput {
   coverBytes: Buffer | null;
   coverMime: string | null;
   driveFileId: string;
+  driveFileName: string;
+  originalDriveFileId: string;
 }
 
 export async function createDraft(input: CreateDraftInput): Promise<string> {
@@ -50,6 +56,10 @@ export async function createDraft(input: CreateDraftInput): Promise<string> {
         isbn: input.embeddedMetadata.isbn,
         cover_bytes: input.embeddedMetadata.coverBytes,
         cover_mime: input.embeddedMetadata.coverMime,
+        publisher: input.embeddedMetadata.publisher,
+        language: input.embeddedMetadata.language,
+        published_date: input.embeddedMetadata.publishedDate,
+        description: input.embeddedMetadata.description,
         review_state: "pending",
       })
       .returning("id")
@@ -135,6 +145,8 @@ export async function confirmDraft(
       .updateTable("books")
       .set({
         drive_file_id: confirmed.driveFileId,
+        drive_file_name: confirmed.driveFileName,
+        original_drive_file_id: confirmed.originalDriveFileId,
         title: confirmed.title,
         author: confirmed.author,
         isbn: confirmed.isbn,

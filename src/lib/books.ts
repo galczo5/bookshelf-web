@@ -8,13 +8,24 @@ export interface BookSummary {
   author: string | null;
   hasCover: boolean;
   createdAt: Date;
-  tags: Array<{ id: string; name: string }>;
+  tags: Array<{ id: string; name: string; color: string }>;
 }
 
 export interface BookDetail extends BookSummary {
   isbn: string | null;
   coverMime: string | null;
   trashedAt: Date | null;
+  updatedAt: Date;
+  publisher: string | null;
+  language: string | null;
+  publishedDate: string | null;
+  description: string | null;
+  series: string | null;
+  part: string | null;
+  driveFileId: string | null;
+  driveFileName: string | null;
+  originalDriveFileId: string | null;
+  renamePending: boolean;
 }
 
 export interface TrashedBookSummary extends BookSummary {
@@ -43,14 +54,19 @@ export async function listConfirmedBooks(userId: string): Promise<BookSummary[]>
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["book_tags.book_id", "tags.id as tag_id", "tags.name as tag_name"])
+    .select([
+      "book_tags.book_id",
+      "tags.id as tag_id",
+      "tags.name as tag_name",
+      "tags.color as tag_color",
+    ])
     .where("book_tags.book_id", "in", bookIds)
     .execute();
 
-  const tagsByBookId = new Map<string, Array<{ id: string; name: string }>>();
+  const tagsByBookId = new Map<string, Array<{ id: string; name: string; color: string }>>();
   for (const row of tagRows) {
     const list = tagsByBookId.get(row.book_id) ?? [];
-    list.push({ id: row.tag_id, name: row.tag_name });
+    list.push({ id: row.tag_id, name: row.tag_name, color: row.tag_color });
     tagsByBookId.set(row.book_id, list);
   }
 
@@ -73,7 +89,18 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
       "author",
       "isbn",
       "cover_mime",
+      "publisher",
+      "language",
+      "published_date",
+      "description",
+      "series",
+      "part",
+      "drive_file_id",
+      "drive_file_name",
+      "original_drive_file_id",
+      "rename_pending",
       "created_at",
+      "updated_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
     ])
     .where("id", "=", bookId)
@@ -87,7 +114,7 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["tags.id as tag_id", "tags.name as tag_name"])
+    .select(["tags.id as tag_id", "tags.name as tag_name", "tags.color as tag_color"])
     .where("book_tags.book_id", "=", bookId)
     .execute();
 
@@ -97,10 +124,21 @@ export async function getConfirmedBook(bookId: string, userId: string): Promise<
     author: book.author,
     isbn: book.isbn,
     coverMime: book.cover_mime,
+    publisher: book.publisher,
+    language: book.language,
+    publishedDate: book.published_date,
+    description: book.description,
+    series: book.series,
+    part: book.part,
+    driveFileId: book.drive_file_id,
+    driveFileName: book.drive_file_name,
+    originalDriveFileId: book.original_drive_file_id,
+    renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,
+    updatedAt: book.updated_at,
     trashedAt: null,
-    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
+    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name, color: r.tag_color })),
   };
 }
 
@@ -127,14 +165,19 @@ export async function listTrashedBooks(userId: string): Promise<TrashedBookSumma
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["book_tags.book_id", "tags.id as tag_id", "tags.name as tag_name"])
+    .select([
+      "book_tags.book_id",
+      "tags.id as tag_id",
+      "tags.name as tag_name",
+      "tags.color as tag_color",
+    ])
     .where("book_tags.book_id", "in", bookIds)
     .execute();
 
-  const tagsByBookId = new Map<string, Array<{ id: string; name: string }>>();
+  const tagsByBookId = new Map<string, Array<{ id: string; name: string; color: string }>>();
   for (const row of tagRows) {
     const list = tagsByBookId.get(row.book_id) ?? [];
-    list.push({ id: row.tag_id, name: row.tag_name });
+    list.push({ id: row.tag_id, name: row.tag_name, color: row.tag_color });
     tagsByBookId.set(row.book_id, list);
   }
 
@@ -158,7 +201,18 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
       "author",
       "isbn",
       "cover_mime",
+      "publisher",
+      "language",
+      "published_date",
+      "description",
+      "series",
+      "part",
+      "drive_file_id",
+      "drive_file_name",
+      "original_drive_file_id",
+      "rename_pending",
       "created_at",
+      "updated_at",
       "trashed_at",
       sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover"),
     ])
@@ -172,7 +226,7 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
   const tagRows = await db
     .selectFrom("book_tags")
     .innerJoin("tags", "tags.id", "book_tags.tag_id")
-    .select(["tags.id as tag_id", "tags.name as tag_name"])
+    .select(["tags.id as tag_id", "tags.name as tag_name", "tags.color as tag_color"])
     .where("book_tags.book_id", "=", bookId)
     .execute();
 
@@ -182,11 +236,160 @@ export async function getOwnedBook(bookId: string, userId: string): Promise<Book
     author: book.author,
     isbn: book.isbn,
     coverMime: book.cover_mime,
+    publisher: book.publisher,
+    language: book.language,
+    publishedDate: book.published_date,
+    description: book.description,
+    series: book.series,
+    part: book.part,
+    driveFileId: book.drive_file_id,
+    driveFileName: book.drive_file_name,
+    originalDriveFileId: book.original_drive_file_id,
+    renamePending: book.rename_pending,
     hasCover: book.has_cover,
     createdAt: book.created_at,
+    updatedAt: book.updated_at,
     trashedAt: book.trashed_at ?? null,
-    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name })),
+    tags: tagRows.map((r) => ({ id: r.tag_id, name: r.tag_name, color: r.tag_color })),
   };
+}
+
+export interface UpdateBookMetadataFields {
+  title: string;
+  author: string | null;
+  isbn: string | null;
+  publisher?: string | null;
+  language?: string | null;
+  publishedDate?: string | null;
+  description?: string | null;
+  series?: string | null;
+  part?: string | null;
+  /** When provided, replaces the stored cover. When omitted, the cover is left unchanged. */
+  cover?: { bytes: Buffer; mime: string };
+}
+
+export async function updateBookMetadata(
+  bookId: string,
+  userId: string,
+  fields: UpdateBookMetadataFields
+): Promise<{ updated: true } | null> {
+  const values: Record<string, unknown> = {
+    title: fields.title,
+    author: fields.author,
+    isbn: fields.isbn,
+    updated_at: sql`NOW()`,
+  };
+
+  if ("publisher" in fields) values.publisher = fields.publisher;
+  if ("language" in fields) values.language = fields.language;
+  if ("publishedDate" in fields) values.published_date = fields.publishedDate;
+  if ("description" in fields) values.description = fields.description;
+  if ("series" in fields) values.series = fields.series;
+  if ("part" in fields) values.part = fields.part;
+
+  if (fields.cover) {
+    values.cover_bytes = fields.cover.bytes;
+    values.cover_mime = fields.cover.mime;
+  }
+
+  const row = await db
+    .updateTable("books")
+    .set(values)
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .returning("id")
+    .executeTakeFirst();
+
+  if (!row) return null;
+  return { updated: true };
+}
+
+export interface BookStats {
+  totalBooks: number;
+  totalTags: number;
+  untaggedBooks: number;
+}
+
+export async function listUserBookStats(userId: string): Promise<BookStats> {
+  const [booksRow, tagsRow, untaggedRow] = await Promise.all([
+    db
+      .selectFrom("books")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .where("review_state", "=", "confirmed")
+      .where("trashed_at", "is", null)
+      .executeTakeFirstOrThrow(),
+    db
+      .selectFrom("tags")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .executeTakeFirstOrThrow(),
+    db
+      .selectFrom("books")
+      .select((eb) => eb.fn.count<string>("id").as("count"))
+      .where("user_id", "=", userId)
+      .where("review_state", "=", "confirmed")
+      .where("trashed_at", "is", null)
+      .where((eb) =>
+        eb.not(
+          eb.exists(
+            eb.selectFrom("book_tags").select("book_id").whereRef("book_id", "=", "books.id")
+          )
+        )
+      )
+      .executeTakeFirstOrThrow(),
+  ]);
+
+  return {
+    totalBooks: Number(booksRow.count),
+    totalTags: Number(tagsRow.count),
+    untaggedBooks: Number(untaggedRow.count),
+  };
+}
+
+export interface RecentBook {
+  id: string;
+  title: string;
+  hasCover: boolean;
+}
+
+export async function listRecentBooks(userId: string, limit = 3): Promise<RecentBook[]> {
+  const rows = await db
+    .selectFrom("books")
+    .select(["id", "title", sql<boolean>`cover_bytes IS NOT NULL`.as("has_cover")])
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .where("trashed_at", "is", null)
+    .orderBy("created_at", "desc")
+    .limit(limit)
+    .execute();
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    hasCover: r.has_cover,
+  }));
+}
+
+export async function setWorkingCopyFilename(
+  bookId: string,
+  userId: string,
+  opts: { driveFileName?: string; renamePending: boolean }
+): Promise<void> {
+  const values: Record<string, unknown> = {
+    rename_pending: opts.renamePending,
+    updated_at: sql`NOW()`,
+  };
+  if (opts.driveFileName !== undefined) values.drive_file_name = opts.driveFileName;
+  await db
+    .updateTable("books")
+    .set(values)
+    .where("id", "=", bookId)
+    .where("user_id", "=", userId)
+    .where("review_state", "=", "confirmed")
+    .execute();
 }
 
 export async function trashConfirmedBook(

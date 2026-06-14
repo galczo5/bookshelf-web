@@ -11,11 +11,14 @@ import {
   findCollidingTag,
   countBookTags,
   getTagById,
+  updateTagColor,
+  type Tag,
 } from "@/lib/tags";
+import { TAG_COLORS } from "@/lib/tag-colors";
 
 export type TagActionState = {
   ok: boolean;
-  tag?: { id: string; name: string };
+  tag?: Tag;
   message?: string;
 };
 
@@ -169,5 +172,30 @@ export async function renameTagAction(
     return { ok: true, kind: "renamed", tag: outcome.tag };
   } catch {
     return { ok: false, kind: "error", message: "Could not rename tag. Please try again." };
+  }
+}
+
+export type UpdateTagColorActionState = { ok: boolean; message?: string };
+
+export async function updateTagColorAction(
+  _prev: UpdateTagColorActionState,
+  formData: FormData
+): Promise<UpdateTagColorActionState> {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/signin");
+
+  const tagId = String(formData.get("tagId") ?? "").trim();
+  const color = String(formData.get("color") ?? "").trim();
+
+  if (!tagId) return { ok: false, message: "Missing tag id" };
+  if (!(TAG_COLORS as readonly string[]).includes(color))
+    return { ok: false, message: "Invalid color" };
+
+  try {
+    const userId = await getUserIdByEmail(session.user.email);
+    await updateTagColor(userId, tagId, color);
+    return { ok: true };
+  } catch {
+    return { ok: false, message: "Could not update tag color. Please try again." };
   }
 }

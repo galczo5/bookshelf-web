@@ -20,7 +20,9 @@ Stack hand-off (from @context/foundation/tech-stack.md): Next.js 16 + React 19 +
 
 Standard scripts live in @package.json — see the `scripts` field for `dev`, `build`, `start`, `lint`.
 
-No test framework is configured yet. Don't fabricate test commands; if you add a runner, add the script in `package.json`, ensure it runs in the existing ESLint/CI flow, and add the command (with a one-line description) here.
+**Dev seed**: `npm run db:seed` prefills the local dev DB with 50 example public-domain books (covers, tags, notes). Dev-only (refuses when `NODE_ENV=production` unless `--force`); idempotent (re-running keeps exactly 50 seed books, leaves real imports untouched). Resolves the seed user from `--email <addr>` or `BOOKSHELF_ALLOWED_EMAIL`; needs `DATABASE_URL`.
+
+Test runners: **Vitest** for unit/integration (`npm test`, `npm run test:integration`, `npm run test:migrate-replay`) against the Docker Postgres; **Playwright** for e2e (`npm run test:e2e`, specs in `e2e/`). The e2e harness boots `next dev` itself, mints a NextAuth session cookie instead of doing live Google OAuth, and seeds/cleans uniquely-identified rows rather than truncating — `e2e/seed.spec.ts` is the reference test for conventions. Don't fabricate test commands; if you add another runner, add the script in `package.json`, ensure it runs in the existing ESLint/CI flow, and add the command (with a one-line description) here.
 
 ## Traps / non-obvious
 

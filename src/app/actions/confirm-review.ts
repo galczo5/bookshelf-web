@@ -4,51 +4,21 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getDriveClient } from "@/lib/drive/client";
 import { DriveAuthError } from "@/lib/drive/errors";
-import { getOrCreateLibraryFolder } from "@/lib/drive/library-folder";
-import { uploadBookToDrive, findAvailableFilename, composeFilename } from "@/lib/drive/upload";
+import {
+  getOrCreateLibraryFolder,
+  getOrCreateOriginalFilesFolder,
+} from "@/lib/drive/library-folder";
+import {
+  uploadBookToDrive,
+  findAvailableFilename,
+  composeFilename,
+  sanitizeOriginalFilename,
+} from "@/lib/drive/upload";
 import { getUserIdByEmail } from "@/lib/users";
 import { getDraftWithBook, confirmDraft } from "@/lib/book-drafts";
+import { fetchCover } from "@/lib/enrichment/fetch-cover";
 
 export type ConfirmReviewState = null | { ok: false; message: string };
-
-async function fetchCover(url: string): Promise<{ bytes: Buffer; mime: string }> {
-  if (!url.startsWith("https://")) {
-    throw new Error("Cover URL must use HTTPS");
-  }
-
-  const resp = await fetch(url, { signal: AbortSignal.timeout(5000) });
-  if (!resp.ok) {
-    throw new Error(`Cover fetch failed with status ${resp.status}`);
-  }
-
-  const contentType = resp.headers.get("content-type") ?? "";
-  if (!contentType.startsWith("image/")) {
-    throw new Error(`Cover URL did not return an image (got ${contentType})`);
-  }
-
-  const mime = contentType.split(";")[0].trim();
-  const reader = resp.body?.getReader();
-  if (!reader) throw new Error("No response body");
-
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  const MAX = 5 * 1024 * 1024;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (value) {
-      total += value.byteLength;
-      if (total > MAX) {
-        await reader.cancel();
-        throw new Error("Cover image exceeds 5 MB limit");
-      }
-      chunks.push(value);
-    }
-  }
-
-  return { bytes: Buffer.concat(chunks), mime };
-}
 
 export async function confirmReviewAction(
   _prev: ConfirmReviewState,
@@ -90,14 +60,26 @@ export async function confirmReviewAction(
     }
   }
 
-  let fileId: string | undefined;
+  let workingFileId: string | undefined;
+  let originalFileId: string | undefined;
 
   try {
     const drive = await getDriveClient();
     const folderId = await getOrCreateLibraryFolder(drive, session.user.email);
-    const desired = composeFilename(author || null, title);
+
+    const desired = composeFilename({ author: author || null, series: null, part: null, title });
     const finalName = await findAvailableFilename(drive, folderId, desired);
-    fileId = await uploadBookToDrive(drive, folderId, finalName, draft.stagedBytes);
+    workingFileId = await uploadBookToDrive(drive, folderId, finalName, draft.stagedBytes);
+
+    const originalFolderId = await getOrCreateOriginalFilesFolder(drive, folderId);
+    const originalDesired = sanitizeOriginalFilename(draft.filename);
+    const originalFinalName = await findAvailableFilename(drive, originalFolderId, originalDesired);
+    originalFileId = await uploadBookToDrive(
+      drive,
+      originalFolderId,
+      originalFinalName,
+      draft.stagedBytes
+    );
 
     await confirmDraft(bookId, userId, {
       title,
@@ -105,19 +87,30 @@ export async function confirmReviewAction(
       isbn: isbn || null,
       coverBytes,
       coverMime,
-      driveFileId: fileId,
+      driveFileId: workingFileId,
+      driveFileName: finalName,
+      originalDriveFileId: originalFileId,
     });
   } catch (e) {
     if (e instanceof DriveAuthError) {
       await signOut({ redirect: false });
       redirect("/signin?expired=1");
     }
-    if (fileId) {
-      try {
-        const drive = await getDriveClient();
-        await drive.files.delete({ fileId });
-      } catch (deleteErr) {
-        console.error("Rollback delete failed:", deleteErr);
+    const drive = await getDriveClient().catch(() => null);
+    if (drive) {
+      if (workingFileId) {
+        try {
+          await drive.files.delete({ fileId: workingFileId });
+        } catch (deleteErr) {
+          console.error("Rollback delete (working copy) failed:", deleteErr);
+        }
+      }
+      if (originalFileId) {
+        try {
+          await drive.files.delete({ fileId: originalFileId });
+        } catch (deleteErr) {
+          console.error("Rollback delete (original copy) failed:", deleteErr);
+        }
       }
     }
     console.error("Confirm review failed:", e);
