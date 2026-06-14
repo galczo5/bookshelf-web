@@ -20,12 +20,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-const navItems = [
-  { href: "/", label: "Library", icon: BookOpen },
-  { href: "/tags", label: "Tags", icon: Tag },
-  { href: "/trash", label: "Trash", icon: Trash2 },
-];
-
 interface AppSidebarProps {
   email: string;
   stats: BookStats;
@@ -34,6 +28,11 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ email, stats, tags, recentBooks }: AppSidebarProps) {
+  const navItems = [
+    { href: "/", label: "Library", icon: BookOpen, badge: stats.untaggedBooks || undefined },
+    { href: "/tags", label: "Tags", icon: Tag },
+    { href: "/trash", label: "Trash", icon: Trash2 },
+  ];
   const displayedTags = tags.slice(0, 8);
   const overflow = tags.length - 8;
 
@@ -67,9 +66,9 @@ export function AppSidebar({ email, stats, tags, recentBooks }: AppSidebarProps)
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                      {item.href === "/" && stats.untaggedBooks > 0 && (
-                        <span className="ml-auto text-xs tabular-nums text-muted-foreground">
-                          {stats.untaggedBooks}
+                      {item.badge !== undefined && (
+                        <span className="ml-auto rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums text-muted-foreground">
+                          {item.badge}
                         </span>
                       )}
                     </Link>
@@ -124,7 +123,6 @@ export function AppSidebar({ email, stats, tags, recentBooks }: AppSidebarProps)
                     <SidebarMenuButton asChild>
                       <Link href={`/books/${book.id}`} className="flex items-center gap-2">
                         {book.hasCover ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={`/api/books/${book.id}/cover`}
                             alt=""

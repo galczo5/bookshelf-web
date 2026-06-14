@@ -11,8 +11,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
 
-  await upsertUserByEmail(session.user.email);
-  const userId = await getUserIdByEmail(session.user.email);
+  let userId: string;
+  try {
+    await upsertUserByEmail(session.user.email);
+    userId = await getUserIdByEmail(session.user.email);
+  } catch {
+    redirect("/signin");
+  }
 
   const [stats, tags, recentBooks] = await Promise.all([
     listUserBookStats(userId),
