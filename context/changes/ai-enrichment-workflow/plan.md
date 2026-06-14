@@ -411,27 +411,27 @@ Remove the blocking SSR enrichment from `page.tsx` and refactor `review-form.tsx
 
 #### Automated
 
-- [x] 3.1 TypeScript compiles
-- [x] 3.2 `field-chat-modal.tsx` exists and exports `FieldChatModal`
-- [x] 3.3 Linting passes
+- [x] 3.1 TypeScript compiles — 9a59dab
+- [x] 3.2 `field-chat-modal.tsx` exists and exports `FieldChatModal` — 9a59dab
+- [x] 3.3 Linting passes — 9a59dab
 
 #### Manual
 
-- [x] 3.4 Retry button opens chat modal with current proposal visible
-- [x] 3.5 Typing + submitting shows loading then new proposal
-- [x] 3.6 "Apply" closes modal and updates field in panel
-- [x] 3.7 Other retry buttons disabled while modal is open
-- [x] 3.8 Closing without applying preserves original proposal
-- [x] 3.9 Failed retry shows error in modal without closing it
+- [x] 3.4 Retry button opens chat modal with current proposal visible — 9a59dab
+- [x] 3.5 Typing + submitting shows loading then new proposal — 9a59dab
+- [x] 3.6 "Apply" closes modal and updates field in panel — 9a59dab
+- [x] 3.7 Other retry buttons disabled while modal is open — 9a59dab
+- [x] 3.8 Closing without applying preserves original proposal — 9a59dab
+- [x] 3.9 Failed retry shows error in modal without closing it — 9a59dab
 
 ### Phase 4: Import Review Flow Refactor
 
 #### Automated
 
-- [ ] 4.1 TypeScript compiles
-- [ ] 4.2 `review-form.tsx` does not import from `@/lib/enrichment/client`
-- [ ] 4.3 `page.tsx` does not import `enrichBook` or `updateProposals`
-- [ ] 4.4 Linting passes
+- [x] 4.1 TypeScript compiles
+- [x] 4.2 `review-form.tsx` does not import from `@/lib/enrichment/client`
+- [x] 4.3 `page.tsx` does not import `enrichBook` or `updateProposals`
+- [x] 4.4 Linting passes
 
 #### Manual
 

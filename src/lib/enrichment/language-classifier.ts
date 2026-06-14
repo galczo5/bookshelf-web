@@ -3,6 +3,14 @@ import OpenAI from "openai";
 import type { EnrichmentInput, LanguageDetectionResult } from "./types";
 import { EnrichmentFailedError } from "./client";
 
+function isAbortLike(err: unknown): boolean {
+  if (err instanceof OpenAI.APIUserAbortError) return true;
+  if (err instanceof Error) {
+    return err.name === "AbortError" || err.name === "TimeoutError";
+  }
+  return false;
+}
+
 let _client: OpenAI | null = null;
 
 function getClient(): OpenAI {
@@ -36,7 +44,7 @@ export async function detectLanguage(input: EnrichmentInput): Promise<LanguageDe
         input: prompt,
         max_output_tokens: 32,
       },
-      { signal: AbortSignal.timeout(15000) }
+      { signal: AbortSignal.timeout(30000) }
     );
 
     const language = response.output_text.trim();
@@ -45,9 +53,7 @@ export async function detectLanguage(input: EnrichmentInput): Promise<LanguageDe
     return { language, responseId: response.id };
   } catch (err) {
     if (err instanceof EnrichmentFailedError) throw err;
-    if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) {
-      throw new EnrichmentFailedError("timeout");
-    }
+    if (isAbortLike(err)) throw new EnrichmentFailedError("timeout");
     console.error("[detectLanguage] unexpected error:", err);
     throw new EnrichmentFailedError("network");
   }

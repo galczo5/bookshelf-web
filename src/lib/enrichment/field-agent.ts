@@ -4,6 +4,14 @@ import type { EnrichmentInput, EnrichableField, FieldAgentResult } from "./types
 import { EnrichmentFailedError } from "./client";
 import { fieldSchemas } from "./schema";
 
+function isAbortLike(err: unknown): boolean {
+  if (err instanceof OpenAI.APIUserAbortError) return true;
+  if (err instanceof Error) {
+    return err.name === "AbortError" || err.name === "TimeoutError";
+  }
+  return false;
+}
+
 let _client: OpenAI | null = null;
 
 function getClient(): OpenAI {
@@ -114,19 +122,20 @@ export async function enrichField(
         )
       : client.responses.create(sharedParams, { signal: AbortSignal.timeout(30000) }));
 
-    let parsed: unknown;
+    let parsed: { proposal: unknown };
     try {
-      parsed = JSON.parse(response.output_text);
+      parsed = JSON.parse(response.output_text) as { proposal: unknown };
     } catch {
       throw new EnrichmentFailedError("parse");
     }
 
-    return { proposal: parsed as FieldAgentResult["proposal"], responseId: response.id };
+    return { proposal: parsed.proposal as FieldAgentResult["proposal"], responseId: response.id };
   } catch (err) {
     if (err instanceof EnrichmentFailedError) throw err;
     if (err instanceof Error && (err.name === "AbortError" || err.name === "TimeoutError")) {
       throw new EnrichmentFailedError("timeout");
     }
+    if (isAbortLike(err)) throw new EnrichmentFailedError("timeout");
     console.error(`[enrichField:${field}] unexpected error:`, err);
     throw new EnrichmentFailedError("network");
   }

@@ -261,15 +261,26 @@ const coverFieldSchema = {
 
 import type { EnrichableField } from "./types";
 
+// OpenAI structured output requires type:"object" at the root of the schema.
+// Wrap each field's anyOf schema in a single-property envelope; field-agent.ts unwraps it.
+function wrapSchema(inner: Record<string, unknown>): Record<string, unknown> {
+  return {
+    type: "object",
+    properties: { proposal: inner },
+    required: ["proposal"],
+    additionalProperties: false,
+  };
+}
+
 export const fieldSchemas: Record<EnrichableField, Record<string, unknown>> = {
-  title: textFieldSchema,
-  author: textFieldSchema,
-  isbn: textFieldSchema,
-  cover: coverFieldSchema,
-  publisher: textFieldSchema,
-  language: textFieldSchema,
-  publishedDate: textFieldSchema,
-  description: textFieldSchema,
-  series: textFieldSchema,
-  part: textFieldSchema,
+  title: wrapSchema(textFieldSchema),
+  author: wrapSchema(textFieldSchema),
+  isbn: wrapSchema(textFieldSchema),
+  cover: wrapSchema(coverFieldSchema),
+  publisher: wrapSchema(textFieldSchema),
+  language: wrapSchema(textFieldSchema),
+  publishedDate: wrapSchema(textFieldSchema),
+  description: wrapSchema(textFieldSchema),
+  series: wrapSchema(textFieldSchema),
+  part: wrapSchema(textFieldSchema),
 };
