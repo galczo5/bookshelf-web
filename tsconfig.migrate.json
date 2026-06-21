@@ -12,10 +12,9 @@
   },
   "include": [
     "scripts/migrate.mts",
+    "scripts/seed.mts",
+    "scripts/seed-core.mts",
     "src/lib/db/migrations/**/*.mts"
   ],
-  "exclude": [
-    "node_modules",
-    ".next"
-  ]
+  "exclude": ["node_modules", ".next"]
 }
