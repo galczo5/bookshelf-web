@@ -362,10 +362,10 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Config-helper unit tests pass: `npm test`
-- [x] 2.4 Build passes: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit` — 69a9499
+- [x] 2.2 Linting passes: `npm run lint` — 69a9499
+- [x] 2.3 Config-helper unit tests pass: `npm test` — 69a9499
+- [x] 2.4 Build passes: `npm run build` — 69a9499
 
 #### Manual
 
@@ -380,8 +380,8 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [ ] 3.1 Image builds for local arch: `docker build -f Dockerfile.allinone -t bookshelf:test .`
-- [ ] 3.2 Multi-arch buildx build succeeds
+- [x] 3.1 Image builds for local arch: `docker build -f Dockerfile.allinone -t bookshelf:test .`
+- [x] 3.2 Multi-arch buildx build succeeds
 - [ ] 3.3 Container boots and Postgres becomes ready (via Phase 4 smoke test)
 
 #### Manual

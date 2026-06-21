@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import path from "node:path";
-import os from "node:os";
 
 function configFile(): string {
   return process.env.BOOKSHELF_CONFIG_FILE ?? "/data/config.env";
@@ -68,7 +67,9 @@ export async function writeConfig(values: ConfigValues): Promise<void> {
   };
   if (values.OPENAI_MODEL) merged.OPENAI_MODEL = values.OPENAI_MODEL;
 
-  const tmp = path.join(os.tmpdir(), `config-${Date.now()}.env`);
+  // Temp file must live on the same filesystem as the target so rename(2)
+  // works atomically (cross-device rename fails with EXDEV on Docker volumes).
+  const tmp = path.join(path.dirname(configFile()), `.config-${Date.now()}.env.tmp`);
   writeFileSync(tmp, serializeEnvFile(merged), { encoding: "utf8", mode: 0o600 });
   renameSync(tmp, configFile());
 }
