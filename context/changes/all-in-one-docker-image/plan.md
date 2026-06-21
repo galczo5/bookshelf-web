@@ -380,8 +380,8 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [x] 3.1 Image builds for local arch: `docker build -f Dockerfile.allinone -t bookshelf:test .`
-- [x] 3.2 Multi-arch buildx build succeeds
+- [x] 3.1 Image builds for local arch: `docker build -f Dockerfile.allinone -t bookshelf:test .` — 0a80f9b
+- [x] 3.2 Multi-arch buildx build succeeds — 0a80f9b
 - [ ] 3.3 Container boots and Postgres becomes ready (via Phase 4 smoke test)
 
 #### Manual
@@ -395,12 +395,12 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [ ] 4.1 Smoke test passes end-to-end: `bash scripts/smoke-allinone.sh`
-- [ ] 4.2 Smoke test fails loudly when the entrypoint is broken
+- [x] 4.1 Smoke test passes end-to-end: `bash scripts/smoke-allinone.sh`
+- [x] 4.2 Smoke test fails loudly when the entrypoint is broken
 
 #### Manual
 
-- [ ] 4.3 Clean `handoff.md` run-through reaches a working signed-in library
+- [x] 4.3 Clean `handoff.md` run-through reaches a working signed-in library
 - [ ] 4.4 Full pipeline with real creds: import → enrich → confirm → library
 - [ ] 4.5 Demo-data opt-in yields a 50-book browsable library without Drive
 - [ ] 4.6 Remote-host `AUTH_URL` caveat verified

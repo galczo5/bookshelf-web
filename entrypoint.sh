@@ -26,8 +26,9 @@ PG_BIN_DIR=$(dirname "$PG_BIN")
 export PATH="$PATH:$PG_BIN_DIR"
 
 # ── Postgres data directory ─────────────────────────────────────────────────
-# /data is the volume root; make it world-accessible so the nextjs user can
-# write the config file and sentinel.
+# /data is the volume root. nextjs user must be able to create files here
+# (config.env, sentinel, temp files). Postgres gets its own subdir below.
+chown nextjs:nodejs /data 2>/dev/null || true
 chmod 755 /data 2>/dev/null || true
 
 mkdir -p "$PGDATA"

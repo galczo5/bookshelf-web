@@ -2,16 +2,27 @@
  * Importable seed core — no `server-only` and no `@/lib/*` imports so this
  * can be called from a Next.js server action and from the CLI alike.
  *
- * Asset resolution: SEED_DIR is derived from import.meta.dirname so the
- * Dockerfile only needs to place books.json + covers/ adjacent to the
- * compiled/bundled module (see Dockerfile.allinone, Phase 3).
+ * Asset resolution: resolved lazily so this module can be imported (bundled
+ * by Next.js) without crashing at module-load time. import.meta.dirname is
+ * undefined when bundled by Turbopack; the fallback uses process.cwd() +
+ * the conventional asset location for dev vs production.
  */
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { Pool } from "pg";
 
-const SEED_DIR = path.join(import.meta.dirname, "seed");
-const COVERS_DIR = path.join(SEED_DIR, "covers");
+function seedDir(): string {
+  if (import.meta.dirname) return path.join(import.meta.dirname, "seed");
+  // Bundled by Next.js: cwd is the project root in dev, /app in the Docker image.
+  return path.join(
+    process.cwd(),
+    process.env.NODE_ENV === "production" ? "dist/scripts/seed" : "scripts/seed"
+  );
+}
+
+function coversDir(): string {
+  return path.join(seedDir(), "covers");
+}
 
 export type Book = {
   slug: string;
@@ -65,7 +76,7 @@ export function preflight(books: Book[]): void {
     if (slugs.has(book.slug)) throw new Error(`Duplicate slug: ${book.slug}`);
     slugs.add(book.slug);
     if (hasCover(book)) {
-      const coverPath = path.join(COVERS_DIR, book.coverFile!);
+      const coverPath = path.join(coversDir(), book.coverFile!);
       if (!existsSync(coverPath)) {
         throw new Error(`Missing cover file for ${book.slug}: ${coverPath}`);
       }
@@ -108,7 +119,7 @@ export async function seed(pool: Pool, email: string, books: Book[]): Promise<vo
 
     for (const book of books) {
       const coverBytes = hasCover(book)
-        ? readFileSync(path.join(COVERS_DIR, book.coverFile!))
+        ? readFileSync(path.join(coversDir(), book.coverFile!))
         : null;
       const coverMime = hasCover(book) ? mimeForCover(book.coverFile!) : null;
       const epubSnapshot = book.epubMetadata ? JSON.stringify(book.epubMetadata) : null;
@@ -170,7 +181,7 @@ export async function runSeed(opts: {
   email: string;
   force?: boolean;
 }): Promise<{ seeded: number }> {
-  const books = JSON.parse(readFileSync(path.join(SEED_DIR, "books.json"), "utf8")) as Book[];
+  const books = JSON.parse(readFileSync(path.join(seedDir(), "books.json"), "utf8")) as Book[];
   const pool = new Pool({ connectionString: opts.databaseUrl });
   try {
     await seed(pool, opts.email, books);

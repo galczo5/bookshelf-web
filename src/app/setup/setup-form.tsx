@@ -75,12 +75,7 @@ export function SetupForm() {
           required
           error={state.errors?.OPENAI_API_KEY}
         />
-        <Field
-          name="OPENAI_MODEL"
-          label="Model (optional)"
-          placeholder="gpt-4.1-mini"
-          error={state.errors?.OPENAI_MODEL}
-        />
+        <ModelSelect error={state.errors?.OPENAI_MODEL} />
       </fieldset>
 
       <fieldset className="flex flex-col gap-4">
@@ -107,6 +102,39 @@ export function SetupForm() {
         Save &amp; apply
       </Button>
     </form>
+  );
+}
+
+const OPENAI_MODELS = [
+  { value: "gpt-4.1-mini", label: "gpt-4.1-mini — fast & cheap (default)" },
+  { value: "gpt-4.1", label: "gpt-4.1 — most capable" },
+  { value: "gpt-4o-mini", label: "gpt-4o-mini — fast & cheap" },
+  { value: "gpt-4o", label: "gpt-4o — capable" },
+];
+
+function ModelSelect({ error }: { error?: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="OPENAI_MODEL">Model</Label>
+      <select
+        id="OPENAI_MODEL"
+        name="OPENAI_MODEL"
+        defaultValue="gpt-4.1-mini"
+        aria-describedby={error ? "OPENAI_MODEL-error" : undefined}
+        className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+      >
+        {OPENAI_MODELS.map((m) => (
+          <option key={m.value} value={m.value}>
+            {m.label}
+          </option>
+        ))}
+      </select>
+      {error && (
+        <p id="OPENAI_MODEL-error" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 

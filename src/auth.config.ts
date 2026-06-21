@@ -28,6 +28,11 @@ export default {
       ) {
         return true;
       }
+      // Pre-config: BOOKSHELF_ALLOWED_EMAIL is absent → redirect to /setup.
+      // Edge-safe: process.env reads are allowed in the Edge runtime.
+      if (!process.env.BOOKSHELF_ALLOWED_EMAIL) {
+        return Response.redirect(new URL("/setup", request.nextUrl));
+      }
       return Response.redirect(new URL("/signin", request.nextUrl));
     },
   },

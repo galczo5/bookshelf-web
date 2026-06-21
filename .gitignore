@@ -29,6 +29,10 @@
 # production
 /build
 
+# docker image tarballs (handoff artifacts)
+*.tar.gz
+*.tar
+
 # misc
 .DS_Store
 *.pem

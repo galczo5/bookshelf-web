@@ -23,6 +23,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
+# NextAuth v5 requires explicit host trust in production (no CORS/CSRF host validation needed
+# in this single-container image since the only client is the local browser).
+ENV AUTH_TRUST_HOST=true
+# Canonical base URL for NextAuth callbacks and redirects.
+# HOSTNAME=0.0.0.0 is the server bind address, not the public URL — without
+# AUTH_URL, NextAuth infers 0.0.0.0 and OAuth redirects break in the browser.
+# Override with -e AUTH_URL=http://your-host:3000 for non-localhost deployments.
+ENV AUTH_URL=http://localhost:3000
 # Postgres data directory and app config live on a persistent volume at /data
 ENV PGDATA=/data/pgdata
 ENV BOOKSHELF_CONFIG_FILE=/data/config.env
