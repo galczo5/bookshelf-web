@@ -395,12 +395,12 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [x] 4.1 Smoke test passes end-to-end: `bash scripts/smoke-allinone.sh`
-- [x] 4.2 Smoke test fails loudly when the entrypoint is broken
+- [x] 4.1 Smoke test passes end-to-end: `bash scripts/smoke-allinone.sh` — a46f792
+- [x] 4.2 Smoke test fails loudly when the entrypoint is broken — a46f792
 
 #### Manual
 
-- [x] 4.3 Clean `handoff.md` run-through reaches a working signed-in library
+- [x] 4.3 Clean `handoff.md` run-through reaches a working signed-in library — a46f792
 - [ ] 4.4 Full pipeline with real creds: import → enrich → confirm → library
 - [ ] 4.5 Demo-data opt-in yields a 50-book browsable library without Drive
 - [ ] 4.6 Remote-host `AUTH_URL` caveat verified

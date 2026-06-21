@@ -1,7 +1,7 @@
 ---
 change_id: all-in-one-docker-image
 title: Single Docker image bundling app + database for handoff testing
-status: implementing
+status: implemented
 created: 2026-06-20
 updated: 2026-06-21
 archived_at: null
