@@ -21,6 +21,7 @@ export default {
       if (
         auth?.user ||
         pathname.startsWith("/signin") ||
+        pathname.startsWith("/setup") ||
         pathname.startsWith("/api/auth") ||
         pathname.startsWith("/_next") ||
         /\.\w+$/.test(pathname)

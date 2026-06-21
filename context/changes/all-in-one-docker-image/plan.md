@@ -347,11 +347,11 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Unit/integration tests pass: `npm test`
+- [x] 1.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit` — d02ea15
+- [x] 1.2 Linting passes: `npm run lint` — d02ea15
+- [x] 1.3 Unit/integration tests pass: `npm test` — d02ea15
 - [ ] 1.4 Existing seeder still works and is idempotent against Docker Postgres
-- [x] 1.5 `npm run build:migrate` emits the seed module without errors
+- [x] 1.5 `npm run build:migrate` emits the seed module without errors — d02ea15
 
 #### Manual
 
@@ -362,10 +362,10 @@ Provide a repeatable smoke-test script for the boot/restart/seed path, a manual 
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Config-helper unit tests pass: `npm test`
-- [ ] 2.4 Build passes: `npm run build`
+- [x] 2.1 Type checking passes: `npx tsc -p tsconfig.json --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Config-helper unit tests pass: `npm test`
+- [x] 2.4 Build passes: `npm run build`
 
 #### Manual
 

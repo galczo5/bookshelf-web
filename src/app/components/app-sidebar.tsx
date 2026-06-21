@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Tag, Trash2, LogOut, User } from "lucide-react";
+import { BookOpen, Tag, Trash2, LogOut, User, Settings } from "lucide-react";
 import { signOutAction } from "@/app/actions/sign-out";
 import { SidebarImport } from "@/app/components/sidebar-import";
 import type { BookStats, RecentBook } from "@/lib/books";
@@ -32,6 +32,7 @@ export function AppSidebar({ email, stats, tags, recentBooks }: AppSidebarProps)
     { href: "/", label: "Library", icon: BookOpen, badge: stats.untaggedBooks || undefined },
     { href: "/tags", label: "Tags", icon: Tag },
     { href: "/trash", label: "Trash", icon: Trash2 },
+    { href: "/settings", label: "Settings", icon: Settings },
   ];
   const displayedTags = tags.slice(0, 8);
   const overflow = tags.length - 8;

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { isConfigured } from "@/lib/config/env-file";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/app/components/app-sidebar";
 import { Breadcrumbs } from "@/app/components/breadcrumbs";
@@ -8,6 +9,8 @@ import { listUserBookStats, listRecentBooks } from "@/lib/books";
 import { listUserTagsWithCount } from "@/lib/tags";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  if (!isConfigured()) redirect("/setup");
+
   const session = await auth();
   if (!session?.user?.email) redirect("/signin");
 

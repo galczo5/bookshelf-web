@@ -10,6 +10,7 @@ const labels: Record<string, string> = {
   tags: "Tags",
   trash: "Trash",
   books: "Library",
+  settings: "Settings",
 };
 
 type Crumb = { label: string; href?: string };
