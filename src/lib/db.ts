@@ -88,6 +88,16 @@ export interface NotesTable {
   updated_at: ColumnType<Date, string | undefined, string>;
 }
 
+export interface BackupsTable {
+  id: Generated<string>;
+  user_id: string;
+  drive_file_id: string | null;
+  drive_file_name: string | null;
+  backed_up_at: Generated<Date>;
+  error: string | null;
+  created_at: Generated<Date>;
+}
+
 export interface Database {
   auth_tokens: AuthTokensTable;
   users: UsersTable;
@@ -96,6 +106,7 @@ export interface Database {
   tags: TagsTable;
   book_tags: BookTagsTable;
   notes: NotesTable;
+  backups: BackupsTable;
 }
 
 declare global {
