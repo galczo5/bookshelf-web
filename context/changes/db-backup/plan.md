@@ -417,13 +417,13 @@ No existing data migrations needed — the `backups` table starts empty; history
 
 #### Automated
 
-- [x] 5.1 Type checking passes: `npx tsc --noEmit`
-- [x] 5.2 `npm run lint` passes
+- [x] 5.1 Type checking passes: `npx tsc --noEmit` — 9feafcf
+- [x] 5.2 `npm run lint` passes — 9feafcf
 
 #### Manual
 
-- [x] 5.3 "Restore" confirmation dialog appears before any action is taken
-- [x] 5.4 Confirming restore replaces the library with the backup's data
-- [x] 5.5 Restored content is visible immediately after confirmation
-- [x] 5.6 Restore on an error row (null `drive_file_id`) is disabled
-- [x] 5.7 Cross-user restore attempt is rejected
+- [x] 5.3 "Restore" confirmation dialog appears before any action is taken — 9feafcf
+- [x] 5.4 Confirming restore replaces the library with the backup's data — 9feafcf
+- [x] 5.5 Restored content is visible immediately after confirmation — 9feafcf
+- [x] 5.6 Restore on an error row (null `drive_file_id`) is disabled — 9feafcf
+- [x] 5.7 Cross-user restore attempt is rejected — 9feafcf

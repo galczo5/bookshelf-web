@@ -1,7 +1,7 @@
 ---
 change_id: db-backup
 title: Daily DB backup to Google Drive with in-app restore
-status: implementing
+status: implemented
 created: 2026-06-22
 updated: 2026-06-22
 archived_at: null
