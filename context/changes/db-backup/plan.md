@@ -376,28 +376,28 @@ No existing data migrations needed — the `backups` table starts empty; history
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 `npm run lint` passes
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 5c36830
+- [x] 2.2 `npm run lint` passes — 5c36830
 
 #### Manual
 
-- [x] 2.3 Calling `runBackup` creates a `backup-*.json` file in `Bookshelf/Backups/` in Drive
-- [x] 2.4 File is valid JSON with `version`, `exported_at`, `books`, `tags`, `book_tags`, `notes` keys
-- [x] 2.5 A row appears in `backups` table with non-null `drive_file_id`
-- [x] 2.6 `runBackupIfNeeded` is a no-op when called again within 24h
+- [x] 2.3 Calling `runBackup` creates a `backup-*.json` file in `Bookshelf/Backups/` in Drive — 5c36830
+- [x] 2.4 File is valid JSON with `version`, `exported_at`, `books`, `tags`, `book_tags`, `notes` keys — 5c36830
+- [x] 2.5 A row appears in `backups` table with non-null `drive_file_id` — 5c36830
+- [x] 2.6 `runBackupIfNeeded` is a no-op when called again within 24h — 5c36830
 
 ### Phase 3: Auto-Trigger
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 `npm run lint` passes
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 3.3 Loading any app page triggers a POST to `/api/backup/trigger` (Network tab)
-- [ ] 3.4 On first ever load, a backup file appears in Drive within ~30s
-- [ ] 3.5 Subsequent page loads within 24h do not create additional backup files
+- [x] 3.3 Loading any app page triggers a POST to `/api/backup/trigger` (Network tab)
+- [x] 3.4 On first ever load, a backup file appears in Drive within ~30s
+- [x] 3.5 Subsequent page loads within 24h do not create additional backup files
 
 ### Phase 4: Settings UI
 

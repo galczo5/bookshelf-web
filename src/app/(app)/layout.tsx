@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/app/components/breadcrumbs";
 import { upsertUserByEmail, getUserIdByEmail } from "@/lib/users";
 import { listUserBookStats, listRecentBooks } from "@/lib/books";
 import { listUserTagsWithCount } from "@/lib/tags";
+import { BackupTrigger } from "@/app/components/backup-trigger";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   if (!isConfigured()) redirect("/setup");
@@ -37,6 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Breadcrumbs />
         </header>
         <div className="flex flex-1 flex-col bg-white">{children}</div>
+        <BackupTrigger />
       </SidebarInset>
     </SidebarProvider>
   );
