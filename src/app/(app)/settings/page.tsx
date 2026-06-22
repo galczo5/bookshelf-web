@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getUserIdByEmail } from "@/lib/users";
 import { db } from "@/lib/db";
 import { runBackupNowAction } from "@/app/actions/backup";
+import { RestoreButton } from "@/components/restore-button";
 
 function formatRelativeTime(date: Date): string {
   const diffMs = Date.now() - date.getTime();
@@ -124,9 +125,16 @@ export default async function SettingsPage() {
                       {formatDateTime(new Date(b.backed_up_at))}
                     </span>
                   </div>
-                  <Button variant="outline" size="sm" disabled>
-                    Restore
-                  </Button>
+                  {b.drive_file_id ? (
+                    <RestoreButton
+                      backupId={b.id}
+                      backupDate={formatDateTime(new Date(b.backed_up_at))}
+                    />
+                  ) : (
+                    <Button variant="outline" size="sm" disabled>
+                      Restore
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>

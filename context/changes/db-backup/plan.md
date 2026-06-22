@@ -403,27 +403,27 @@ No existing data migrations needed — the `backups` table starts empty; history
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx tsc --noEmit`
-- [x] 4.2 `npm run lint` passes
+- [x] 4.1 Type checking passes: `npx tsc --noEmit` — b2bc4c6
+- [x] 4.2 `npm run lint` passes — b2bc4c6
 
 #### Manual
 
-- [x] 4.3 Settings page shows the Backup card with last backup time
-- [x] 4.4 Error banner appears after a failed backup
-- [x] 4.5 "Back up now" triggers a backup and the page refreshes with updated history
-- [x] 4.6 History list shows correct timestamps and Drive file names
+- [x] 4.3 Settings page shows the Backup card with last backup time — b2bc4c6
+- [x] 4.4 Error banner appears after a failed backup — b2bc4c6
+- [x] 4.5 "Back up now" triggers a backup and the page refreshes with updated history — b2bc4c6
+- [x] 4.6 History list shows correct timestamps and Drive file names — b2bc4c6
 
 ### Phase 5: Restore Flow
 
 #### Automated
 
-- [ ] 5.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 5.2 `npm run lint` passes
+- [x] 5.1 Type checking passes: `npx tsc --noEmit`
+- [x] 5.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 5.3 "Restore" confirmation dialog appears before any action is taken
-- [ ] 5.4 Confirming restore replaces the library with the backup's data
-- [ ] 5.5 Restored content is visible immediately after confirmation
-- [ ] 5.6 Restore on an error row (null `drive_file_id`) is disabled
-- [ ] 5.7 Cross-user restore attempt is rejected
+- [x] 5.3 "Restore" confirmation dialog appears before any action is taken
+- [x] 5.4 Confirming restore replaces the library with the backup's data
+- [x] 5.5 Restored content is visible immediately after confirmation
+- [x] 5.6 Restore on an error row (null `drive_file_id`) is disabled
+- [x] 5.7 Cross-user restore attempt is rejected
