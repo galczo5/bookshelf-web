@@ -390,28 +390,28 @@ No existing data migrations needed — the `backups` table starts empty; history
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 `npm run lint` passes
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — cf5a7c8
+- [x] 3.2 `npm run lint` passes — cf5a7c8
 
 #### Manual
 
-- [x] 3.3 Loading any app page triggers a POST to `/api/backup/trigger` (Network tab)
-- [x] 3.4 On first ever load, a backup file appears in Drive within ~30s
-- [x] 3.5 Subsequent page loads within 24h do not create additional backup files
+- [x] 3.3 Loading any app page triggers a POST to `/api/backup/trigger` (Network tab) — cf5a7c8
+- [x] 3.4 On first ever load, a backup file appears in Drive within ~30s — cf5a7c8
+- [x] 3.5 Subsequent page loads within 24h do not create additional backup files — cf5a7c8
 
 ### Phase 4: Settings UI
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 `npm run lint` passes
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 4.3 Settings page shows the Backup card with last backup time
-- [ ] 4.4 Error banner appears after a failed backup
-- [ ] 4.5 "Back up now" triggers a backup and the page refreshes with updated history
-- [ ] 4.6 History list shows correct timestamps and Drive file names
+- [x] 4.3 Settings page shows the Backup card with last backup time
+- [x] 4.4 Error banner appears after a failed backup
+- [x] 4.5 "Back up now" triggers a backup and the page refreshes with updated history
+- [x] 4.6 History list shows correct timestamps and Drive file names
 
 ### Phase 5: Restore Flow
 
