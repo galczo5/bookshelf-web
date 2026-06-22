@@ -1,8 +1,11 @@
-import { existsSync, readFileSync, writeFileSync, renameSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, renameSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 function configFile(): string {
-  return process.env.BOOKSHELF_CONFIG_FILE ?? "/data/config.env";
+  // BOOKSHELF_CONFIG_FILE is set via ENV in Dockerfile.allinone → /data/config.env.
+  // In local dev it is unset, so fall back to a project-local directory that is
+  // writable without root and gitignored (.bookshelf/).
+  return process.env.BOOKSHELF_CONFIG_FILE ?? path.join(process.cwd(), ".bookshelf", "config.env");
 }
 
 const REQUIRED_KEYS = [
@@ -67,9 +70,12 @@ export async function writeConfig(values: ConfigValues): Promise<void> {
   };
   if (values.OPENAI_MODEL) merged.OPENAI_MODEL = values.OPENAI_MODEL;
 
+  const dir = path.dirname(configFile());
+  mkdirSync(dir, { recursive: true });
+
   // Temp file must live on the same filesystem as the target so rename(2)
   // works atomically (cross-device rename fails with EXDEV on Docker volumes).
-  const tmp = path.join(path.dirname(configFile()), `.config-${Date.now()}.env.tmp`);
+  const tmp = path.join(dir, `.config-${Date.now()}.env.tmp`);
   writeFileSync(tmp, serializeEnvFile(merged), { encoding: "utf8", mode: 0o600 });
   renameSync(tmp, configFile());
 }

@@ -33,6 +33,9 @@
 *.tar.gz
 *.tar
 
+# local dev config written by /setup (Docker uses /data/config.env instead)
+.bookshelf/
+
 # misc
 .DS_Store
 *.pem

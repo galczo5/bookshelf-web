@@ -14,7 +14,7 @@ export default async function TrashPage() {
   const books = await listTrashedBooks(userId);
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-6">
+    <main className="w-full px-6 py-6">
       <h2 className="mb-6 text-lg font-semibold text-zinc-900">Trash</h2>
 
       {books.length === 0 ? (
@@ -26,7 +26,7 @@ export default async function TrashPage() {
               key={book.id}
               className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4"
             >
-              <div className="h-10 w-14 flex-shrink-0 overflow-hidden rounded shadow-sm">
+              <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded shadow-sm">
                 {book.hasCover ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
