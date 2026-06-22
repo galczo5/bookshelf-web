@@ -67,7 +67,10 @@ export default async function BookPage({
               className="rounded-xl shadow-md max-h-96"
             />
           ) : (
-            <CoverPlaceholder title={book.title} className="h-full min-w-32 rounded-xl shadow-md" />
+            <CoverPlaceholder
+              title={book.title}
+              className="aspect-[2/3] w-48 rounded-xl shadow-md"
+            />
           )}
         </div>
 
