@@ -364,27 +364,27 @@ No existing data migrations needed — the `backups` table starts empty; history
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npm run db:migrate`
-- [x] 1.2 Migration reverses cleanly: `npm run db:migrate:down` then `npm run db:migrate` again
-- [x] 1.3 Type checking passes: `npx tsc --noEmit`
+- [x] 1.1 Migration applies cleanly: `npm run db:migrate` — 2f26298
+- [x] 1.2 Migration reverses cleanly: `npm run db:migrate:down` then `npm run db:migrate` again — 2f26298
+- [x] 1.3 Type checking passes: `npx tsc --noEmit` — 2f26298
 
 #### Manual
 
-- [x] 1.4 `backups` table exists in DB with correct columns after migration
+- [x] 1.4 `backups` table exists in DB with correct columns after migration — 2f26298
 
 ### Phase 2: Backup Library
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 `npm run lint` passes
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 2.3 Calling `runBackup` creates a `backup-*.json` file in `Bookshelf/Backups/` in Drive
-- [ ] 2.4 File is valid JSON with `version`, `exported_at`, `books`, `tags`, `book_tags`, `notes` keys
-- [ ] 2.5 A row appears in `backups` table with non-null `drive_file_id`
-- [ ] 2.6 `runBackupIfNeeded` is a no-op when called again within 24h
+- [x] 2.3 Calling `runBackup` creates a `backup-*.json` file in `Bookshelf/Backups/` in Drive
+- [x] 2.4 File is valid JSON with `version`, `exported_at`, `books`, `tags`, `book_tags`, `notes` keys
+- [x] 2.5 A row appears in `backups` table with non-null `drive_file_id`
+- [x] 2.6 `runBackupIfNeeded` is a no-op when called again within 24h
 
 ### Phase 3: Auto-Trigger
 
