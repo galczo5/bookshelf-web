@@ -6,6 +6,12 @@ import { getUserIdByEmail } from "@/lib/users";
 import { db } from "@/lib/db";
 import { runBackupNowAction } from "@/app/actions/backup";
 import { RestoreButton } from "@/components/restore-button";
+import { getLatestSyncCheck } from "@/lib/drive-sync-db";
+import {
+  runSyncCheckNowAction,
+  importFromDriveAction,
+  markDriveFileMissingAction,
+} from "@/app/actions/drive-sync";
 
 function formatRelativeTime(date: Date): string {
   const diffMs = Date.now() - date.getTime();
@@ -38,17 +44,30 @@ export default async function SettingsPage() {
     backed_up_at: Date;
     error: string | null;
   }> = [];
+  let syncCheck: Awaited<ReturnType<typeof getLatestSyncCheck>> = null;
+  let missingBooks: Array<{ id: string; title: string }> = [];
 
   if (email) {
     try {
       const userId = await getUserIdByEmail(email);
-      backups = await db
-        .selectFrom("backups")
-        .select(["id", "drive_file_id", "drive_file_name", "backed_up_at", "error"])
-        .where("user_id", "=", userId)
-        .orderBy("backed_up_at", "desc")
-        .limit(30)
-        .execute();
+      [backups, syncCheck] = await Promise.all([
+        db
+          .selectFrom("backups")
+          .select(["id", "drive_file_id", "drive_file_name", "backed_up_at", "error"])
+          .where("user_id", "=", userId)
+          .orderBy("backed_up_at", "desc")
+          .limit(30)
+          .execute(),
+        getLatestSyncCheck(userId),
+      ]);
+
+      if (syncCheck && syncCheck.missingBookIds.length > 0) {
+        missingBooks = await db
+          .selectFrom("books")
+          .select(["id", "title"])
+          .where("id", "in", syncCheck.missingBookIds)
+          .execute();
+      }
     } catch {
       // not fatal — show empty backup history
     }
@@ -138,6 +157,75 @@ export default async function SettingsPage() {
                 </div>
               ))}
             </div>
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Drive Sync</CardTitle>
+          <CardDescription>
+            {syncCheck
+              ? `Last checked: ${formatRelativeTime(new Date(syncCheck.checkedAt))}`
+              : "Not yet scanned"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <form action={runSyncCheckNowAction}>
+            <Button type="submit" variant="outline" size="sm">
+              Refresh now
+            </Button>
+          </form>
+
+          {!syncCheck ||
+          (syncCheck.untrackedFiles.length === 0 && syncCheck.missingBookIds.length === 0) ? (
+            <p className="text-sm text-muted-foreground">No sync issues detected.</p>
+          ) : (
+            <>
+              {syncCheck.untrackedFiles.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                    Untracked files on Drive
+                  </p>
+                  {syncCheck.untrackedFiles.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
+                    >
+                      <span className="truncate">{file.name}</span>
+                      <form action={importFromDriveAction}>
+                        <input type="hidden" name="fileId" value={file.id} />
+                        <input type="hidden" name="fileName" value={file.name} />
+                        <Button type="submit" variant="outline" size="sm">
+                          Import
+                        </Button>
+                      </form>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {missingBooks.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                    Books with missing Drive files
+                  </p>
+                  {missingBooks.map((book) => (
+                    <div
+                      key={book.id}
+                      className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
+                    >
+                      <span className="truncate">{book.title}</span>
+                      <form action={markDriveFileMissingAction}>
+                        <input type="hidden" name="bookId" value={book.id} />
+                        <Button type="submit" variant="outline" size="sm">
+                          Mark as broken
+                        </Button>
+                      </form>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
