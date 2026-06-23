@@ -454,8 +454,8 @@ Migration `0009` is additive only — no data backfill needed. `source_drive_fil
 
 #### Automated
 
-- [x] 4.1 TypeScript compiles: `npm run build`
-- [x] 4.2 Lint passes: `npm run lint`
+- [x] 4.1 TypeScript compiles: `npm run build` — 470a8ad
+- [x] 4.2 Lint passes: `npm run lint` — 470a8ad
 
 #### Manual
 
@@ -472,8 +472,8 @@ Migration `0009` is additive only — no data backfill needed. `source_drive_fil
 
 #### Automated
 
-- [ ] 5.1 TypeScript compiles: `npm run build`
-- [ ] 5.2 Lint passes: `npm run lint`
+- [x] 5.1 TypeScript compiles: `npm run build`
+- [x] 5.2 Lint passes: `npm run lint`
 
 #### Manual
 

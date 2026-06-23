@@ -91,6 +91,14 @@ export async function confirmReviewAction(
       driveFileName: finalName,
       originalDriveFileId: originalFileId,
     });
+
+    if (draft.sourceDriveFileId) {
+      try {
+        await drive.files.delete({ fileId: draft.sourceDriveFileId });
+      } catch (e) {
+        console.error("Could not delete source Drive file after import:", e);
+      }
+    }
   } catch (e) {
     if (e instanceof DriveAuthError) {
       await signOut({ redirect: false });
