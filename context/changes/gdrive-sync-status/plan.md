@@ -408,9 +408,9 @@ Migration `0009` is additive only — no data backfill needed. `source_drive_fil
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npm run db:migrate`
-- [x] 1.2 Down migration applies cleanly: `npm run db:migrate:down`
-- [x] 1.3 TypeScript compiles: `npm run build`
+- [x] 1.1 Migration applies cleanly: `npm run db:migrate` — 4a712b9
+- [x] 1.2 Down migration applies cleanly: `npm run db:migrate:down` — 4a712b9
+- [x] 1.3 TypeScript compiles: `npm run build` — 4a712b9
 
 #### Manual
 
@@ -422,8 +422,8 @@ Migration `0009` is additive only — no data backfill needed. `source_drive_fil
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles: `npm run build`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compiles: `npm run build`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
