@@ -63,7 +63,21 @@ export interface BookDraftsTable {
     EnrichmentProposals | null,
     EnrichmentProposals | null
   >;
+  source_drive_file_id: string | null;
   created_at: Generated<Date>;
+}
+
+export interface DriveSyncFile {
+  id: string;
+  name: string;
+}
+
+export interface DriveSyncChecksTable {
+  id: Generated<string>;
+  user_id: string;
+  checked_at: Generated<Date>;
+  untracked_files: ColumnType<DriveSyncFile[], DriveSyncFile[], DriveSyncFile[]>;
+  missing_book_ids: ColumnType<string[], string[], string[]>;
 }
 
 export interface TagsTable {
@@ -107,6 +121,7 @@ export interface Database {
   book_tags: BookTagsTable;
   notes: NotesTable;
   backups: BackupsTable;
+  drive_sync_checks: DriveSyncChecksTable;
 }
 
 declare global {

@@ -31,6 +31,7 @@ export interface DraftWithBook {
   };
   stagedBytes: Buffer;
   proposals: EnrichmentProposals | null;
+  sourceDriveFileId: string | null;
 }
 
 export interface ConfirmDraftInput {
@@ -44,7 +45,10 @@ export interface ConfirmDraftInput {
   originalDriveFileId: string;
 }
 
-export async function createDraft(input: CreateDraftInput): Promise<string> {
+export async function createDraft(
+  input: CreateDraftInput,
+  options?: { sourceDriveFileId?: string }
+): Promise<string> {
   return db.transaction().execute(async (trx) => {
     const inserted = await trx
       .insertInto("books")
@@ -72,6 +76,7 @@ export async function createDraft(input: CreateDraftInput): Promise<string> {
         filename: input.filename,
         staged_bytes: input.stagedBytes,
         proposals: null,
+        source_drive_file_id: options?.sourceDriveFileId ?? null,
       })
       .execute();
 
@@ -96,6 +101,7 @@ export async function getDraftWithBook(
       "book_drafts.filename",
       "book_drafts.staged_bytes",
       "book_drafts.proposals",
+      "book_drafts.source_drive_file_id",
     ])
     .where("books.id", "=", bookId)
     .where("books.user_id", "=", userId)
@@ -116,6 +122,7 @@ export async function getDraftWithBook(
     },
     stagedBytes: row.staged_bytes,
     proposals: row.proposals,
+    sourceDriveFileId: row.source_drive_file_id,
   };
 }
 
