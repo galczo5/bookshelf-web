@@ -1,7 +1,7 @@
 ---
 change_id: gdrive-sync-status
 title: Google Drive sync check with missing-book detection and in-app import
-status: implementing
+status: implemented
 created: 2026-06-22
 updated: 2026-06-23
 archived_at: null
