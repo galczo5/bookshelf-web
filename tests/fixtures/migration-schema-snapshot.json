@@ -52,6 +52,95 @@
       ]
     },
     {
+      "name": "backups",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "drive_file_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "drive_file_name",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "backed_up_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "error",
+          "type": "text",
+          "nullable": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "backups_backed_up_at_not_null",
+          "type": "CHECK",
+          "definition": "backups_backed_up_at_not_null"
+        },
+        {
+          "name": "backups_created_at_not_null",
+          "type": "CHECK",
+          "definition": "backups_created_at_not_null"
+        },
+        {
+          "name": "backups_id_not_null",
+          "type": "CHECK",
+          "definition": "backups_id_not_null"
+        },
+        {
+          "name": "backups_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "backups_pkey"
+        },
+        {
+          "name": "backups_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "backups_user_id_fkey"
+        },
+        {
+          "name": "backups_user_id_not_null",
+          "type": "CHECK",
+          "definition": "backups_user_id_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "backups_pkey",
+          "definition": "CREATE UNIQUE INDEX backups_pkey ON public.backups USING btree (id)"
+        },
+        {
+          "name": "backups_user_id_backed_up_at_idx",
+          "definition": "CREATE INDEX backups_user_id_backed_up_at_idx ON public.backups USING btree (user_id, backed_up_at)"
+        }
+      ]
+    },
+    {
       "name": "book_drafts",
       "columns": [
         {
@@ -83,6 +172,12 @@
           "type": "timestamp with time zone",
           "nullable": false,
           "default": "now()"
+        },
+        {
+          "name": "source_drive_file_id",
+          "type": "text",
+          "nullable": true,
+          "default": null
         }
       ],
       "constraints": [
@@ -372,6 +467,88 @@
         {
           "name": "books_pkey",
           "definition": "CREATE UNIQUE INDEX books_pkey ON public.books USING btree (id)"
+        }
+      ]
+    },
+    {
+      "name": "drive_sync_checks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null
+        },
+        {
+          "name": "checked_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "untracked_files",
+          "type": "jsonb",
+          "nullable": false,
+          "default": "'[]'::jsonb"
+        },
+        {
+          "name": "missing_book_ids",
+          "type": "jsonb",
+          "nullable": false,
+          "default": "'[]'::jsonb"
+        }
+      ],
+      "constraints": [
+        {
+          "name": "drive_sync_checks_checked_at_not_null",
+          "type": "CHECK",
+          "definition": "drive_sync_checks_checked_at_not_null"
+        },
+        {
+          "name": "drive_sync_checks_id_not_null",
+          "type": "CHECK",
+          "definition": "drive_sync_checks_id_not_null"
+        },
+        {
+          "name": "drive_sync_checks_missing_book_ids_not_null",
+          "type": "CHECK",
+          "definition": "drive_sync_checks_missing_book_ids_not_null"
+        },
+        {
+          "name": "drive_sync_checks_pkey",
+          "type": "PRIMARY KEY",
+          "definition": "drive_sync_checks_pkey"
+        },
+        {
+          "name": "drive_sync_checks_untracked_files_not_null",
+          "type": "CHECK",
+          "definition": "drive_sync_checks_untracked_files_not_null"
+        },
+        {
+          "name": "drive_sync_checks_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "definition": "drive_sync_checks_user_id_fkey"
+        },
+        {
+          "name": "drive_sync_checks_user_id_not_null",
+          "type": "CHECK",
+          "definition": "drive_sync_checks_user_id_not_null"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "drive_sync_checks_pkey",
+          "definition": "CREATE UNIQUE INDEX drive_sync_checks_pkey ON public.drive_sync_checks USING btree (id)"
+        },
+        {
+          "name": "drive_sync_checks_user_checked",
+          "definition": "CREATE INDEX drive_sync_checks_user_checked ON public.drive_sync_checks USING btree (user_id, checked_at)"
         }
       ]
     },
