@@ -39,6 +39,10 @@ export async function insertSyncCheckResult(
 ): Promise<void> {
   await db
     .insertInto("drive_sync_checks")
-    .values({ user_id: userId, untracked_files: untrackedFiles, missing_book_ids: missingBookIds })
+    .values({
+      user_id: userId,
+      untracked_files: JSON.stringify(untrackedFiles),
+      missing_book_ids: JSON.stringify(missingBookIds),
+    })
     .execute();
 }

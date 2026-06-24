@@ -76,8 +76,8 @@ export interface DriveSyncChecksTable {
   id: Generated<string>;
   user_id: string;
   checked_at: Generated<Date>;
-  untracked_files: ColumnType<DriveSyncFile[], DriveSyncFile[], DriveSyncFile[]>;
-  missing_book_ids: ColumnType<string[], string[], string[]>;
+  untracked_files: ColumnType<DriveSyncFile[], string, string>;
+  missing_book_ids: ColumnType<string[], string, string>;
 }
 
 export interface TagsTable {

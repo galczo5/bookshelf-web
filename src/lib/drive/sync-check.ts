@@ -16,16 +16,22 @@ export async function checkDriveSync(
 ): Promise<SyncCheckResult> {
   const libraryFolderId = await getOrCreateLibraryFolder(drive, email);
 
-  const listRes = await drive.files.list({
-    q: `'${libraryFolderId}' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'`,
-    fields: "files(id,name)",
-    pageSize: 1000,
-  });
+  const allDriveFiles: DriveSyncFile[] = [];
+  let pageToken: string | undefined;
+  do {
+    const listRes = await drive.files.list({
+      q: `'${libraryFolderId}' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'`,
+      fields: "nextPageToken,files(id,name)",
+      pageSize: 1000,
+      ...(pageToken ? { pageToken } : {}),
+    });
+    for (const f of listRes.data.files ?? []) {
+      allDriveFiles.push({ id: f.id!, name: f.name! });
+    }
+    pageToken = listRes.data.nextPageToken ?? undefined;
+  } while (pageToken);
 
-  const driveFiles: DriveSyncFile[] = (listRes.data.files ?? []).map((f) => ({
-    id: f.id!,
-    name: f.name!,
-  }));
+  const driveFiles = allDriveFiles;
   const driveFileIds = new Set(driveFiles.map((f) => f.id));
 
   const [confirmedBooks, pendingSourceIds] = await Promise.all([
