@@ -330,10 +330,10 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 New helper compiles and is importable (integration collects file without module errors)
-- [x] 1.2 Privacy describe block passes (`npm run test:integration -- ai-enrichment-privacy`)
-- [x] 1.3 Type checking passes (`npx tsc --noEmit`)
-- [x] 1.4 Linting passes (`npm run lint`)
+- [x] 1.1 New helper compiles and is importable (integration collects file without module errors) — ab54f5e
+- [x] 1.2 Privacy describe block passes (`npm run test:integration -- ai-enrichment-privacy`) — ab54f5e
+- [x] 1.3 Type checking passes (`npx tsc --noEmit`) — ab54f5e
+- [x] 1.4 Linting passes (`npm run lint`) — ab54f5e
 
 #### Manual
 
@@ -345,13 +345,13 @@ None — no schema or data changes.
 
 #### Automated
 
-- [ ] 2.1 Full file passes (`npm run test:integration -- ai-enrichment-privacy`)
-- [ ] 2.2 Whole integration suite green, no regressions (`npm run test:integration`)
-- [ ] 2.3 Type checking passes (`npx tsc --noEmit`)
-- [ ] 2.4 Linting passes (`npm run lint`)
+- [x] 2.1 Full file passes (`npm run test:integration -- ai-enrichment-privacy`)
+- [x] 2.2 Whole integration suite green, no regressions (`npm run test:integration`)
+- [x] 2.3 Type checking passes (`npx tsc --noEmit`)
+- [x] 2.4 Linting passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 2.5 Forcing a proposal value into a persistence call turns the FormData assertion red
-- [ ] 2.6 Submitting a non-empty value where reject expects `null` turns the reject assertion red
-- [ ] 2.7 §6.5 reads as a usable how-to; §6.6 note is accurate
+- [x] 2.5 Forcing a proposal value into a persistence call turns the FormData assertion red
+- [x] 2.6 Submitting a non-empty value where reject expects `null` turns the reject assertion red
+- [x] 2.7 §6.5 reads as a usable how-to; §6.6 note is accurate

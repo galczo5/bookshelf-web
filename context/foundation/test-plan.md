@@ -67,12 +67,12 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                                           | Goal (one line)                                                                                                                                                                                                     | Risks covered | Test types                  | Status        | Change folder                                             |
-| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ------------- | --------------------------------------------------------- |
-| 1   | Harness bootstrap + import/migration integrity       | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers.                                   | #1, #2        | integration, contract       | complete      | `context/changes/testing-harness-and-import-integrity/`   |
-| 2   | Notes durability + tag-rename atomicity              | Defend Risk #6 (notes save round-trip) and Risk #4 (rename transactional integrity) at the action layer, reusing the Postgres harness from Phase 1.                                                                 | #4, #6        | integration                 | change opened | `context/changes/testing-notes-and-tag-rename-integrity/` |
-| 3   | Drive error envelope + AI privacy + session boundary | Defend Risk #3, Risk #5, Risk #7 with focused unit, contract, and integration tests sharing fixtures from Phase 1. AI privacy via prompt-construction contract; session boundary via session-less invocation sweep. | #3, #5, #7    | unit, contract, integration | not started   | —                                                         |
-| 4   | Quality-gates wiring                                 | Lock the test floor in CI (GitHub Actions: lint + typecheck + Vitest matrix against a Render-major Postgres); optional post-deploy smoke via Render MCP for the deployed schema.                                    | cross-cutting | gates                       | not started   | —                                                         |
+| #   | Phase name                                           | Goal (one line)                                                                                                                                                                                                     | Risks covered | Test types                  | Status        | Change folder                                                                                                              |
+| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Harness bootstrap + import/migration integrity       | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers.                                   | #1, #2        | integration, contract       | complete      | `context/changes/testing-harness-and-import-integrity/`                                                                    |
+| 2   | Notes durability + tag-rename atomicity              | Defend Risk #6 (notes save round-trip) and Risk #4 (rename transactional integrity) at the action layer, reusing the Postgres harness from Phase 1.                                                                 | #4, #6        | integration                 | change opened | `context/changes/testing-notes-and-tag-rename-integrity/`                                                                  |
+| 3   | Drive error envelope + AI privacy + session boundary | Defend Risk #3, Risk #5, Risk #7 with focused unit, contract, and integration tests sharing fixtures from Phase 1. AI privacy via prompt-construction contract; session boundary via session-less invocation sweep. | #3, #5, #7    | unit, contract, integration | implementing  | `context/changes/drive-error-classification/` (#3 ✓), `context/changes/ai-enrichment-privacy-boundary/` (#5 ✓), #7 pending |
+| 4   | Quality-gates wiring                                 | Lock the test floor in CI (GitHub Actions: lint + typecheck + Vitest matrix against a Render-major Postgres); optional post-deploy smoke via Render MCP for the deployed schema.                                    | cross-cutting | gates                       | not started   | —                                                                                                                          |
 
 **Status vocabulary** (fixed — parser literals):
 
@@ -157,7 +157,33 @@ Call the action directly (no HTTP layer) — pass a `FormData` as the second arg
 
 ### 6.5 Adding a test for an AI-touching path
 
-- TBD — see §3 Phase 3. Covers the prompt-construction contract (assert no forbidden bytes), the per-test response fixture, and the gate's reject-path integration.
+**OpenAI boundary mock.** Import `createOpenAIFake` from `tests/helpers/openai-fake.ts`. Create one shared instance at module scope, then inject it via `vi.mock` so every `new OpenAI()` in the client modules yields the fake:
+
+```ts
+const openaiFake = createOpenAIFake();
+vi.mock("openai", () => {
+  const ctor = vi.fn(function () {
+    return openaiFake.client;
+  });
+  (ctor as unknown as { APIUserAbortError: unknown }).APIUserAbortError =
+    class APIUserAbortError extends Error {};
+  return { default: ctor };
+});
+```
+
+Set `process.env.OPENAI_API_KEY = "test-key"` in `beforeAll` (clients gate on this before constructing). Call `openaiFake.reset()` in `beforeEach` to clear recorded calls and revert to the default response payload.
+
+**Prompt content allow-list (privacy contract).** For pure prompt builders (`buildEnrichmentPrompt`, `buildTagSuggestionPrompt`), call them directly and assert each allow-listed field marker appears in the returned string while a `BOOK_BODY_SENTINEL` that was never in the typed input does not. For module-private builders (`buildFieldPrompt` inside `field-agent.ts`, `detectLanguage`'s inline prompt), call the exported wrapper function (`enrichField`, `detectLanguage`) and assert on `openaiFake.lastInput()` — the assembled prompt captured at the OpenAI boundary.
+
+**Front-matter cap.** Supply `frontMatterStrings` with > 10 entries (one longer than 200 chars). Assert via `openaiFake.lastInput()` that at most 10 snippet lines survive and the long entry is truncated. This cap lives in the client (`client.ts:42-45`, `field-agent.ts:92-95`), not the builder — a builder-only test would miss it entirely.
+
+**Canned response.** Call `openaiFake.setNextResponse(value)` before the test. A string is returned verbatim (e.g. for `detectLanguage`); anything else is `JSON.stringify`-ed. The default is a minimal `EnrichmentProposals` shape (all null fields) that satisfies `isValidProposals`. For tag-suggestion tests use `openaiFake.setNextResponse({ tags: [...] })`.
+
+**Gate tests (no auto-accept).** For each proposal-generating action (`enrichMetadataAction`, `enrichFieldAction`, `enrichFieldForDraftAction`, `suggestTagsAction`): seed via `seedBook` / `seedDraft` (§6.2), mock `@/auth` (§6.3), call the action, read the DB row back and assert it is unchanged. The proposal object lives in the return value — nothing is written.
+
+**FormData-driven persistence + reject path.** For `confirmReviewAction` and `applyMetadataAction`: submit a `FormData` whose values differ from any proposal (e.g. `isbn: "SUBMITTED-ISBN"` when the draft's embedded isbn is `"DRAFT-EMBEDDED-ISBN"`), assert the persisted DB row matches what was submitted. Submit an empty string where a nullable field should persist as `null` to cover the reject path. Mock `next/cache` with `vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))` if the action calls `revalidatePath` outside the Next.js request context.
+
+Example: `tests/integration/ai-enrichment-privacy.test.ts`.
 
 ### 6.6 Per-rollout-phase notes
 
@@ -174,6 +200,8 @@ helpers (§6.2). Surprise: `deleteNote`'s ownership guard is dead code —
 `deleteNoteAction` returns `{ ok:true }` on a denied no-op delete; the row is
 still protected by the `WHERE exists` clause, so the notes test asserts the
 data-integrity invariant (note unchanged) rather than the action's `ok` flag.
+
+**Phase 3 — Risk #5 (AI enrichment privacy boundary + wrong-identity gate), characterization only.** Three `KNOWN SURFACE` characterizations are asserted as passing tests, not skips: (1) **unbounded `userMessage`** — the field-chat modal's free-form guidance is forwarded to the prompt verbatim and without a length cap (`field-agent.ts:78-80`); a user could paste body text here, so it is a privacy surface, not a current leak (nothing in the import flow auto-fills it); (2) **always-empty front matter at the action layer** — every action call site passes `frontMatterStrings: []`, making the 10×200 cap unreachable from normal use; the cap test exercises the client directly so it stays meaningful if a future change starts routing real front matter; (3) **no auto-accept by construction** — there is no code path that reads `EnrichmentProposals` into a persistence call; the gate test proves this behaviorally (seed → call action → assert DB unchanged), not by inspecting branches. No production behavior was changed.
 
 **Phase 3 — Risk #3 (Drive error classification), characterization only.** There
 is **no** central Drive error classifier; classification is scattered across call

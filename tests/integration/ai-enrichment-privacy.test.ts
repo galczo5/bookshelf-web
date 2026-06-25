@@ -33,12 +33,29 @@ import type { EnrichmentInput } from "@/lib/enrichment/types";
 import type { OpenLibraryData } from "@/lib/enrichment/open-library";
 import { createOpenAIFake } from "../helpers/openai-fake";
 
+// --- Phase 2: gate integration imports ---
+import { db } from "@/lib/db";
+import { enrichMetadataAction, applyMetadataAction } from "@/app/actions/enrich-metadata";
+import { enrichFieldAction, enrichFieldForDraftAction } from "@/app/actions/enrich-field";
+import { suggestTagsAction } from "@/app/actions/tag-suggestions";
+import { confirmReviewAction } from "@/app/actions/confirm-review";
+import { auth } from "@/auth";
+import { getDriveClient } from "@/lib/drive/client";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { resetDb, seedDraft, seedBook, TEST_USER } from "../helpers/db";
+import { createDriveFake } from "../helpers/drive-fake";
+import { loadFixtureEpub } from "../helpers/fixtures";
+
 // One shared fake across the suite. The `openai` default export is replaced by a
 // constructor that always yields `openaiFake.client`; the client modules cache it
 // in their module-scope `_client`, so a single instance is correct. The factory
 // references `openaiFake` lazily (inside `vi.fn`), so it is only read when
 // `new OpenAI()` runs — after this const is initialized (hoist-safe).
 const openaiFake = createOpenAIFake();
+
+vi.mock("@/auth", () => ({ auth: vi.fn(), signOut: vi.fn() }));
+vi.mock("@/lib/drive/client", () => ({ getDriveClient: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }));
 
 vi.mock("openai", () => {
   // A normal function (not an arrow) so `new OpenAI()` in the client modules can
@@ -55,6 +72,10 @@ vi.mock("openai", () => {
 
 // A string that is never part of any typed input — stands in for book-body bytes.
 const BODY_SENTINEL = "BOOK_BODY_SENTINEL_DO_NOT_LEAK";
+
+// --- Phase 2: gate test infrastructure ---
+const driveFakeGate = createDriveFake();
+const fixtureBytes = loadFixtureEpub();
 
 beforeAll(() => {
   // The clients throw `network` if this is unset; the fake never reads its value.
@@ -256,5 +277,312 @@ describe("AI enrichment privacy boundary — front-matter 10×200 cap", () => {
     // forwarding front matter, this note should move to an end-to-end assertion through
     // that action.
     expect(true).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 2: Wrong-identity gate — behavioral proof that no auto-accept exists
+// ---------------------------------------------------------------------------
+
+describe("Wrong-identity gate — proposals do not write to DB (no auto-accept)", () => {
+  beforeEach(async () => {
+    await resetDb();
+    openaiFake.reset();
+    driveFakeGate.reset();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.mocked(auth).mockResolvedValue({ user: { email: TEST_USER.email } } as any);
+    vi.mocked(getDriveClient).mockResolvedValue(driveFakeGate.client);
+  });
+
+  it("enrichMetadataAction returns proposals but leaves the books row unchanged", async () => {
+    // Seed with an ISBN so enrichBook skips the Open Library network fetch (client.ts:47).
+    const bookId = await db
+      .insertInto("books")
+      .values({
+        user_id: TEST_USER.id,
+        title: "Gate Test Title",
+        author: "Gate Test Author",
+        isbn: "978-3-16-148410-0",
+        drive_file_id: "seed-drive-id",
+        drive_file_name: "Gate Test Author - Gate Test Title.epub",
+        review_state: "confirmed",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+      .then((r) => r.id);
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+
+    const result = await enrichMetadataAction({ ok: false }, fd);
+
+    expect(result.ok).toBe(true);
+    expect(result.proposals).toBeDefined();
+
+    // DB row unchanged — proposals were returned, never persisted.
+    const row = await db
+      .selectFrom("books")
+      .select(["title", "author", "isbn"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.title).toBe("Gate Test Title");
+    expect(row.author).toBe("Gate Test Author");
+    expect(row.isbn).toBe("978-3-16-148410-0");
+  });
+
+  it("enrichFieldAction returns a proposal but leaves the books row unchanged", async () => {
+    openaiFake.setNextResponse({ proposal: null });
+
+    const bookId = await db
+      .insertInto("books")
+      .values({
+        user_id: TEST_USER.id,
+        title: "Gate Test Title",
+        author: "Gate Test Author",
+        isbn: "978-3-16-148410-0",
+        drive_file_id: "seed-drive-id",
+        drive_file_name: "Gate Test Author - Gate Test Title.epub",
+        review_state: "confirmed",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+      .then((r) => r.id);
+
+    const result = await enrichFieldAction(bookId, "title", "English");
+
+    expect(result.ok).toBe(true);
+    expect("proposal" in result).toBe(true);
+
+    // DB row unchanged.
+    const row = await db
+      .selectFrom("books")
+      .select(["title", "author", "isbn"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.title).toBe("Gate Test Title");
+    expect(row.author).toBe("Gate Test Author");
+    expect(row.isbn).toBe("978-3-16-148410-0");
+  });
+
+  it("enrichFieldForDraftAction returns a proposal but leaves the book_drafts row + book row unchanged", async () => {
+    openaiFake.setNextResponse({ proposal: null });
+
+    const bookId = await seedDraft({
+      filename: "gate-test.epub",
+      derivedTitle: "Draft Gate Title",
+      stagedBytes: fixtureBytes,
+      embedded: { author: "Draft Author", isbn: "978-3-16-148410-0" },
+    });
+
+    const result = await enrichFieldForDraftAction(bookId, "title", "English");
+
+    expect(result.ok).toBe(true);
+
+    // Both the book row and the draft row are unchanged.
+    const bookRow = await db
+      .selectFrom("books")
+      .select(["title", "author", "review_state"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(bookRow.title).toBe("Draft Gate Title");
+    expect(bookRow.author).toBe("Draft Author");
+    expect(bookRow.review_state).toBe("pending");
+
+    const draftRow = await db
+      .selectFrom("book_drafts")
+      .select("book_id")
+      .where("book_id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(draftRow.book_id).toBe(bookId);
+  });
+
+  it("suggestTagsAction returns proposals but creates no book_tags rows", async () => {
+    openaiFake.setNextResponse({ tags: [{ name: "fantasy", isNew: true, provenance: "genre" }] });
+
+    const bookId = await seedBook({ title: "Tag Gate Title", author: "Tag Gate Author" });
+
+    const tagsBefore = await db
+      .selectFrom("book_tags")
+      .select("book_id")
+      .where("book_id", "=", bookId)
+      .execute();
+    expect(tagsBefore).toHaveLength(0);
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+
+    const result = await suggestTagsAction({ ok: false }, fd);
+
+    expect(result.ok).toBe(true);
+    expect(result.proposals).toBeDefined();
+
+    // No book_tags rows created — proposals returned, never persisted.
+    const tagsAfter = await db
+      .selectFrom("book_tags")
+      .select("book_id")
+      .where("book_id", "=", bookId)
+      .execute();
+    expect(tagsAfter).toHaveLength(0);
+  });
+});
+
+describe("Wrong-identity gate — persistence reads FormData, not the proposal", () => {
+  beforeEach(async () => {
+    await resetDb();
+    openaiFake.reset();
+    driveFakeGate.reset();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.mocked(auth).mockResolvedValue({ user: { email: TEST_USER.email } } as any);
+    vi.mocked(getDriveClient).mockResolvedValue(driveFakeGate.client);
+  });
+
+  it("applyMetadataAction persists submitted FormData values verbatim, never any AI proposal", async () => {
+    // drive_file_id: null → the rename path in applyMetadataAction is never taken,
+    // keeping this test offline and Drive-agnostic.
+    const bookId = await db
+      .insertInto("books")
+      .values({
+        user_id: TEST_USER.id,
+        title: "Original Title",
+        author: "Original Author",
+        isbn: null,
+        drive_file_id: null,
+        drive_file_name: null,
+        review_state: "confirmed",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+      .then((r) => r.id);
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+    fd.set("title", "Submitted Title");
+    fd.set("author", "Submitted Author");
+    fd.set("isbn", "SUBMITTED-ISBN");
+
+    const result = await applyMetadataAction(null, fd);
+
+    expect(result).toMatchObject({ ok: true });
+
+    const row = await db
+      .selectFrom("books")
+      .select(["title", "author", "isbn"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.title).toBe("Submitted Title");
+    expect(row.author).toBe("Submitted Author");
+    expect(row.isbn).toBe("SUBMITTED-ISBN");
+  });
+
+  it("applyMetadataAction persists null for empty isbn and author (reject path)", async () => {
+    const bookId = await db
+      .insertInto("books")
+      .values({
+        user_id: TEST_USER.id,
+        title: "Original Title",
+        author: "Original Author",
+        isbn: "978-3-16-148410-0",
+        drive_file_id: null,
+        drive_file_name: null,
+        review_state: "confirmed",
+      })
+      .returning("id")
+      .executeTakeFirstOrThrow()
+      .then((r) => r.id);
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+    fd.set("title", "T");
+    fd.set("author", ""); // empty string → author || null → null persisted
+    fd.set("isbn", ""); // empty string → isbn || null → null persisted
+
+    const result = await applyMetadataAction(null, fd);
+
+    expect(result).toMatchObject({ ok: true });
+
+    const row = await db
+      .selectFrom("books")
+      .select(["author", "isbn"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.author).toBeNull();
+    expect(row.isbn).toBeNull();
+  });
+
+  it("confirmReviewAction persists submitted FormData values verbatim, never the draft's embedded metadata", async () => {
+    const bookId = await seedDraft({
+      filename: "test.epub",
+      derivedTitle: "Draft Derived Title",
+      stagedBytes: fixtureBytes,
+      embedded: { author: "Draft Embedded Author", isbn: "DRAFT-EMBEDDED-ISBN" },
+    });
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+    fd.set("title", "Submitted Title");
+    fd.set("author", "Submitted Author");
+    fd.set("isbn", "SUBMITTED-ISBN");
+    fd.set("coverChoice", "");
+
+    let thrown: unknown;
+    try {
+      await confirmReviewAction(null, fd);
+    } catch (err) {
+      thrown = err;
+    }
+
+    if (!isRedirectError(thrown)) throw thrown ?? new Error("Expected redirect");
+
+    // The confirmed book carries the submitted values, not the draft's embedded ones.
+    const row = await db
+      .selectFrom("books")
+      .select(["title", "author", "isbn", "review_state"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.review_state).toBe("confirmed");
+    expect(row.title).toBe("Submitted Title");
+    expect(row.author).toBe("Submitted Author");
+    expect(row.isbn).toBe("SUBMITTED-ISBN");
+  });
+
+  it("confirmReviewAction persists null for empty author and isbn (reject path)", async () => {
+    const bookId = await seedDraft({
+      filename: "test.epub",
+      derivedTitle: "Test Book",
+      stagedBytes: fixtureBytes,
+      embedded: { author: "Embedded Author", isbn: "EMBEDDED-ISBN" },
+    });
+
+    const fd = new FormData();
+    fd.set("bookId", bookId);
+    fd.set("title", "T");
+    fd.set("author", ""); // empty string → author || null → null persisted
+    fd.set("isbn", ""); // empty string → isbn || null → null persisted
+    fd.set("coverChoice", "");
+
+    let thrown: unknown;
+    try {
+      await confirmReviewAction(null, fd);
+    } catch (err) {
+      thrown = err;
+    }
+
+    if (!isRedirectError(thrown)) throw thrown ?? new Error("Expected redirect");
+
+    const row = await db
+      .selectFrom("books")
+      .select(["author", "isbn"])
+      .where("id", "=", bookId)
+      .executeTakeFirstOrThrow();
+
+    expect(row.author).toBeNull();
+    expect(row.isbn).toBeNull();
   });
 });
