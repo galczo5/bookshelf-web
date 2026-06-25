@@ -43,6 +43,40 @@ export async function seedDraft(input: {
   });
 }
 
+export const SECOND_USER = {
+  id: "00000000-0000-0000-0000-000000000002",
+  email: "second@example.com",
+} as const;
+
+export async function seedSecondUser(): Promise<{ id: string; email: string }> {
+  await db
+    .insertInto("users")
+    .values({ id: SECOND_USER.id, email: SECOND_USER.email })
+    .onConflict((oc) => oc.column("id").doNothing())
+    .execute();
+  return { id: SECOND_USER.id, email: SECOND_USER.email };
+}
+
+export async function seedBook(opts?: {
+  userId?: string;
+  title?: string;
+  author?: string | null;
+}): Promise<string> {
+  const row = await db
+    .insertInto("books")
+    .values({
+      user_id: opts?.userId ?? TEST_USER.id,
+      title: opts?.title ?? "Seed Title",
+      author: opts?.author === undefined ? "Seed Author" : opts.author,
+      drive_file_id: "seed-drive-file-id",
+      drive_file_name: "Seed Author - Seed Title.epub",
+      review_state: "confirmed",
+    })
+    .returning("id")
+    .executeTakeFirstOrThrow();
+  return row.id;
+}
+
 export async function readState(bookId: string): Promise<{
   reviewState: string;
   driveFileId: string | null;
