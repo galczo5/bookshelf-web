@@ -7,6 +7,7 @@ export interface FakeDriveFile {
   parents: string[];
   mimeType: string;
   contentBytes?: Buffer;
+  webContentLink?: string;
 }
 
 export interface DriveFake {
@@ -15,7 +16,23 @@ export interface DriveFake {
   deleteCallCount: number;
   failNextCreate(err: Error): void;
   failNextDelete(err: Error): void;
+  failNextGet(err: Error): void;
+  failNextList(err: Error): void;
+  failNextUpdate(err: Error): void;
   reset(): void;
+}
+
+/**
+ * Build an error shaped like what `googleapis`/Gaxios throws for an HTTP failure:
+ * a plain `Error` carrying a numeric `.code` (and matching `.status`). This is the
+ * only property the production call sites read — see `books.ts` `(e as {code?: number}).code`.
+ * Use for live-401 / 404 / 429 / 5xx fixtures so they are constructed uniformly.
+ */
+export function driveError(code: number, message?: string): Error {
+  const err = new Error(message ?? `Drive API error ${code}`);
+  (err as unknown as { code: number; status: number }).code = code;
+  (err as unknown as { code: number; status: number }).status = code;
+  return err;
 }
 
 async function collectStream(body: unknown): Promise<Buffer | undefined> {
@@ -46,6 +63,9 @@ export function createDriveFake(): DriveFake {
   let counter = 0;
   let nextCreateError: Error | undefined;
   let nextDeleteError: Error | undefined;
+  let nextGetError: Error | undefined;
+  let nextListError: Error | undefined;
+  let nextUpdateError: Error | undefined;
   let _deleteCallCount = 0;
 
   const notImplemented = (method: string) => {
@@ -56,6 +76,11 @@ export function createDriveFake(): DriveFake {
 
   const files = {
     async list(params: { q?: string; fields?: string; spaces?: string }) {
+      if (nextListError) {
+        const err = nextListError;
+        nextListError = undefined;
+        throw err;
+      }
       const { name, parent } = parseQ(params.q ?? "");
       const matches = [...filesMap.values()].filter((f) => {
         if (name !== undefined && f.name !== name) return false;
@@ -101,11 +126,47 @@ export function createDriveFake(): DriveFake {
       return { data: {} };
     },
 
+    async get(
+      params: { fileId?: string; fields?: string; alt?: string },
+      _opts?: { responseType?: string }
+    ) {
+      if (nextGetError) {
+        const err = nextGetError;
+        nextGetError = undefined;
+        throw err;
+      }
+      const file = params.fileId ? filesMap.get(params.fileId) : undefined;
+      if (!file) {
+        throw driveError(404, `Drive fake: file not found: ${params.fileId}`);
+      }
+      if (params.alt === "media") {
+        const bytes = file.contentBytes ?? Buffer.alloc(0);
+        // Match `googleapis` arraybuffer responses: a raw ArrayBuffer in `data`.
+        const arrayBuffer = bytes.buffer.slice(
+          bytes.byteOffset,
+          bytes.byteOffset + bytes.byteLength
+        );
+        return { data: arrayBuffer };
+      }
+      return {
+        data: {
+          id: file.id,
+          name: file.name,
+          webContentLink: file.webContentLink ?? `https://drive.fake/download/${file.id}`,
+        },
+      };
+    },
+
     async update(params: {
       fileId?: string;
       requestBody?: { name?: string; addParents?: string; removeParents?: string };
       fields?: string;
     }) {
+      if (nextUpdateError) {
+        const err = nextUpdateError;
+        nextUpdateError = undefined;
+        throw err;
+      }
       if (!params.fileId) throw new Error("Drive fake: files.update requires fileId");
       const file = filesMap.get(params.fileId);
       if (!file) {
@@ -124,7 +185,6 @@ export function createDriveFake(): DriveFake {
       }
       return { data: { id: params.fileId } };
     },
-    get: notImplemented("files.get"),
     copy: notImplemented("files.copy"),
     export: notImplemented("files.export"),
     generateIds: notImplemented("files.generateIds"),
@@ -148,11 +208,23 @@ export function createDriveFake(): DriveFake {
     failNextDelete(err: Error) {
       nextDeleteError = err;
     },
+    failNextGet(err: Error) {
+      nextGetError = err;
+    },
+    failNextList(err: Error) {
+      nextListError = err;
+    },
+    failNextUpdate(err: Error) {
+      nextUpdateError = err;
+    },
     reset() {
       filesMap.clear();
       counter = 0;
       nextCreateError = undefined;
       nextDeleteError = undefined;
+      nextGetError = undefined;
+      nextListError = undefined;
+      nextUpdateError = undefined;
       _deleteCallCount = 0;
     },
   };

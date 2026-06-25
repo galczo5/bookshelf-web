@@ -68,6 +68,13 @@ docker run -p 3000:3000 -v bookshelf-data:/data \
   bookshelf:test
 ```
 
+### Troubleshooting
+
+**`JWTSessionError: no matching decryption secret` in the logs** — your browser is holding a session cookie that was encrypted with a different `AUTH_SECRET` than the running container has. On first boot the container generates `AUTH_SECRET` and persists it to `/data/config.env`, so it only stays stable while the **same `/data` volume** is reattached on every run. This error means the secret changed underneath an existing cookie:
+
+- **Most common cause:** the container was recreated without reusing the named volume (e.g. `docker run` without `-v bookshelf-data:/data`, or the volume was removed). Each fresh `/data` regenerates the secret. Always run with `-v bookshelf-data:/data` so `/data/config.env` survives.
+- **Quick fix:** clear the site's cookies (or open an incognito window) and sign in again — the stale cookie is replaced by one matching the current secret. Auth.js treats an undecryptable cookie as "no session," so this is self-correcting per browser; it's noisy in logs but not a hard failure.
+
 For more detail — prerequisites, the full OAuth walkthrough, and the handoff flow — see [`DOCKER.md`](DOCKER.md) and [`context/changes/all-in-one-docker-image/handoff.md`](context/changes/all-in-one-docker-image/handoff.md).
 
 ---

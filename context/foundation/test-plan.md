@@ -19,9 +19,9 @@ Tests follow three non-negotiable principles for this project:
 2. **User concerns are first-class evidence.** Risks anchored in "the
    author is worried about X, and the failure would surface somewhere in
    `<area>`" carry the same weight as PRD lines or hot-spot data.
-3. **Risks are scenarios, not code locations.** This plan documents *what
-   could fail* and *why we believe it's likely* — drawn from documents,
-   interview, and codebase *signal* (churn, structure, test base). It does
+3. **Risks are scenarios, not code locations.** This plan documents _what
+   could fail_ and _why we believe it's likely_ — drawn from documents,
+   interview, and codebase _signal_ (churn, structure, test base). It does
    NOT claim to know which line owns the failure. That knowledge is
    produced by `/10x-research` during each rollout phase. If the plan and
    research disagree about where the failure lives, research is the
@@ -35,31 +35,31 @@ fixtures, archive).
 
 The top failure scenarios this project must protect against, ordered by
 risk = impact × likelihood. Risks are failure scenarios in user / business
-terms, not test names. The Source column cites the *evidence that surfaced
-this risk* — never a specific file as "where the failure lives" (that is
+terms, not test names. The Source column cites the _evidence that surfaced
+this risk_ — never a specific file as "where the failure lives" (that is
 research's job, see §1 principle #3).
 
-| # | Risk (failure scenario) | Impact | Likelihood | Source (evidence — not anchor) |
-|---|---|---|---|---|
-| 1 | **Import non-atomicity.** A successful "import" leaves the DB row written but the epub bytes never reach Drive (or the reverse): library shows a ghost book, or Drive holds an orphan file the app no longer references. App-independent-library guardrail silently breaks. | High | High | interview Q1; hot-spot dir `src/lib/drive/` — 6 commits/30d; hot-spot dir `src/app/actions/` — 12 commits/30d; PRD US-01, FR-005, Guardrail "App-independent library"; archived plan `epub-import-to-drive` |
-| 2 | **Migration drift between Docker-local Postgres and Render Postgres.** A migration applies green against the local Docker image and fails or silently misbehaves on Render (default collation, missing extension, locale, ordering of CITEXT/JSONB). | High | High | interview Q2; hot-spot dir `src/lib/db/` — 3 commits/30d; archived plan `library-data-schema`; tech-stack.md (Kysely + `pg` + Docker Compose `postgres:16-alpine` locally) |
-| 3 | **Drive API error misclassification.** A transient 5xx / 429 / 401-token-expired / quota error is mapped to "not found" or vice versa; user sees the wrong outcome, or a transient becomes permanent. Can cascade into Risk #1. | Medium | High | interview Q3; hot-spot dir `src/lib/drive/` — 6 commits/30d; archived plan `drive-oauth-and-client` |
-| 4 | **Tag rename non-atomicity.** A global rename half-applies after a mid-operation crash, or merge-on-collision goes wrong, leaving some books on the new tag and some still on the old. Violates the data-integrity guardrail. | High | Medium | PRD FR-010, Guardrail "Data integrity"; hot-spot dir `src/app/actions/` — 12 commits/30d (tags actions churning); archived plan `rename-tag-globally` |
-| 5 | **AI enrichment violates the privacy boundary OR persists a wrong identity.** Prompt construction emits something other than the allow-listed strings (filename, embedded title/author/ISBN, front-matter), or the confirmation gate auto-accepts a low-confidence proposal that ends up identifying the wrong book. | High | Medium | PRD §Business Logic, PRD §NFR Privacy of book content, PRD FR-003/004; hot-spot dir `src/lib/enrichment/` — 4 commits/30d; hot-spot dir `src/lib/tag-suggestions/` — 4 commits/30d |
-| 6 | **Notes save silently drops content.** Autosave or explicit-save fires but a transient DB error, refresh, or navigate-away loses the edit without telling the user. Violates the 5-second persistence-durability NFR and the data-integrity guardrail. | High | Medium | PRD §NFR Persistence durability, FR-014/015/016; archived plan `library-and-book-view` (notes shipped here); hot-spot dir `src/app/(app)/` — 12 commits/30d |
-| 7 | **Server action runs without a valid session.** A mutating action becomes callable session-less (or with an expired session) and either crashes on an undefined user_id or — worse — writes against a stub identity. Abuse-lens row: the single-user model collapses if a stale session can mutate state. | High | Medium | PRD §Access Control; tech-stack.md (NextAuth + Drive OAuth, single-user); hot-spot dir `src/app/actions/` — 12 commits/30d; abuse/security lens (auth + AI + user-provided input present) |
+| #   | Risk (failure scenario)                                                                                                                                                                                                                                                                                              | Impact | Likelihood | Source (evidence — not anchor)                                                                                                                                                                              |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Import non-atomicity.** A successful "import" leaves the DB row written but the epub bytes never reach Drive (or the reverse): library shows a ghost book, or Drive holds an orphan file the app no longer references. App-independent-library guardrail silently breaks.                                          | High   | High       | interview Q1; hot-spot dir `src/lib/drive/` — 6 commits/30d; hot-spot dir `src/app/actions/` — 12 commits/30d; PRD US-01, FR-005, Guardrail "App-independent library"; archived plan `epub-import-to-drive` |
+| 2   | **Migration drift between Docker-local Postgres and Render Postgres.** A migration applies green against the local Docker image and fails or silently misbehaves on Render (default collation, missing extension, locale, ordering of CITEXT/JSONB).                                                                 | High   | High       | interview Q2; hot-spot dir `src/lib/db/` — 3 commits/30d; archived plan `library-data-schema`; tech-stack.md (Kysely + `pg` + Docker Compose `postgres:16-alpine` locally)                                  |
+| 3   | **Drive API error misclassification.** A transient 5xx / 429 / 401-token-expired / quota error is mapped to "not found" or vice versa; user sees the wrong outcome, or a transient becomes permanent. Can cascade into Risk #1.                                                                                      | Medium | High       | interview Q3; hot-spot dir `src/lib/drive/` — 6 commits/30d; archived plan `drive-oauth-and-client`                                                                                                         |
+| 4   | **Tag rename non-atomicity.** A global rename half-applies after a mid-operation crash, or merge-on-collision goes wrong, leaving some books on the new tag and some still on the old. Violates the data-integrity guardrail.                                                                                        | High   | Medium     | PRD FR-010, Guardrail "Data integrity"; hot-spot dir `src/app/actions/` — 12 commits/30d (tags actions churning); archived plan `rename-tag-globally`                                                       |
+| 5   | **AI enrichment violates the privacy boundary OR persists a wrong identity.** Prompt construction emits something other than the allow-listed strings (filename, embedded title/author/ISBN, front-matter), or the confirmation gate auto-accepts a low-confidence proposal that ends up identifying the wrong book. | High   | Medium     | PRD §Business Logic, PRD §NFR Privacy of book content, PRD FR-003/004; hot-spot dir `src/lib/enrichment/` — 4 commits/30d; hot-spot dir `src/lib/tag-suggestions/` — 4 commits/30d                          |
+| 6   | **Notes save silently drops content.** Autosave or explicit-save fires but a transient DB error, refresh, or navigate-away loses the edit without telling the user. Violates the 5-second persistence-durability NFR and the data-integrity guardrail.                                                               | High   | Medium     | PRD §NFR Persistence durability, FR-014/015/016; archived plan `library-and-book-view` (notes shipped here); hot-spot dir `src/app/(app)/` — 12 commits/30d                                                 |
+| 7   | **Server action runs without a valid session.** A mutating action becomes callable session-less (or with an expired session) and either crashes on an undefined user_id or — worse — writes against a stub identity. Abuse-lens row: the single-user model collapses if a stale session can mutate state.            | High   | Medium     | PRD §Access Control; tech-stack.md (NextAuth + Drive OAuth, single-user); hot-spot dir `src/app/actions/` — 12 commits/30d; abuse/security lens (auth + AI + user-provided input present)                   |
 
 ### Risk Response Guidance
 
-| Risk | What would prove protection | Must challenge | Context `/10x-research` must ground | Likely cheapest layer | Anti-pattern to avoid |
-|------|-----------------------------|----------------|--------------------------------------|-----------------------|-----------------------|
-| #1 | A successful import means both the DB row exists AND the epub bytes are reachable via Drive. A Drive failure mid-upload leaves *neither* state behind, and the user sees a clean error rather than a partial success. | "The action returned 200, therefore both writes succeeded." | The exact ordering of Drive upload vs DB insert in the import action, the rollback path, and the user-visible state after a partial failure. | integration (action against a real Postgres + a fake Drive client that can fail mid-upload) | happy-path-only; mocking the action under test; asserting the SQL string rather than the resulting row + bytes |
-| #2 | Every migration applies forward against a fresh Postgres matching the Render major version, rolls back cleanly, and the resulting schema is identical to what dev sees. | "It worked locally, so it'll work on Render." | The migration runner's contract, expected `schema_migrations` table, which extensions/collations the schema assumes (CITEXT? UUID? JSONB ordering?). | contract / replay (CI step that spins up a Render-major Postgres and runs migrations up + down) | asserting against the current dev DB's schema (oracle problem — bakes in the bug); skipping rollback; only running migrations on the first commit |
-| #3 | Each documented Drive error class maps to a stable, user-visible outcome (with a recorded fixture per error code). Transient classes are retried; terminal classes surface a clear user error. | "200 means success" — Drive can return 200 with an error envelope. "The SDK throws on errors" — `googleapis` surfaces some errors as status, others as exceptions. | The full set of Drive responses the import / upload / connection-check code actually handles, which classes are retried, and where token-refresh sits. | unit on the error-mapper + integration on the upload path | implementation mirror (re-asserting the mapping the function builds); over-mocking the `googleapis` client; not exercising the retry decision |
-| #4 | A rename either fully applies to every affected book AND removes the old tag (or merges on collision per the shipped change), or rolls back entirely. After a simulated mid-rename crash the DB is in one of those two states — never the in-between. | "Rows affected equals expected count, therefore done"; "the migration is atomic because it's one query." | The exact rename SQL, the transaction boundary, the merge-on-collision semantics. | integration with a transaction-probe + a forced-rollback case | snapshotting the SQL (implementation mirror); skipping the collision case |
-| #5 | The prompt-construction path emits only allow-listed strings. The confirmation gate requires explicit user accept per field — no auto-accept paths exist anywhere; provenance is shown alongside each proposal; the reject path persists nothing. | "We only send small strings, so we're safe"; "the LLM said X, so X is correct"; "front-matter is metadata-shaped, so it's allowed." | The exact set of strings the enrichment + tag-suggestion clients send, and the gate's accept/reject flow including the persistence boundary. | contract test on prompt construction (negative: assert no forbidden bytes) + integration on the gate (positive: reject path) | snapshotting the LLM's response (couples to the model); only testing the accept path; asserting on the prompt template rather than the assembled body |
-| #6 | A note edit survives a refresh within 5 seconds of the last keystroke (or explicit save). On a simulated mid-save error the editor surfaces the failure rather than dropping silently. | "The autosave callback ran, so the data is persisted"; "the UI shows a saved indicator." | The note-save action's contract (debounce vs explicit, error surface, optimistic UI), the persistence-layer transaction shape. | integration on the save action (write → re-read) + a forced-error path | snapshotting the editor's internal state; asserting localStorage state without verifying the DB; testing only the autosave timer rather than the round-trip |
-| #7 | Every mutating server action requires a valid NextAuth session; an action called session-less returns a clean error and writes nothing. Every action that touches a user-scoped row resolves the row via the session, not via a client-supplied user ID. | "It's single-user, so anyone reaching the action *is* the user"; "the middleware handles auth." | The session-extraction pattern actions actually use, whether any action accepts user_id as input, the shape of the error returned to the client. | integration sweep on a representative sample of mutating actions, invoked without a session | testing only the happy path with a real session; copying the session-guard logic into the test (oracle problem) |
+| Risk | What would prove protection                                                                                                                                                                                                                              | Must challenge                                                                                                                                                     | Context `/10x-research` must ground                                                                                                                    | Likely cheapest layer                                                                                                        | Anti-pattern to avoid                                                                                                                                       |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #1   | A successful import means both the DB row exists AND the epub bytes are reachable via Drive. A Drive failure mid-upload leaves _neither_ state behind, and the user sees a clean error rather than a partial success.                                    | "The action returned 200, therefore both writes succeeded."                                                                                                        | The exact ordering of Drive upload vs DB insert in the import action, the rollback path, and the user-visible state after a partial failure.           | integration (action against a real Postgres + a fake Drive client that can fail mid-upload)                                  | happy-path-only; mocking the action under test; asserting the SQL string rather than the resulting row + bytes                                              |
+| #2   | Every migration applies forward against a fresh Postgres matching the Render major version, rolls back cleanly, and the resulting schema is identical to what dev sees.                                                                                  | "It worked locally, so it'll work on Render."                                                                                                                      | The migration runner's contract, expected `schema_migrations` table, which extensions/collations the schema assumes (CITEXT? UUID? JSONB ordering?).   | contract / replay (CI step that spins up a Render-major Postgres and runs migrations up + down)                              | asserting against the current dev DB's schema (oracle problem — bakes in the bug); skipping rollback; only running migrations on the first commit           |
+| #3   | Each documented Drive error class maps to a stable, user-visible outcome (with a recorded fixture per error code). Transient classes are retried; terminal classes surface a clear user error.                                                           | "200 means success" — Drive can return 200 with an error envelope. "The SDK throws on errors" — `googleapis` surfaces some errors as status, others as exceptions. | The full set of Drive responses the import / upload / connection-check code actually handles, which classes are retried, and where token-refresh sits. | unit on the error-mapper + integration on the upload path                                                                    | implementation mirror (re-asserting the mapping the function builds); over-mocking the `googleapis` client; not exercising the retry decision               |
+| #4   | A rename either fully applies to every affected book AND removes the old tag (or merges on collision per the shipped change), or rolls back entirely. After a simulated mid-rename crash the DB is in one of those two states — never the in-between.    | "Rows affected equals expected count, therefore done"; "the migration is atomic because it's one query."                                                           | The exact rename SQL, the transaction boundary, the merge-on-collision semantics.                                                                      | integration with a transaction-probe + a forced-rollback case                                                                | snapshotting the SQL (implementation mirror); skipping the collision case                                                                                   |
+| #5   | The prompt-construction path emits only allow-listed strings. The confirmation gate requires explicit user accept per field — no auto-accept paths exist anywhere; provenance is shown alongside each proposal; the reject path persists nothing.        | "We only send small strings, so we're safe"; "the LLM said X, so X is correct"; "front-matter is metadata-shaped, so it's allowed."                                | The exact set of strings the enrichment + tag-suggestion clients send, and the gate's accept/reject flow including the persistence boundary.           | contract test on prompt construction (negative: assert no forbidden bytes) + integration on the gate (positive: reject path) | snapshotting the LLM's response (couples to the model); only testing the accept path; asserting on the prompt template rather than the assembled body       |
+| #6   | A note edit survives a refresh within 5 seconds of the last keystroke (or explicit save). On a simulated mid-save error the editor surfaces the failure rather than dropping silently.                                                                   | "The autosave callback ran, so the data is persisted"; "the UI shows a saved indicator."                                                                           | The note-save action's contract (debounce vs explicit, error surface, optimistic UI), the persistence-layer transaction shape.                         | integration on the save action (write → re-read) + a forced-error path                                                       | snapshotting the editor's internal state; asserting localStorage state without verifying the DB; testing only the autosave timer rather than the round-trip |
+| #7   | Every mutating server action requires a valid NextAuth session; an action called session-less returns a clean error and writes nothing. Every action that touches a user-scoped row resolves the row via the session, not via a client-supplied user ID. | "It's single-user, so anyone reaching the action _is_ the user"; "the middleware handles auth."                                                                    | The session-extraction pattern actions actually use, whether any action accepts user_id as input, the shape of the error returned to the client.       | integration sweep on a representative sample of mutating actions, invoked without a session                                  | testing only the happy path with a real session; copying the session-guard logic into the test (oracle problem)                                             |
 
 ## 3. Phased Rollout
 
@@ -67,23 +67,23 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
-|---|---|---|---|---|---|---|
-| 1 | Harness bootstrap + import/migration integrity | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers. | #1, #2 | integration, contract | complete | `context/changes/testing-harness-and-import-integrity/` |
-| 2 | Notes durability + tag-rename atomicity | Defend Risk #6 (notes save round-trip) and Risk #4 (rename transactional integrity) at the action layer, reusing the Postgres harness from Phase 1. | #4, #6 | integration | not started | — |
-| 3 | Drive error envelope + AI privacy + session boundary | Defend Risk #3, Risk #5, Risk #7 with focused unit, contract, and integration tests sharing fixtures from Phase 1. AI privacy via prompt-construction contract; session boundary via session-less invocation sweep. | #3, #5, #7 | unit, contract, integration | not started | — |
-| 4 | Quality-gates wiring | Lock the test floor in CI (GitHub Actions: lint + typecheck + Vitest matrix against a Render-major Postgres); optional post-deploy smoke via Render MCP for the deployed schema. | cross-cutting | gates | not started | — |
+| #   | Phase name                                           | Goal (one line)                                                                                                                                                                                                     | Risks covered | Test types                  | Status        | Change folder                                                                                                              |
+| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Harness bootstrap + import/migration integrity       | Stand up Vitest + an integration harness against a Render-major Postgres; defend Risk #1 (import non-atomicity) and Risk #2 (migration parity) at the action and contract layers.                                   | #1, #2        | integration, contract       | complete      | `context/changes/testing-harness-and-import-integrity/`                                                                    |
+| 2   | Notes durability + tag-rename atomicity              | Defend Risk #6 (notes save round-trip) and Risk #4 (rename transactional integrity) at the action layer, reusing the Postgres harness from Phase 1.                                                                 | #4, #6        | integration                 | change opened | `context/changes/testing-notes-and-tag-rename-integrity/`                                                                  |
+| 3   | Drive error envelope + AI privacy + session boundary | Defend Risk #3, Risk #5, Risk #7 with focused unit, contract, and integration tests sharing fixtures from Phase 1. AI privacy via prompt-construction contract; session boundary via session-less invocation sweep. | #3, #5, #7    | unit, contract, integration | implementing  | `context/changes/drive-error-classification/` (#3 ✓), `context/changes/ai-enrichment-privacy-boundary/` (#5 ✓), #7 pending |
+| 4   | Quality-gates wiring                                 | Lock the test floor in CI (GitHub Actions: lint + typecheck + Vitest matrix against a Render-major Postgres); optional post-deploy smoke via Render MCP for the deployed schema.                                    | cross-cutting | gates                       | not started   | —                                                                                                                          |
 
 **Status vocabulary** (fixed — parser literals):
 
-| Value | Meaning |
-|---|---|
-| `not started` | No change folder for this rollout phase yet. |
+| Value           | Meaning                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| `not started`   | No change folder for this rollout phase yet.                        |
 | `change opened` | `context/changes/<id>/` exists with `change.md`; research not done. |
-| `researched` | `research.md` exists in the change folder. |
-| `planned` | `plan.md` exists with a `## Progress` section. |
-| `implementing` | Progress section has at least one `[x]` and at least one `[ ]`. |
-| `complete` | Progress section is fully `[x]`. |
+| `researched`    | `research.md` exists in the change folder.                          |
+| `planned`       | `plan.md` exists with a `## Progress` section.                      |
+| `implementing`  | Progress section has at least one `[x]` and at least one `[ ]`.     |
+| `complete`      | Progress section is fully `[x]`.                                    |
 
 ## 4. Stack
 
@@ -93,13 +93,13 @@ Recommendations in this section are grounded in local manifests/configs
 plus the MCP/tools actually exposed in the current session — see the
 grounding note below the table.
 
-| Layer | Tool | Version | Notes |
-|---|---|---|---|
-| unit + integration | none yet — see §3 Phase 1 | — | Phase 1 stands up Vitest (TypeScript-native, ESM-friendly, no Babel) against the Docker Compose Postgres. |
-| API mocking | none yet — see §3 Phase 1 | — | Mock at the network edge only. Drive: a fake `drive_v3` client that the upload path accepts. OpenAI: per-test response fixture. |
-| e2e | none yet — see §3 Phase 4 (only if cost × signal justifies) | — | Default to integration. Add Playwright only if the failure mode requires a real browser + cookie + NextAuth round-trip and integration cannot catch it. |
-| accessibility | none — out of scope per PRD §Non-Goals (no WCAG-AA commitment) | — | Keyboard navigation and basic readability are checked manually. |
-| (optional) AI-native | not used | — | No vision-review or post-edit-hook layer planned. The riskiest paths are deterministic (DB, Drive contracts, prompt strings) and classic tests carry the signal. |
+| Layer                | Tool                                                           | Version | Notes                                                                                                                                                            |
+| -------------------- | -------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unit + integration   | none yet — see §3 Phase 1                                      | —       | Phase 1 stands up Vitest (TypeScript-native, ESM-friendly, no Babel) against the Docker Compose Postgres.                                                        |
+| API mocking          | none yet — see §3 Phase 1                                      | —       | Mock at the network edge only. Drive: a fake `drive_v3` client that the upload path accepts. OpenAI: per-test response fixture.                                  |
+| e2e                  | none yet — see §3 Phase 4 (only if cost × signal justifies)    | —       | Default to integration. Add Playwright only if the failure mode requires a real browser + cookie + NextAuth round-trip and integration cannot catch it.          |
+| accessibility        | none — out of scope per PRD §Non-Goals (no WCAG-AA commitment) | —       | Keyboard navigation and basic readability are checked manually.                                                                                                  |
+| (optional) AI-native | not used                                                       | —       | No vision-review or post-edit-hook layer planned. The riskiest paths are deterministic (DB, Drive contracts, prompt strings) and classic tests carry the signal. |
 
 **Stack grounding tools (current session):**
 
@@ -119,16 +119,16 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase `<N>`" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate | Where | Required? | Catches |
-|---|---|---|---|
-| lint (`eslint`) | local + CI (already in `package.json`) | required | syntactic / style drift |
-| typecheck (`tsc --noEmit`) | local + CI | required after §3 Phase 4 wires it explicitly | type drift; Next.js 16 type changes per CLAUDE.md |
-| unit + integration (Vitest) | local + CI | required after §3 Phase 1 | logic + transactional regressions on Risk #1, #2, #4, #6 |
-| migration replay (forward + rollback) | CI on PR | required after §3 Phase 1 | Risk #2 — Render Postgres drift |
-| Drive-error fixture suite | local + CI | required after §3 Phase 3 | Risk #3 — error misclassification regressions |
-| AI prompt-construction contract | local + CI | required after §3 Phase 3 | Risk #5 — privacy NFR violations |
-| session-required action sweep | CI on PR | required after §3 Phase 3 | Risk #7 — session-less mutations |
-| post-deploy smoke (Render MCP: schema + logs) | between merge + prod | optional, recommended after §3 Phase 4 | environment-specific failures (Render Postgres drift surviving CI) |
+| Gate                                          | Where                                  | Required?                                     | Catches                                                            |
+| --------------------------------------------- | -------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| lint (`eslint`)                               | local + CI (already in `package.json`) | required                                      | syntactic / style drift                                            |
+| typecheck (`tsc --noEmit`)                    | local + CI                             | required after §3 Phase 4 wires it explicitly | type drift; Next.js 16 type changes per CLAUDE.md                  |
+| unit + integration (Vitest)                   | local + CI                             | required after §3 Phase 1                     | logic + transactional regressions on Risk #1, #2, #4, #6           |
+| migration replay (forward + rollback)         | CI on PR                               | required after §3 Phase 1                     | Risk #2 — Render Postgres drift                                    |
+| Drive-error fixture suite                     | local + CI                             | required after §3 Phase 3                     | Risk #3 — error misclassification regressions                      |
+| AI prompt-construction contract               | local + CI                             | required after §3 Phase 3                     | Risk #5 — privacy NFR violations                                   |
+| session-required action sweep                 | CI on PR                               | required after §3 Phase 3                     | Risk #7 — session-less mutations                                   |
+| post-deploy smoke (Render MCP: schema + logs) | between merge + prod                   | optional, recommended after §3 Phase 4        | environment-specific failures (Render Postgres drift surviving CI) |
 
 ## 6. Cookbook Patterns
 
@@ -142,7 +142,7 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.2 Adding an integration test against Postgres
 
-Drop the test file into `tests/integration/`. Import `resetDb`, `seedDraft`, and `readState` from `tests/helpers/db.ts` — `resetDb` truncates all user tables and re-seeds the test user in one call, `readState(bookId)` returns the `{reviewState, driveFileId, hasDraft}` triple that anchors Risk #1 assertions. Mock `@/lib/drive/client` with `createDriveFake()` from `tests/helpers/drive-fake.ts` to control Drive behaviour per-test. Example: `tests/integration/confirm-review.test.ts`.
+Drop the test file into `tests/integration/`. Import `resetDb`, `seedDraft`, and `readState` from `tests/helpers/db.ts` — `resetDb` truncates all user tables and re-seeds the test user in one call, `readState(bookId)` returns the `{reviewState, driveFileId, hasDraft}` triple that anchors Risk #1 assertions. For library-state fixtures use `seedBook({ userId?, title?, author? })` (inserts a `confirmed` book, returns its id) and `seedSecondUser()` (a second fixed-UUID user) — these make cross-user ownership cases a one-liner. Mock `@/lib/drive/client` with `createDriveFake()` from `tests/helpers/drive-fake.ts` to control Drive behaviour per-test. Example: `tests/integration/confirm-review.test.ts`.
 
 ### 6.3 Adding a test for a server action
 
@@ -157,12 +157,72 @@ Call the action directly (no HTTP layer) — pass a `FormData` as the second arg
 
 ### 6.5 Adding a test for an AI-touching path
 
-- TBD — see §3 Phase 3. Covers the prompt-construction contract (assert no forbidden bytes), the per-test response fixture, and the gate's reject-path integration.
+**OpenAI boundary mock.** Import `createOpenAIFake` from `tests/helpers/openai-fake.ts`. Create one shared instance at module scope, then inject it via `vi.mock` so every `new OpenAI()` in the client modules yields the fake:
+
+```ts
+const openaiFake = createOpenAIFake();
+vi.mock("openai", () => {
+  const ctor = vi.fn(function () {
+    return openaiFake.client;
+  });
+  (ctor as unknown as { APIUserAbortError: unknown }).APIUserAbortError =
+    class APIUserAbortError extends Error {};
+  return { default: ctor };
+});
+```
+
+Set `process.env.OPENAI_API_KEY = "test-key"` in `beforeAll` (clients gate on this before constructing). Call `openaiFake.reset()` in `beforeEach` to clear recorded calls and revert to the default response payload.
+
+**Prompt content allow-list (privacy contract).** For pure prompt builders (`buildEnrichmentPrompt`, `buildTagSuggestionPrompt`), call them directly and assert each allow-listed field marker appears in the returned string while a `BOOK_BODY_SENTINEL` that was never in the typed input does not. For module-private builders (`buildFieldPrompt` inside `field-agent.ts`, `detectLanguage`'s inline prompt), call the exported wrapper function (`enrichField`, `detectLanguage`) and assert on `openaiFake.lastInput()` — the assembled prompt captured at the OpenAI boundary.
+
+**Front-matter cap.** Supply `frontMatterStrings` with > 10 entries (one longer than 200 chars). Assert via `openaiFake.lastInput()` that at most 10 snippet lines survive and the long entry is truncated. This cap lives in the client (`client.ts:42-45`, `field-agent.ts:92-95`), not the builder — a builder-only test would miss it entirely.
+
+**Canned response.** Call `openaiFake.setNextResponse(value)` before the test. A string is returned verbatim (e.g. for `detectLanguage`); anything else is `JSON.stringify`-ed. The default is a minimal `EnrichmentProposals` shape (all null fields) that satisfies `isValidProposals`. For tag-suggestion tests use `openaiFake.setNextResponse({ tags: [...] })`.
+
+**Gate tests (no auto-accept).** For each proposal-generating action (`enrichMetadataAction`, `enrichFieldAction`, `enrichFieldForDraftAction`, `suggestTagsAction`): seed via `seedBook` / `seedDraft` (§6.2), mock `@/auth` (§6.3), call the action, read the DB row back and assert it is unchanged. The proposal object lives in the return value — nothing is written.
+
+**FormData-driven persistence + reject path.** For `confirmReviewAction` and `applyMetadataAction`: submit a `FormData` whose values differ from any proposal (e.g. `isbn: "SUBMITTED-ISBN"` when the draft's embedded isbn is `"DRAFT-EMBEDDED-ISBN"`), assert the persisted DB row matches what was submitted. Submit an empty string where a nullable field should persist as `null` to cover the reject path. Mock `next/cache` with `vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }))` if the action calls `revalidatePath` outside the Next.js request context.
+
+Example: `tests/integration/ai-enrichment-privacy.test.ts`.
 
 ### 6.6 Per-rollout-phase notes
 
 (Optional. After each phase lands, `/10x-implement` appends a 2–3 line note
 here capturing anything surprising the rollout phase taught.)
+
+**Phase 2 (notes durability + tag-rename atomicity).** Tag-merge atomicity is
+proven by a _union-preservation_ assertion through `renameTagAction` (source `S`
+on `{A,B}`, target `T` on `{B,C}` → `T` on exactly `{A,B,C}`, `S` gone) — no
+fault injection needed; reversing the INSERT/DELETE order in `renameOrMergeTag`
+turns it red. Notes/tags fixtures use the new `seedBook`/`seedSecondUser`
+helpers (§6.2). Surprise: `deleteNote`'s ownership guard is dead code —
+`DELETE … executeTakeFirst()` (no `RETURNING`) is always truthy, so
+`deleteNoteAction` returns `{ ok:true }` on a denied no-op delete; the row is
+still protected by the `WHERE exists` clause, so the notes test asserts the
+data-integrity invariant (note unchanged) rather than the action's `ok` flag.
+
+**Phase 3 — Risk #5 (AI enrichment privacy boundary + wrong-identity gate), characterization only.** Three `KNOWN SURFACE` characterizations are asserted as passing tests, not skips: (1) **unbounded `userMessage`** — the field-chat modal's free-form guidance is forwarded to the prompt verbatim and without a length cap (`field-agent.ts:78-80`); a user could paste body text here, so it is a privacy surface, not a current leak (nothing in the import flow auto-fills it); (2) **always-empty front matter at the action layer** — every action call site passes `frontMatterStrings: []`, making the 10×200 cap unreachable from normal use; the cap test exercises the client directly so it stays meaningful if a future change starts routing real front matter; (3) **no auto-accept by construction** — there is no code path that reads `EnrichmentProposals` into a persistence call; the gate test proves this behaviorally (seed → call action → assert DB unchanged), not by inspecting branches. No production behavior was changed.
+
+**Phase 3 — Risk #3 (Drive error classification), characterization only.** There
+is **no** central Drive error classifier; classification is scattered across call
+sites and only ever distinguishes a pre-flight `DriveAuthError` and a raw `404`.
+`tests/integration/drive-error-classification.test.ts` pins each Drive-touching
+path's current error-class → outcome mapping and labels three **known, intentionally
+unfixed** defects (asserted as passing tests, not skips): (1) **live `401` is not
+re-auth'd** — a token that expires mid-call returns a plain `code===401`, which is
+not an `instanceof DriveAuthError`, so confirm-review/trash/restore hit the generic
+path instead of re-auth (`KNOWN GAP`); (2) **transient `429`/`5xx` are not retried**
+— `books.ts` only special-cases `404`, everything else surfaces as a terminal
+`Drive file lookup failed: …` (`KNOWN GAP`); (3) **`404` is indistinguishable from
+transient** in the read paths — `download/route.ts` maps any `files.get` error to
+`502` and `epub-metadata/route.ts` to `reason:"drive_error"` (`KNOWN MISCLASS`).
+These are **test-only characterizations pending a future classifier change** — when
+that classifier lands, these are the exact tests to flip. No production behavior was
+changed here.
+
+### 6.7 Adding a Drive-error classification test
+
+Build the error with `driveError(code, message?)` from `tests/helpers/drive-fake.ts` — it returns a plain `Error` carrying a numeric `.code` (and matching `.status`), exactly the shape `googleapis`/Gaxios throws and the only property the call sites read (`(e as {code?: number}).code`). Inject it with the fake's per-operation hooks: `failNextCreate` / `failNextDelete` / `failNextGet` / `failNextList` / `failNextUpdate` each force the next call to that operation to throw, then clear (also reset by `driveFake.reset()`). Pick the hook matching the operation that fails at the call site (e.g. `failNextGet` for the trash/restore `files.get` and both API routes, `failNextUpdate` for the rename path's `files.update`). Because `library-folder.ts` caches folder ids at module scope, warm those caches once in `beforeAll` (call `getOrCreateLibraryFolder` / `getOrCreateTrashFolder` with the fake client) so an injected failure lands on the targeted operation instead of an incidental folder list/create. Assert the **observable outcome only** — the returned state object, the thrown redirect URL (`isRedirectError` + `getURLFromRedirectError`, §6.3), the HTTP `Response` status/JSON, and DB state — never the internal branch. Example: `tests/integration/drive-error-classification.test.ts`.
 
 ## 7. What We Deliberately Don't Test
 
