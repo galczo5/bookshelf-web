@@ -1,7 +1,7 @@
 ---
 change_id: testing-notes-and-tag-rename-integrity
 title: Notes durability + tag-rename atomicity tests
-status: implementing
+status: implemented
 created: 2026-06-25
 updated: 2026-06-25
 archived_at: null

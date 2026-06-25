@@ -315,11 +315,11 @@ None — no schema changes. Tests only, against the existing Phase 1 harness.
 
 #### Automated
 
-- [x] 2.1 Integration suite passes: `npm run test:integration`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 New file present: `tests/integration/rename-tag.test.ts`
+- [x] 2.1 Integration suite passes: `npm run test:integration` — f757ce8
+- [x] 2.2 Lint passes: `npm run lint` — f757ce8
+- [x] 2.3 New file present: `tests/integration/rename-tag.test.ts` — f757ce8
 
 #### Manual
 
-- [x] 2.4 Mutation check: reversed INSERT/DELETE ordering makes the union test FAIL, then reverted
-- [x] 2.5 Cookbook §6 per-phase note reads accurately against the shipped tests
+- [x] 2.4 Mutation check: reversed INSERT/DELETE ordering makes the union test FAIL, then reverted — f757ce8
+- [x] 2.5 Cookbook §6 per-phase note reads accurately against the shipped tests — f757ce8
