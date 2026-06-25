@@ -190,12 +190,12 @@ None — no schema or production code changes.
 
 #### Automated
 
-- [x] 2.1 New suite passes: `npm test`
-- [x] 2.2 Targeted run green: `npx vitest run tests/integration/drive-error-classification.test.ts`
-- [x] 2.3 Lint passes: `npm run lint`
-- [x] 2.4 Full integration suite still green: `npm run test:integration`
+- [x] 2.1 New suite passes: `npm test` — 16d72cc
+- [x] 2.2 Targeted run green: `npx vitest run tests/integration/drive-error-classification.test.ts` — 16d72cc
+- [x] 2.3 Lint passes: `npm run lint` — 16d72cc
+- [x] 2.4 Full integration suite still green: `npm run test:integration` — 16d72cc
 
 #### Manual
 
-- [x] 2.5 Gap assertions verified by reversing a classification branch (books 404; confirm-review live-401) and confirming red, then revert
-- [x] 2.6 §6.6 note and §6.7 cookbook entry read clearly
+- [x] 2.5 Gap assertions verified by reversing a classification branch (books 404; confirm-review live-401) and confirming red, then revert — 16d72cc
+- [x] 2.6 §6.6 note and §6.7 cookbook entry read clearly — 16d72cc

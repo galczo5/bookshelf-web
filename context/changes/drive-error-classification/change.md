@@ -1,7 +1,7 @@
 ---
 change_id: drive-error-classification
 title: Defend Risk #3 — Drive API error misclassification (error-mapper unit + upload-path integration)
-status: implementing
+status: implemented
 created: 2026-06-25
 updated: 2026-06-25
 archived_at: null
