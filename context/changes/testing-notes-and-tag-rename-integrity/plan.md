@@ -302,24 +302,24 @@ None — no schema changes. Tests only, against the existing Phase 1 harness.
 
 #### Automated
 
-- [x] 1.1 Integration suite passes: `npm run test:integration`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 New file present: `tests/integration/notes.test.ts`
+- [x] 1.1 Integration suite passes: `npm run test:integration` — 161fa0c
+- [x] 1.2 Lint passes: `npm run lint` — 161fa0c
+- [x] 1.3 New file present: `tests/integration/notes.test.ts` — 161fa0c
 
 #### Manual
 
-- [x] 1.4 Test names read as behavior, not implementation mirrors
-- [x] 1.5 Assertion oracles come from requirements, not re-derived SQL
+- [x] 1.4 Test names read as behavior, not implementation mirrors — 161fa0c
+- [x] 1.5 Assertion oracles come from requirements, not re-derived SQL — 161fa0c
 
 ### Phase 2: Tag-rename atomicity + ownership tests + housekeeping
 
 #### Automated
 
-- [ ] 2.1 Integration suite passes: `npm run test:integration`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 New file present: `tests/integration/rename-tag.test.ts`
+- [x] 2.1 Integration suite passes: `npm run test:integration`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 New file present: `tests/integration/rename-tag.test.ts`
 
 #### Manual
 
-- [ ] 2.4 Mutation check: reversed INSERT/DELETE ordering makes the union test FAIL, then reverted
-- [ ] 2.5 Cookbook §6 per-phase note reads accurately against the shipped tests
+- [x] 2.4 Mutation check: reversed INSERT/DELETE ordering makes the union test FAIL, then reverted
+- [x] 2.5 Cookbook §6 per-phase note reads accurately against the shipped tests

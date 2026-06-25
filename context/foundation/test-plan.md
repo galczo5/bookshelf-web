@@ -142,7 +142,7 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.2 Adding an integration test against Postgres
 
-Drop the test file into `tests/integration/`. Import `resetDb`, `seedDraft`, and `readState` from `tests/helpers/db.ts` — `resetDb` truncates all user tables and re-seeds the test user in one call, `readState(bookId)` returns the `{reviewState, driveFileId, hasDraft}` triple that anchors Risk #1 assertions. Mock `@/lib/drive/client` with `createDriveFake()` from `tests/helpers/drive-fake.ts` to control Drive behaviour per-test. Example: `tests/integration/confirm-review.test.ts`.
+Drop the test file into `tests/integration/`. Import `resetDb`, `seedDraft`, and `readState` from `tests/helpers/db.ts` — `resetDb` truncates all user tables and re-seeds the test user in one call, `readState(bookId)` returns the `{reviewState, driveFileId, hasDraft}` triple that anchors Risk #1 assertions. For library-state fixtures use `seedBook({ userId?, title?, author? })` (inserts a `confirmed` book, returns its id) and `seedSecondUser()` (a second fixed-UUID user) — these make cross-user ownership cases a one-liner. Mock `@/lib/drive/client` with `createDriveFake()` from `tests/helpers/drive-fake.ts` to control Drive behaviour per-test. Example: `tests/integration/confirm-review.test.ts`.
 
 ### 6.3 Adding a test for a server action
 
@@ -163,6 +163,17 @@ Call the action directly (no HTTP layer) — pass a `FormData` as the second arg
 
 (Optional. After each phase lands, `/10x-implement` appends a 2–3 line note
 here capturing anything surprising the rollout phase taught.)
+
+**Phase 2 (notes durability + tag-rename atomicity).** Tag-merge atomicity is
+proven by a _union-preservation_ assertion through `renameTagAction` (source `S`
+on `{A,B}`, target `T` on `{B,C}` → `T` on exactly `{A,B,C}`, `S` gone) — no
+fault injection needed; reversing the INSERT/DELETE order in `renameOrMergeTag`
+turns it red. Notes/tags fixtures use the new `seedBook`/`seedSecondUser`
+helpers (§6.2). Surprise: `deleteNote`'s ownership guard is dead code —
+`DELETE … executeTakeFirst()` (no `RETURNING`) is always truthy, so
+`deleteNoteAction` returns `{ ok:true }` on a denied no-op delete; the row is
+still protected by the `WHERE exists` clause, so the notes test asserts the
+data-integrity invariant (note unchanged) rather than the action's `ok` flag.
 
 ## 7. What We Deliberately Don't Test
 
