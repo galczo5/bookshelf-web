@@ -345,13 +345,13 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 2.1 Full file passes (`npm run test:integration -- ai-enrichment-privacy`)
-- [x] 2.2 Whole integration suite green, no regressions (`npm run test:integration`)
-- [x] 2.3 Type checking passes (`npx tsc --noEmit`)
-- [x] 2.4 Linting passes (`npm run lint`)
+- [x] 2.1 Full file passes (`npm run test:integration -- ai-enrichment-privacy`) — dadc224
+- [x] 2.2 Whole integration suite green, no regressions (`npm run test:integration`) — dadc224
+- [x] 2.3 Type checking passes (`npx tsc --noEmit`) — dadc224
+- [x] 2.4 Linting passes (`npm run lint`) — dadc224
 
 #### Manual
 
-- [x] 2.5 Forcing a proposal value into a persistence call turns the FormData assertion red
-- [x] 2.6 Submitting a non-empty value where reject expects `null` turns the reject assertion red
-- [x] 2.7 §6.5 reads as a usable how-to; §6.6 note is accurate
+- [x] 2.5 Forcing a proposal value into a persistence call turns the FormData assertion red — dadc224
+- [x] 2.6 Submitting a non-empty value where reject expects `null` turns the reject assertion red — dadc224
+- [x] 2.7 §6.5 reads as a usable how-to; §6.6 note is accurate — dadc224

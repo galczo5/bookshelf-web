@@ -1,7 +1,7 @@
 ---
 change_id: ai-enrichment-privacy-boundary
 title: Test Risk #5 — AI enrichment privacy boundary + wrong-identity confirmation gate
-status: implementing
+status: implemented
 created: 2026-06-25
 updated: 2026-06-25
 archived_at: null
