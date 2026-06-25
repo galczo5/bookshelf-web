@@ -175,6 +175,27 @@ helpers (§6.2). Surprise: `deleteNote`'s ownership guard is dead code —
 still protected by the `WHERE exists` clause, so the notes test asserts the
 data-integrity invariant (note unchanged) rather than the action's `ok` flag.
 
+**Phase 3 — Risk #3 (Drive error classification), characterization only.** There
+is **no** central Drive error classifier; classification is scattered across call
+sites and only ever distinguishes a pre-flight `DriveAuthError` and a raw `404`.
+`tests/integration/drive-error-classification.test.ts` pins each Drive-touching
+path's current error-class → outcome mapping and labels three **known, intentionally
+unfixed** defects (asserted as passing tests, not skips): (1) **live `401` is not
+re-auth'd** — a token that expires mid-call returns a plain `code===401`, which is
+not an `instanceof DriveAuthError`, so confirm-review/trash/restore hit the generic
+path instead of re-auth (`KNOWN GAP`); (2) **transient `429`/`5xx` are not retried**
+— `books.ts` only special-cases `404`, everything else surfaces as a terminal
+`Drive file lookup failed: …` (`KNOWN GAP`); (3) **`404` is indistinguishable from
+transient** in the read paths — `download/route.ts` maps any `files.get` error to
+`502` and `epub-metadata/route.ts` to `reason:"drive_error"` (`KNOWN MISCLASS`).
+These are **test-only characterizations pending a future classifier change** — when
+that classifier lands, these are the exact tests to flip. No production behavior was
+changed here.
+
+### 6.7 Adding a Drive-error classification test
+
+Build the error with `driveError(code, message?)` from `tests/helpers/drive-fake.ts` — it returns a plain `Error` carrying a numeric `.code` (and matching `.status`), exactly the shape `googleapis`/Gaxios throws and the only property the call sites read (`(e as {code?: number}).code`). Inject it with the fake's per-operation hooks: `failNextCreate` / `failNextDelete` / `failNextGet` / `failNextList` / `failNextUpdate` each force the next call to that operation to throw, then clear (also reset by `driveFake.reset()`). Pick the hook matching the operation that fails at the call site (e.g. `failNextGet` for the trash/restore `files.get` and both API routes, `failNextUpdate` for the rename path's `files.update`). Because `library-folder.ts` caches folder ids at module scope, warm those caches once in `beforeAll` (call `getOrCreateLibraryFolder` / `getOrCreateTrashFolder` with the fake client) so an injected failure lands on the targeted operation instead of an incidental folder list/create. Assert the **observable outcome only** — the returned state object, the thrown redirect URL (`isRedirectError` + `getURLFromRedirectError`, §6.3), the HTTP `Response` status/JSON, and DB state — never the internal branch. Example: `tests/integration/drive-error-classification.test.ts`.
+
 ## 7. What We Deliberately Don't Test
 
 Exclusions agreed during the rollout (Phase 2 interview, Q5). Future

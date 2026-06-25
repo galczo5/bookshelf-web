@@ -179,23 +179,23 @@ None — no schema or production code changes.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Existing suite still green: `npm test`
+- [x] 1.1 Lint passes: `npm run lint` — 9d97ea4
+- [x] 1.2 Existing suite still green: `npm test` — 9d97ea4
 
 #### Manual
 
-- [x] 1.3 Scratch assertion confirms `files.get` returns bytes and throws 404-coded error for unknown id
+- [x] 1.3 Scratch assertion confirms `files.get` returns bytes and throws 404-coded error for unknown id — 9d97ea4
 
 ### Phase 2: Call-site characterization tests + gap documentation
 
 #### Automated
 
-- [ ] 2.1 New suite passes: `npm test`
-- [ ] 2.2 Targeted run green: `npx vitest run tests/integration/drive-error-classification.test.ts`
-- [ ] 2.3 Lint passes: `npm run lint`
-- [ ] 2.4 Full integration suite still green: `npm run test:integration`
+- [x] 2.1 New suite passes: `npm test`
+- [x] 2.2 Targeted run green: `npx vitest run tests/integration/drive-error-classification.test.ts`
+- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.4 Full integration suite still green: `npm run test:integration`
 
 #### Manual
 
-- [ ] 2.5 Gap assertions verified by reversing a classification branch (books 404; confirm-review live-401) and confirming red, then revert
-- [ ] 2.6 §6.6 note and §6.7 cookbook entry read clearly
+- [x] 2.5 Gap assertions verified by reversing a classification branch (books 404; confirm-review live-401) and confirming red, then revert
+- [x] 2.6 §6.6 note and §6.7 cookbook entry read clearly
